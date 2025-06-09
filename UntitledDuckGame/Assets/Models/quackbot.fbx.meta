@@ -43,7 +43,7 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: duck_eye_holo
-    second: {fileID: 2100000, guid: 8166e0a368d92c448bc7dbeb154c7f18, type: 2}
+    second: {fileID: 2100000, guid: 3aa6a137bd6c9544cb70b1075ce74521, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
