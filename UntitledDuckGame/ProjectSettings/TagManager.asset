@@ -9,20 +9,20 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
-  - Player
-  - IK Target
-  - BlockUI
-  - Ignore IK
+  - 
+  - Floor IK
+  - Vertical IK
   - Block IK
   - CursorIntersect IK
   - 
+  - 'Interactable '
   - 
   - 
   - 
-  - Block
+  - 
   - 
   - 
   - 
