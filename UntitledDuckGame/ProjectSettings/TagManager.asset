@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - PlayerIK
   layers:
   - Default
   - TransparentFX
@@ -12,16 +13,16 @@ TagManager:
   - Water
   - UI
   - Player
-  - 
+  - IK Target
   - BlockUI
   - Ignore IK
   - Block IK
+  - CursorIntersect IK
   - 
   - 
   - 
   - 
-  - 
-  - 
+  - Block
   - 
   - 
   - 

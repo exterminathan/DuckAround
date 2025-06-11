@@ -1,6 +1,4 @@
-using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerDuckController : MonoBehaviour
@@ -42,15 +40,15 @@ public class PlayerDuckController : MonoBehaviour
             }
 
 
-            float horizontalInput = Input.GetAxis("Horizontal");
-            float verticalInput = Input.GetAxis("Vertical");
+            //float horizontalInput = Input.GetAxis("Horizontal");
+            //float verticalInput = Input.GetAxis("Vertical");
 
-            float flipHorizontal = rigTarget.localPosition.x - horizontalInput * dampeningFactor;
+            //float flipHorizontal = rigTarget.localPosition.x - horizontalInput * dampeningFactor;
 
-            float newHorizPosition = Mathf.Clamp(flipHorizontal, horizontalMinClamp, horizontalMaxClamp);
-            float newVertPosition = Mathf.Clamp(rigTarget.localPosition.y + verticalInput * dampeningFactor, verticalMinClamp, verticalMaxClamp);
+            //float newHorizPosition = Mathf.Clamp(flipHorizontal, horizontalMinClamp, horizontalMaxClamp);
+            //float newVertPosition = Mathf.Clamp(rigTarget.localPosition.y + verticalInput * dampeningFactor, verticalMinClamp, verticalMaxClamp);
 
-            rigTarget.localPosition = new Vector3(newHorizPosition, newVertPosition, rigTarget.localPosition.z);
+            // rigTarget.localPosition = new Vector3(newHorizPosition, newVertPosition, rigTarget.localPosition.z);
 
         }
     }
