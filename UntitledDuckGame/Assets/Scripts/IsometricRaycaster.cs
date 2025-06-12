@@ -131,6 +131,7 @@ public class IsometricRaycaster : MonoBehaviour
         // Check 1: Blocker IK Range (Any scene Objects)
         if (Physics.Raycast(ray, out RaycastHit hit0, Mathf.Infinity, block_ik_layer))
         {
+
             //Debug.Log("On blocker");
             // if IK target inside any blocker
             if (Physics.CheckSphere(ik_target.position, 0.05f, block_ik_layer))

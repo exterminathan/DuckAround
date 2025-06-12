@@ -1,4 +1,5 @@
 using System.Collections;
+using AmplifyShaderEditor;
 using UnityEngine;
 
 public class PlayerDuckController : MonoBehaviour
@@ -18,6 +19,8 @@ public class PlayerDuckController : MonoBehaviour
     [Header("Movement Settings")]
     private bool canTraverse { get; set; } = true;
     private bool canFlex { get; set; } = true;
+
+    [SerializeField] private float moveSpeed = 5f;
 
     [SerializeField] private float dampeningFactor = 0.05f;
 
@@ -39,16 +42,16 @@ public class PlayerDuckController : MonoBehaviour
                 StartCoroutine(Quack());
             }
 
+            Vector3 input = new Vector3(
+                            -Input.GetAxisRaw("Horizontal"),
+                            0f,
+                            -Input.GetAxisRaw("Vertical")).normalized;
 
-            //float horizontalInput = Input.GetAxis("Horizontal");
-            //float verticalInput = Input.GetAxis("Vertical");
+            if (input.sqrMagnitude > 0f)
+            {
+                transform.Translate(input * moveSpeed * Time.deltaTime, Space.World);
+            }
 
-            //float flipHorizontal = rigTarget.localPosition.x - horizontalInput * dampeningFactor;
-
-            //float newHorizPosition = Mathf.Clamp(flipHorizontal, horizontalMinClamp, horizontalMaxClamp);
-            //float newVertPosition = Mathf.Clamp(rigTarget.localPosition.y + verticalInput * dampeningFactor, verticalMinClamp, verticalMaxClamp);
-
-            // rigTarget.localPosition = new Vector3(newHorizPosition, newVertPosition, rigTarget.localPosition.z);
 
         }
     }
