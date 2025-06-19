@@ -12,6 +12,8 @@ public class IsometricRaycaster : MonoBehaviour
     public LayerMask cursorIntersect_ik_layer;
     public LayerMask floor_ik_layer;
 
+    public LayerMask combinedBlockerIgnoreLayer;
+
 
     [Header("IK Target")]
     [Tooltip("The IK target that controls the IK rig")]
@@ -95,7 +97,7 @@ public class IsometricRaycaster : MonoBehaviour
         lowerCursorIntersect.enabled = showDev;
 
         //enable/disable cursor intersection planes based on armature rotation limits
-        if (rotate_pivot.transform.rotation.eulerAngles.y < 280f && rotate_pivot.transform.rotation.eulerAngles.y > 180f)
+        if (rotate_pivot.transform.rotation.eulerAngles.y < 280f && rotate_pivot.transform.rotation.eulerAngles.y > 175f)
         {
             //Enables the lower cursor intersection plane when at rotation limit
             lowerCursorIntersect.gameObject.SetActive(true);
@@ -132,9 +134,19 @@ public class IsometricRaycaster : MonoBehaviour
         if (Physics.Raycast(ray, out RaycastHit hit0, Mathf.Infinity, block_ik_layer))
         {
 
+            if (!wentOutOfVertical)
+            {
+                wentOutOfVertical = true;
+                //Debug.Log("Went out of vertical IK plane");
+            }
+
+            //if a sphere cast from hit point hits vertical ik collider, then find closest point on blocker collider
+            // and move ik target to that point
+
             //Debug.Log("On blocker");
             // if IK target inside any blocker
-            if (Physics.CheckSphere(ik_target.position, 0.05f, block_ik_layer))
+            //draw debug check sphere
+            if (Physics.CheckSphere(ik_target.position, 0.1f, combinedBlockerIgnoreLayer))
             {
                 //find closest point on blocker collider
                 // move ik target to that point
@@ -147,6 +159,9 @@ public class IsometricRaycaster : MonoBehaviour
                 }
             }
 
+
+
+
             //Debug ray and sphere
             Debug.DrawRay(ray.origin, ray.direction * 100f, Color.yellow, 0.5f);
             if (showDev) ShowDebugSphere(hit0.point, Color.yellow);
@@ -154,7 +169,7 @@ public class IsometricRaycaster : MonoBehaviour
             // find intersection point between blocker and vertical IK plane, and use that hit point
             // as new ik target position
             // (so when you are on top of a blocker, the IK target will move to the blocker surface)
-
+            // rotate
             Vector3 flatDirection = hit0.point - rotate_pivot.transform.position;
             flatDirection.y = 0f;
 
@@ -202,20 +217,19 @@ public class IsometricRaycaster : MonoBehaviour
 
                 // Double-check if the hit point is colliding with any blockers 
                 // (might have to move this out of here if blocker check happens before this one)
-                if (!Physics.CheckSphere(hit.point, 0.05f, block_ik_layer))
+
+                // check if IK target returned to the vertical IK range
+                if (wentOutOfVertical)
                 {
-                    // check if IK target returned to the vertical IK range
-                    if (wentOutOfVertical)
-                    {
-                        Debug.Log("Went back in to vert range");
-                        StartIKLerp(hit.point);
-                        wentOutOfVertical = false;
-                    }
-                    else
-                    {
-                        StartIKLerp(hit.point);
-                    }
+                    //Debug.Log("Went back in to vert range");
+                    StartIKLerp(hit.point);
+                    wentOutOfVertical = false;
                 }
+                else
+                {
+                    StartIKLerp(hit.point);
+                }
+                
             }
         }
 
@@ -252,7 +266,7 @@ public class IsometricRaycaster : MonoBehaviour
                 if (!wentOutOfVertical)
                 {
                     wentOutOfVertical = true;
-                    Debug.Log("Went out of vertical IK plane");
+                    //Debug.Log("Went out of vertical IK plane");
                 }
 
                 Debug.DrawRay(ray.origin, ray.direction * 100f, Color.red, 0.5f);

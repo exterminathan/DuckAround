@@ -12,11 +12,6 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: base_bolts
-    second: {fileID: 2100000, guid: 96e28f50e1392c54aa77ec1f023c4287, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: bottom_join_base
     second: {fileID: 2100000, guid: 35e2f0c83a997e146a226abe5048c38b, type: 2}
   - first:
