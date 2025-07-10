@@ -8,6 +8,11 @@ public class PhysicsIKDrive : MonoBehaviour
 
     ConfigurableJoint joint;
 
+
+    [SerializeField][Min(.01f)] float rotationSmoothTime = 0.05f;
+    [SerializeField][Min(0f)] float extraSecondsPerDegree = 0.0003f; // 0.0003*180°≈0.054s extra
+    Quaternion rotationVelocity;
+
     void Start()
     {
         joint = GetComponent<ConfigurableJoint>();
@@ -20,6 +25,14 @@ public class PhysicsIKDrive : MonoBehaviour
         Quaternion worldToParent = Quaternion.Inverse(transform.parent.rotation);
         Quaternion desiredLocal = worldToParent * ikTarget.rotation;
 
-        joint.targetRotation = desiredLocal;
+        float angleDiff = Quaternion.Angle(joint.targetRotation, desiredLocal);
+        float smooth = rotationSmoothTime + angleDiff * extraSecondsPerDegree;
+
+        joint.targetRotation = Quaternion.Slerp(
+        joint.targetRotation,
+        desiredLocal,
+        Time.fixedDeltaTime / smooth
+    );
+
     }
 }

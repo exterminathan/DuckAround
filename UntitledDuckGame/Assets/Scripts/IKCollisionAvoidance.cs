@@ -12,19 +12,30 @@ public class IKCollisionAvoidance : MonoBehaviour
     [Tooltip("Which layers count as obstacles")]
     public LayerMask obstacleMask;
 
+    [SerializeField][Min(0f)] float positionSmoothTime = 0.05f;
+    Vector3 positionVelocity;
+
     void LateUpdate()
     {
         // Find any colliders overlapping the probe sphere
         Collider[] hits = Physics.OverlapSphere(ikTarget.position, probeRadius, obstacleMask);
         if (hits.Length == 0) return;
 
-        // For each penetration, push the target out along the surface normal
+        Vector3 corrected = ikTarget.position;
         foreach (var hit in hits)
         {
             Vector3 closest = hit.ClosestPoint(ikTarget.position);
             Vector3 pushDir = (ikTarget.position - closest).normalized;
-            ikTarget.position = closest + pushDir * probeRadius;
+            corrected = closest + pushDir * probeRadius;
         }
+
+        // SmoothDamp from current → corrected
+        ikTarget.position = Vector3.SmoothDamp(
+            ikTarget.position,
+            corrected,
+            ref positionVelocity,
+            positionSmoothTime
+        );
     }
 
     // Draw the probe in the editor

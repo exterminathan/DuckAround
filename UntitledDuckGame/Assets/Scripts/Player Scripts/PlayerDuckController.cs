@@ -35,7 +35,7 @@ public class PlayerDuckController : MonoBehaviour
 
     [SerializeField] private float moveSpeed = 5f;
     [Range(0.5f, 1f)]
-    [SerializeField] private float diagonalFactor = 1.85f; 
+    [SerializeField] private float diagonalFactor = 1.85f;
 
     [SerializeField] private float dampeningFactor = 0.05f;
 
@@ -63,7 +63,12 @@ public class PlayerDuckController : MonoBehaviour
         isoRight = Vector3.Cross(Vector3.up, isoForward).normalized;
 
         rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
     }
+
 
     void Update()
     {
@@ -119,14 +124,14 @@ public class PlayerDuckController : MonoBehaviour
 
             }
         }
-        
+
     }
 
     private IEnumerator Quack()
     {
         float duration = quackDuration / 2;
         Quaternion initialRot = mouth.localRotation;
-        Quaternion openRot    = initialRot * Quaternion.Euler(0f, quackRotation, 0f);
+        Quaternion openRot = initialRot * Quaternion.Euler(0f, quackRotation, 0f);
 
         // ——— Open mouth ———
         for (float t = 0; t < duration; t += Time.deltaTime)
