@@ -49,8 +49,10 @@ public static class WaypointActions {
         Vector3 dir = targetWP.transform.position - selfTrans.position;
         dir.y = 0;
 
-        if (dir.sqrMagnitude > 2.5f)
-            selfTrans.rotation = Quaternion.LookRotation(dir);
+        if (dir.sqrMagnitude > .05f) {
+            Quaternion targetRotation = Quaternion.LookRotation(dir);
+            selfTrans.rotation = Quaternion.Slerp(selfTrans.rotation, targetRotation, .25f);
+        }
 
         selfTrans.position = Vector3.MoveTowards(selfTrans.position, targetWP.transform.position,
                                                  speed * Time.deltaTime);

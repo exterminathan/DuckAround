@@ -28,7 +28,7 @@ public class WorkerAIController : MonoBehaviour {
             ["IsAllowedToMove"] = IsAllowedToMove
         };
 
-        var anim = GetComponent<Animator>();
+        var anim = GetComponentInChildren<Animator>();
         if (anim != null)
             _blackboard["Animator"] = anim;
     }
