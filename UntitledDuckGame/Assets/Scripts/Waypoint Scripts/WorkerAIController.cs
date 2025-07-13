@@ -11,13 +11,15 @@ public class WorkerAIController : MonoBehaviour {
 
     [Header("Control Flags")]
     public bool IsAllowedToMove = true;
+    public bool IsCollided = false;
+    public bool IsRagdollActive = false;
 
     private BehaviourTree _tree;
     private Dictionary<string, object> _blackboard;
 
     void Awake() {
         _tree = GetComponent<BehaviourTree>();
-        _tree.Root = WaypointBTBuilder.CreateTree();
+        _tree.Root = PrimaryBTBuilder.CreateTree();
 
         _blackboard = new Dictionary<string, object> {
             ["SelfTransform"] = transform,
@@ -25,7 +27,10 @@ public class WorkerAIController : MonoBehaviour {
             ["TargetWaypoint"] = TargetWaypoint,
             ["Speed"] = MoveSpeed,
             ["ArriveThreshold"] = ArriveThreshold,
-            ["IsAllowedToMove"] = IsAllowedToMove
+            ["IsAllowedToMove"] = IsAllowedToMove,
+            ["IsCollided"] = IsCollided,
+            ["IsRagdollActive"] = IsRagdollActive
+
         };
 
         var anim = GetComponentInChildren<Animator>();
@@ -34,10 +39,22 @@ public class WorkerAIController : MonoBehaviour {
     }
 
     void Update() {
-        _blackboard["IsAllowedToMove"] = IsAllowedToMove;
         _tree.Root?.Execute(_blackboard);
     }
 
+    // Collisions
+    void OnCollisionEnter(Collision other) {
+        if (other.gameObject.layer == LayerMask.NameToLayer("AICollision")) {
+            Destroy(other.gameObject);
+            _blackboard["IsCollided"] = true;
+        }
+    }
+
+
+
+
+    //used by debug to set destination
+    //
     public void SetNewDestination(Waypoint newTarget) {
         TargetWaypoint = newTarget;
         _blackboard["TargetWaypoint"] = newTarget;
@@ -51,6 +68,7 @@ public class WorkerAIController : MonoBehaviour {
         _blackboard["StartWaypoint"] = closest;
     }
 
+    //local helper to find closest waypoint
     private Waypoint FindClosestWaypoint(Vector3 pos) {
         Waypoint[] all = FindObjectsByType<Waypoint>(FindObjectsSortMode.None);
         Waypoint closest = null;
