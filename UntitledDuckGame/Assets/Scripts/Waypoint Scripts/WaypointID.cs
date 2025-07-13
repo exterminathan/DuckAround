@@ -20,6 +20,9 @@ public class WaypointID : MonoBehaviour {
 
     private void OnDrawGizmos() {
 
+#if UNITY_EDITOR
         Handles.Label(transform.position + Vector3.up * 1, $"{waypointID}", guiStyle);
+#endif
+
     }
 }

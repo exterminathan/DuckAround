@@ -1,15 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(BehaviourTree))]
 public class WorkerAIController : MonoBehaviour {
-    [Header("Path Settings")]
+    [Header("State Path Settings")]
     public Waypoint StartWaypoint;
     public Waypoint TargetWaypoint;
     public float MoveSpeed = 3f;
     public float ArriveThreshold = 0.1f;
 
-    [Header("Control Flags")]
+    [Header("State Control Flags")]
     public bool IsAllowedToMove = true;
     public bool IsCollided = false;
     public bool IsRagdollActive = false;
@@ -17,7 +19,32 @@ public class WorkerAIController : MonoBehaviour {
     private BehaviourTree _tree;
     private Dictionary<string, object> _blackboard;
 
+    [Header("Editor Debug")]
+    public bool ragdollRBEnabled = false;
+    private bool rgFlag = false;
+    private Rigidbody[] rigidbodies;
+    private Dictionary<Type, Collider[]> rigidbodyColliders = new Dictionary<Type, Collider[]>();
+
+
     void Awake() {
+        // ragdoll testing
+        //assumes there are no children objects with colliders/rbs
+        //EXCEEPT those that are on the rig
+        //might be problematic if worker holding something/etc
+
+        // all rigibodies except parent
+        rigidbodies = GetComponentsInChildren<Rigidbody>().Where(rb => rb.gameObject != this.gameObject).ToArray();
+
+        // all colliders except parent
+        rigidbodyColliders[typeof(CapsuleCollider)] =
+                        GetComponentsInChildren<CapsuleCollider>()
+                        .Where(c => c.gameObject != this.gameObject).ToArray();
+
+        rigidbodyColliders[typeof(BoxCollider)] = GetComponentsInChildren<BoxCollider>();
+        rigidbodyColliders[typeof(SphereCollider)] = GetComponentsInChildren<SphereCollider>();
+
+
+        //Tree stuff
         _tree = GetComponent<BehaviourTree>();
         _tree.Root = PrimaryBTBuilder.CreateTree();
 
@@ -36,10 +63,44 @@ public class WorkerAIController : MonoBehaviour {
         var anim = GetComponentInChildren<Animator>();
         if (anim != null)
             _blackboard["Animator"] = anim;
+
+        ApplyRagdoll(false);
+        rgFlag = false;
+        _blackboard["IsRagdollActive"] = false;
     }
 
     void Update() {
+        // read the desired state from the blackboard
+        bool desired = _blackboard.ContainsKey("IsRagdollActive")
+                       && (bool)_blackboard["IsRagdollActive"];
+
+        // only flip once when it actually changes
+        if (desired != rgFlag) {
+            ApplyRagdoll(desired);
+            rgFlag = desired;
+        }
+
         _tree.Root?.Execute(_blackboard);
+    }
+
+    private void ApplyRagdoll(bool on) {
+        // toggle Animator (fetched from blackboard)
+        if (_blackboard.TryGetValue("Animator", out var a) && a is Animator animator) {
+            animator.enabled = !on;
+        }
+
+        // rigidbodies: non-kinematic when ragdoll==on
+        foreach (var rb in rigidbodies) {
+            rb.isKinematic = !on;
+            rb.useGravity = on;
+        }
+
+        // colliders: enabled only in ragdoll mode
+        foreach (var kvp in rigidbodyColliders) {
+            foreach (var col in kvp.Value) {
+                col.enabled = on;
+            }
+        }
     }
 
     // Collisions
