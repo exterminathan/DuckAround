@@ -25,6 +25,8 @@ public class WorkerAIController : MonoBehaviour {
     private Rigidbody[] rigidbodies;
     private Dictionary<Type, Collider[]> rigidbodyColliders = new Dictionary<Type, Collider[]>();
 
+    private GameObject originalFBX;
+
 
     void Awake() {
         // ragdoll testing
@@ -42,6 +44,9 @@ public class WorkerAIController : MonoBehaviour {
 
         rigidbodyColliders[typeof(BoxCollider)] = GetComponentsInChildren<BoxCollider>();
         rigidbodyColliders[typeof(SphereCollider)] = GetComponentsInChildren<SphereCollider>();
+
+        //lowpoly_withrig fbx reference to reset position after ragdoll reset
+        originalFBX = gameObject.transform.GetChild(0).gameObject;
 
 
         //Tree stuff
@@ -99,6 +104,13 @@ public class WorkerAIController : MonoBehaviour {
         foreach (var kvp in rigidbodyColliders) {
             foreach (var col in kvp.Value) {
                 col.enabled = on;
+            }
+        }
+
+        if (!on) {
+            if (originalFBX != null) {
+                originalFBX.transform.localPosition = Vector3.zero;
+                Debug.Log(originalFBX.name + $" position reset to {originalFBX.transform.localPosition}");
             }
         }
     }
