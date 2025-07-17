@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class IsometricRaycaster : MonoBehaviour
-{
+public class IsometricRaycaster : MonoBehaviour {
     #region Public Variables
     [Header("Setup")]
     public Camera mainCamera;
@@ -71,14 +70,12 @@ public class IsometricRaycaster : MonoBehaviour
     private float frameCt;
 
     // --------------- UNITY METHODS --------------- //
-    void Start()
-    {
+    void Start() {
         // assign main camera for raycasts
         if (mainCamera == null) mainCamera = Camera.main;
 
         // Get colliders and Mesh Renderers for collider ranges
-        if (vertical_ik_plane != null)
-        {
+        if (vertical_ik_plane != null) {
             vertical_ik_collider = vertical_ik_plane.GetComponent<Collider>();
             vertical_ik_meshRenderer = vertical_ik_plane.GetComponent<MeshRenderer>();
         }
@@ -88,8 +85,7 @@ public class IsometricRaycaster : MonoBehaviour
     }
 
 
-    void Update()
-    {
+    void Update() {
         //Determine visibility of debug elements
         vertical_ik_meshRenderer.enabled = showDev;
         primaryCursorIntersect.enabled = showDev;
@@ -97,15 +93,13 @@ public class IsometricRaycaster : MonoBehaviour
         lowerCursorIntersect.enabled = showDev;
 
         //enable/disable cursor intersection planes based on armature rotation limits
-        if (rotate_pivot.transform.rotation.eulerAngles.y < 280f && rotate_pivot.transform.rotation.eulerAngles.y > 175f)
-        {
+        if (rotate_pivot.transform.rotation.eulerAngles.y < 280f && rotate_pivot.transform.rotation.eulerAngles.y > 175f) {
             //Enables the lower cursor intersection plane when at rotation limit
             lowerCursorIntersect.gameObject.SetActive(true);
             upperCursorIntersect.gameObject.SetActive(false);
 
         }
-        else
-        {
+        else {
             //Disables the lower cursor intersection plane when not at rotation limit
             lowerCursorIntersect.gameObject.SetActive(false);
             upperCursorIntersect.gameObject.SetActive(true);
@@ -113,14 +107,12 @@ public class IsometricRaycaster : MonoBehaviour
         }
 
         //Lerp tracker for any IK target movement 
-        if (isLerpingIK)
-        {
+        if (isLerpingIK) {
             ikLerpTimer += Time.deltaTime;
             float t = Mathf.Clamp01(ikLerpTimer / ikLerpDuration);
             ik_target.transform.position = Vector3.Lerp(IKTargetStartPosition, IKTargetEndPosition, t);
 
-            if (t >= 1f)
-            {
+            if (t >= 1f) {
                 isLerpingIK = false;
             }
         }
@@ -131,11 +123,9 @@ public class IsometricRaycaster : MonoBehaviour
 
         // LOGIC BLOCKS //
         // Check 1: Blocker IK Range (Any scene Objects)
-        if (Physics.Raycast(ray, out RaycastHit hit0, Mathf.Infinity, block_ik_layer))
-        {
+        if (Physics.Raycast(ray, out RaycastHit hit0, Mathf.Infinity, block_ik_layer)) {
 
-            if (!wentOutOfVertical)
-            {
+            if (!wentOutOfVertical) {
                 wentOutOfVertical = true;
                 //Debug.Log("Went out of vertical IK plane");
             }
@@ -146,14 +136,12 @@ public class IsometricRaycaster : MonoBehaviour
             //Debug.Log("On blocker");
             // if IK target inside any blocker
             //draw debug check sphere
-            if (Physics.CheckSphere(ik_target.position, 0.1f, combinedBlockerIgnoreLayer))
-            {
+            if (Physics.CheckSphere(ik_target.position, 0.1f, combinedBlockerIgnoreLayer)) {
                 //find closest point on blocker collider
                 // move ik target to that point
                 Collider[] blockers = Physics.OverlapSphere(ik_target.position, 0.05f, block_ik_layer);
 
-                if (blockers.Length > 0)
-                {
+                if (blockers.Length > 0) {
                     Vector3 closestPoint = blockers[0].ClosestPoint(ik_target.position);
                     StartIKLerp(closestPoint);
                 }
@@ -173,8 +161,7 @@ public class IsometricRaycaster : MonoBehaviour
             Vector3 flatDirection = hit0.point - rotate_pivot.transform.position;
             flatDirection.y = 0f;
 
-            if (flatDirection != Vector3.zero)
-            {
+            if (flatDirection != Vector3.zero) {
                 Quaternion targetLook = Quaternion.LookRotation(flatDirection);
 
                 float targetY = targetLook.eulerAngles.y + 90f;
@@ -183,12 +170,10 @@ public class IsometricRaycaster : MonoBehaviour
                 if (targetY > 180f) targetY -= 360f;
 
                 // only rotate outside of range
-                if (targetY > -90f || targetY < -180f)
-                {
+                if (targetY > -90f || targetY < -180f) {
                     Quaternion targetRotation = Quaternion.Euler(-90f, targetY, 0f);
 
-                    if (allowRotation)
-                    {
+                    if (allowRotation) {
                         rotate_pivot.transform.rotation = Quaternion.Slerp(
                             rotate_pivot.transform.rotation,
                             targetRotation,
@@ -202,11 +187,9 @@ public class IsometricRaycaster : MonoBehaviour
         }
 
         // Check 2: Vertical IK Range (Random White Gibberish in Editor)
-        else if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, vertical_ik_layer))
-        {
+        else if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, vertical_ik_layer)) {
             //if hit vertical collider, determine new position of IK target
-            if (hit.collider == vertical_ik_collider && useVertical)
-            {
+            if (hit.collider == vertical_ik_collider && useVertical) {
                 //Mark last recorded hit location
                 lastRecordedLocation = hit.point;
 
@@ -219,23 +202,20 @@ public class IsometricRaycaster : MonoBehaviour
                 // (might have to move this out of here if blocker check happens before this one)
 
                 // check if IK target returned to the vertical IK range
-                if (wentOutOfVertical)
-                {
+                if (wentOutOfVertical) {
                     //Debug.Log("Went back in to vert range");
                     StartIKLerp(hit.point);
                     wentOutOfVertical = false;
                 }
-                else
-                {
+                else {
                     StartIKLerp(hit.point);
                 }
-                
+
             }
         }
 
         //Check 3: Cursor Intersection Plane (Purple in Editor) 
-        else if (Physics.Raycast(ray, out RaycastHit hit3, Mathf.Infinity, cursorIntersect_ik_layer))
-        {
+        else if (Physics.Raycast(ray, out RaycastHit hit3, Mathf.Infinity, cursorIntersect_ik_layer)) {
             //if hit intersection plane, determine start position and direction
             Vector3 start_pos = hit3.point;
             Vector3 start_direction = (bone_point.transform.position - start_pos).normalized;
@@ -243,13 +223,11 @@ public class IsometricRaycaster : MonoBehaviour
             if (showDev) ShowDebugSphere(start_pos, Color.cyan);
 
             // raycast #2: from intersection plane hit point towards bone root
-            if (Physics.Raycast(start_pos, start_direction, out RaycastHit hit4, Mathf.Infinity, vertical_ik_layer))
-            {
+            if (Physics.Raycast(start_pos, start_direction, out RaycastHit hit4, Mathf.Infinity, vertical_ik_layer)) {
                 Debug.DrawRay(start_pos, start_direction, Color.cyan, .1f);
 
                 // find a point within the Vertical IK range to move the IK target to 
-                if (vertical_ik_collider.bounds.Contains(hit4.point))
-                {
+                if (vertical_ik_collider.bounds.Contains(hit4.point)) {
                     //slight push towards inside of range for cleaner collision
                     StartIKLerp(hit4.point + start_direction * outbound_range_follow_dist);
 
@@ -258,13 +236,10 @@ public class IsometricRaycaster : MonoBehaviour
         }
 
         //Check 4: Floor IK Range - Rotation (The floor)
-        else if (Physics.Raycast(ray, out RaycastHit hit2, Mathf.Infinity, floor_ik_layer))
-        {
+        else if (Physics.Raycast(ray, out RaycastHit hit2, Mathf.Infinity, floor_ik_layer)) {
             //if hit specific floor collider, determine new rotation of armature
-            if (hit2.collider == floor_ik_collider)
-            {
-                if (!wentOutOfVertical)
-                {
+            if (hit2.collider == floor_ik_collider) {
+                if (!wentOutOfVertical) {
                     wentOutOfVertical = true;
                     //Debug.Log("Went out of vertical IK plane");
                 }
@@ -280,8 +255,7 @@ public class IsometricRaycaster : MonoBehaviour
                 flatDirection.y = 0f;
 
                 // use LookRotation to find where to point, and rotate
-                if (flatDirection != Vector3.zero)
-                {
+                if (flatDirection != Vector3.zero) {
                     Quaternion targetLook = Quaternion.LookRotation(flatDirection);
 
                     float targetY = targetLook.eulerAngles.y + 90f;
@@ -290,12 +264,10 @@ public class IsometricRaycaster : MonoBehaviour
                     if (targetY > 180f) targetY -= 360f;
 
                     // only rotate outside of range
-                    if (targetY > -90f || targetY < -180f)
-                    {
+                    if (targetY > -90f || targetY < -180f) {
                         Quaternion targetRotation = Quaternion.Euler(-90f, targetY, 0f);
 
-                        if (allowRotation)
-                        {
+                        if (allowRotation) {
                             rotate_pivot.transform.rotation = Quaternion.Slerp(
                                 rotate_pivot.transform.rotation,
                                 targetRotation,
@@ -313,20 +285,18 @@ public class IsometricRaycaster : MonoBehaviour
 
     // --------------- HELPER METHODS -------------- //
     // helper function to lerp the ik target to a new position smoothly
-    void StartIKLerp(Vector3 targetPosition)
-    {
+    void StartIKLerp(Vector3 targetPosition) {
         IKTargetStartPosition = ik_target.transform.position;
         IKTargetEndPosition = targetPosition;
         ikLerpTimer = 0f;
         isLerpingIK = true;
     }
-    
- 
+
+
 
     // --------------- DEBUG METHODS --------------- //
     // debug helper function to create a sphere at agiven position with a specified color
-    void ShowDebugSphere(Vector3 position, Color debugColor)
-    {
+    void ShowDebugSphere(Vector3 position, Color debugColor) {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.name = "TMP_DEBUG_SPHERE";
         sphere.transform.position = position;
