@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [ExecuteAlways]
@@ -9,11 +10,21 @@ public class Waypoint : MonoBehaviour {
 
     // draw connections in editor
     private void OnDrawGizmos() {
-        Gizmos.color = Color.blue;
         foreach (var nb in neighbors) {
-            if (nb != null)
-                Gizmos.DrawLine(transform.position, nb.transform.position);
+            if (nb != null) {
+                if (nb.neighbors.Contains<Waypoint>(this)) {
+                    Gizmos.color = Color.blue;
+                    Gizmos.DrawLine(transform.position, nb.transform.position);
+                }
+                else {
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawLine(transform.position, nb.transform.position);
+                }
+
+            }
+
         }
+        Gizmos.color = Color.blue;
         Gizmos.DrawSphere(transform.position, 0.2f);
 
     }
