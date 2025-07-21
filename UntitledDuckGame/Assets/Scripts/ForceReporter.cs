@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ForceReporter : MonoBehaviour
 {
-    void OllisionEnter(Collision collision)
+    void CollisionEnter(Collision collision)
     {
         Rigidbody otherRb = collision.rigidbody;
 
