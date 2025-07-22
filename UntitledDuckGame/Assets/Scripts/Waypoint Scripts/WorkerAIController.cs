@@ -121,6 +121,9 @@ public class WorkerAIController : MonoBehaviour {
             Destroy(other.gameObject);
             _blackboard["IsCollided"] = true;
         }
+        if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
+            _blackboard["IsCollided"] = true;
+        }
     }
 
 
