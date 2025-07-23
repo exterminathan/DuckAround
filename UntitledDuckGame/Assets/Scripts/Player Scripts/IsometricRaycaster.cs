@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.UI;
 
 // during click on interactable like alarm
@@ -14,32 +15,27 @@ public class IsometricRaycaster : MonoBehaviour {
     public Camera mainCamera;
 
     [Header("IK Target")]
-    [Tooltip("The IK target that controls the IK rig")]
     [SerializeField] private Transform ik_target;
-    [Tooltip("The bone point used for cursor intersection raycasts")]
     public GameObject bone_point;
-    [Tooltip("The pivot point, in this case the Armature")]
     public GameObject rotate_pivot;
 
-    [Header("Pivot Rotation")]
-    [Tooltip("Pivot’s angle at left edge (in degrees)")]
+
+    [Header("Rotation Parameters")]
+    public float innerZoneRangeX = 225f;
     public float minPivotAngle = -90f;
-    [Tooltip("Pivot’s angle at right edge (in degrees)")]
     public float maxPivotAngle = 90f;
-    [Tooltip("How fast the pivot lerps to target (higher = snappier)")]
     public float rotationSmoothSpeed = 5f;
 
-    [Header("Screen Detection")]
-    [Tooltip("Half-width in pixels of inner zone")]
-    public float innerZoneRange = 100f;
-    [Tooltip("Half-height in pixels of inner vertical zone")]
-    public float innerZoneRangeY = 100f;
+    [Header("Horizontal IK Parameters")]
+    public float minIKX = 0f;
+    public float maxIKX = 0f;
+    // how much scrolling moves the ik target 
+    public float scrollIncrement = 0.1f;
 
-    [Header("Vertical IK Bounds")]
-    [Tooltip("IK target Y at bottom edge")]
-    public float minIKY = 0f;
-    [Tooltip("IK target Y at top edge")]
-    public float maxIKY = 2f;
+    [Header("Vertical IK Parameters")]
+    public float innerZoneRangeY = 200f;
+    public float minIKY = 0.05f;
+    public float maxIKY = 2.562f;
 
     [Header("Boundary Visuals")]
     public Canvas uiCanvas;
@@ -48,26 +44,8 @@ public class IsometricRaycaster : MonoBehaviour {
 
     [Header("Debug Options")]
     public bool showDev = false;
-    private bool useVertical = true;
-    private bool allowRotation = true;
 
-    [Header("Random Variables")]
-    [Tooltip("how far away from edge of vertical external influence affects")]
-    public float outbound_range_follow_dist = .05f;
-
-    private Vector3 lastRecordedLocation = new Vector3(0, 0, 0);
-    private bool wentOutOfVertical = false;
     #endregion
-
-    #region Slerp Settings
-    private Vector3 IKTargetStartPosition;
-    private Vector3 IKTargetEndPosition;
-    private float ikLerpTimer = 0f;
-    private float ikLerpDuration = 0.05f;
-    private bool isLerpingIK = false;
-    #endregion
-
-    private float frameCt;
 
     private Image leftBoundaryImage;
     private Image rightBoundaryImage;
@@ -81,15 +59,16 @@ public class IsometricRaycaster : MonoBehaviour {
     }
 
     void Update() {
-        HandleInnerZoneDetection();
+        HandleRotation();
         HandleVerticalIK();
+        HandleHorizontalIK();
         UpdateBoundaryFade();
     }
 
-    private void HandleInnerZoneDetection() {
+    private void HandleRotation() {
         float centerX = Screen.width * 0.5f;
-        float minX = centerX - innerZoneRange;
-        float maxX = centerX + innerZoneRange;
+        float minX = centerX - innerZoneRangeX;
+        float maxX = centerX + innerZoneRangeX;
         float mouseX = Input.mousePosition.x;
         float t = Mathf.Clamp01((mouseX - minX) / (maxX - minX));
 
@@ -113,7 +92,17 @@ public class IsometricRaycaster : MonoBehaviour {
         pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed);
         ik_target.position = pos;
     }
+    private void HandleHorizontalIK() {
+        float scroll = Input.mouseScrollDelta.y;
+        if (scroll != 0f) {
+            var local = ik_target.localPosition;
+            float targetX = Mathf.Clamp(local.x - scroll * scrollIncrement, minIKX, maxIKX);
+            local.x = Mathf.Lerp(local.x, targetX, 1f / 7f);
+            ik_target.localPosition = local;
+        }
+    }
 
+    #region Debug
     void CreateBoundaryLines() {
         System.Func<string, Image> makeLine = (string name) => {
             var go = new GameObject(name, typeof(RectTransform));
@@ -134,8 +123,8 @@ public class IsometricRaycaster : MonoBehaviour {
     void UpdateBoundaryFade() {
         if (leftBoundaryImage == null || rightBoundaryImage == null) return;
         float centerX = Screen.width * 0.5f;
-        float minX = centerX - innerZoneRange;
-        float maxX = centerX + innerZoneRange;
+        float minX = centerX - innerZoneRangeX;
+        float maxX = centerX + innerZoneRangeX;
         float centerY = Screen.height * 0.5f;
         float minY = centerY - innerZoneRangeY;
         float maxY = centerY + innerZoneRangeY;
@@ -172,13 +161,6 @@ public class IsometricRaycaster : MonoBehaviour {
         bottomBoundaryImage.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, alphaB);
     }
 
-    void StartIKLerp(Vector3 targetPosition) {
-        IKTargetStartPosition = ik_target.transform.position;
-        IKTargetEndPosition = targetPosition;
-        ikLerpTimer = 0f;
-        isLerpingIK = true;
-    }
-
     void ShowDebugSphere(Vector3 position, Color debugColor) {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         sphere.name = "TMP_DEBUG_SPHERE";
@@ -187,4 +169,5 @@ public class IsometricRaycaster : MonoBehaviour {
         sphere.GetComponent<Renderer>().material.color = debugColor;
         Destroy(sphere, 1f);
     }
+    #endregion
 }

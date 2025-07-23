@@ -1731,7 +1731,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &612774266
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4990,7 +4990,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 318518283601257330, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 318518283601257330, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: moveSpeed
@@ -5005,12 +5005,24 @@ PrefabInstance:
       value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: maxIKX
+      value: -1.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: maxIKY
       value: 2.562
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: minIKX
+      value: -2.65
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: minIKY
       value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: showDev
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: uiCanvas
@@ -5018,7 +5030,7 @@ PrefabInstance:
       objectReference: {fileID: 1236123369}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: maxPivotAngle
@@ -5033,8 +5045,24 @@ PrefabInstance:
       value: 225
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: boundaryColor.b
+      value: 0.4575472
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: boundaryColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: boundaryColor.r
+      value: 0.6333313
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: innerZoneRangeY
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
+      propertyPath: scrollIncrement
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 1163714902560598061, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: m_ExcludeLayers.m_Bits
@@ -5681,7 +5709,7 @@ PrefabInstance:
       objectReference: {fileID: 7975336412792225021}
     - target: {fileID: 7577849521388870528, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Constraints
-      value: 112
+      value: 116
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.x
