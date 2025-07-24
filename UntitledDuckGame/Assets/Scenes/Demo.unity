@@ -5022,7 +5022,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: showDev
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 4b8242b6eaf5ff541a16890cb5679db6, type: 3}
       propertyPath: uiCanvas
