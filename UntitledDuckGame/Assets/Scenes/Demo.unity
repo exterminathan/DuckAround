@@ -8955,6 +8955,10 @@ PrefabInstance:
       propertyPath: playerBlockingLayerMask.m_Bits
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 837003310928594882, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1076453174010289958, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -9023,6 +9027,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 756029407}
+    - target: {fileID: 3622358493318085467, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3815994776270012554, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -9071,6 +9079,10 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 1447132234}
+    - target: {fileID: 6418687873595364275, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6514881518042241836, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
