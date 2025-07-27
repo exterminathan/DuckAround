@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 [RequireComponent(typeof(BehaviourTree))]
@@ -124,6 +125,10 @@ public class WorkerAIController : MonoBehaviour {
         if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
             _blackboard["IsCollided"] = true;
         }
+    }
+
+    public void SetStateAtValue(string key, object newVal) {
+        if (_blackboard.ContainsKey(key)) _blackboard[key] = newVal;
     }
 
 

@@ -26,7 +26,7 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private LayerMask playerBlockingLayerMask;
 
     [Header("Movement Settings")]
-    private bool canTraverse = true;
+    private bool canTraverse = false;
     private bool canFlex = true;
     [SerializeField] private float moveSpeed = 5f;
     [Range(0.5f, 2f)]
@@ -59,12 +59,13 @@ public class PlayerDuckController : MonoBehaviour {
 
         // gather controller + arm colliders
         characterController = GetComponent<CharacterController>();
+        characterController.skinWidth = 0.01f;
 
         // prevent self‑collision
         foreach (var c in armColliders) Physics.IgnoreCollision(characterController, c, true);
     }
 
-    void FixedUpdate() {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
 
         if (!isBrokenFree) {
@@ -72,11 +73,15 @@ public class PlayerDuckController : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
                 Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D)) {
                 keysPressed++;
+                Debug.Log("Key pressed: " + keysPressed);
                 if (keysPressed > 15) {
                     isBrokenFree = true;
                     meshBase.gameObject.SetActive(false);
+
+                    canTraverse = true;
                     // small drop via CC
                     characterController.Move(new Vector3(0, rig_drop_distance, 0));
+
                 }
             }
             return;
@@ -92,7 +97,7 @@ public class PlayerDuckController : MonoBehaviour {
                 float speedMulti = (Mathf.Abs(input.x) > 0 && Mathf.Abs(input.z) > 0)
                     ? diagonalFactor : 1f;
                 Vector3 dir = isoForward * input.z + isoRight * (input.x * horizontalSpeedFactor);
-                Vector3 desiredMove = dir * moveSpeed * speedMulti * Time.fixedDeltaTime;
+                Vector3 desiredMove = dir * moveSpeed * speedMulti * Time.deltaTime;
 
                 // sweep each arm collider
                 float maxDist = desiredMove.magnitude;
@@ -114,6 +119,13 @@ public class PlayerDuckController : MonoBehaviour {
             }
         }
     }
+
+    void OnControllerColliderHit(ControllerColliderHit hit) {
+        var npc = hit.collider.GetComponent<WorkerAIController>();
+        if (npc != null) npc.SetStateAtValue("IsCollided", true);
+
+    }
+
     private IEnumerator Quack() {
         float half = quackDuration * 0.5f;
         Quaternion start = mouth.localRotation;

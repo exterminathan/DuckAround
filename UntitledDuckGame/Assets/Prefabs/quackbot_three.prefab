@@ -199,6 +199,10 @@ MonoBehaviour:
   boundaryColor: {r: 0.6333313, g: 1, b: 0.4575472, a: 1}
   fadeDistance: 50
   showDev: 0
+  playerBlockingLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  armColliders: []
 --- !u!1 &6122409478122950566
 GameObject:
   m_ObjectHideFlags: 0
@@ -1152,12 +1156,12 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 1.93
-  m_Radius: 0.46
+  m_Radius: 0.39
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0.23, y: 0.97, z: 0}
+  m_Center: {x: -0, y: 1.1, z: 0}
 --- !u!1 &7851156126519145743 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -8755568657009614973, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
