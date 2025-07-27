@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
+[RequireComponent(typeof(CharacterController))]
 public class PlayerDuckController : MonoBehaviour {
     #region Rig & Camera Settings
     [Header("Rig Settings")]
@@ -38,62 +40,80 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private float horizontalSpeedFactor = 1f;
     #endregion
 
-    private Rigidbody rb;
+    #region Collision Settings
+    [Header("Collision Settings")]
+    private CharacterController characterController;
+    public Collider[] armColliders;
+    private RaycastHit[] hitBuffer = new RaycastHit[1];
+    #endregion
+
+
 
     void Start() {
         if (isoCamera == null && Camera.main != null) isoCamera = Camera.main.transform;
+        var f = isoCamera.forward; f.y = 0; isoForward = f.normalized;
 
-        // Project camera forward onto XZ plane
-        Vector3 f = isoCamera.forward;
-        f.y = 0f;
-        isoForward = f.normalized;
         // Perpendicular in XZ for “right”
         isoRight = Vector3.Cross(Vector3.up, isoForward).normalized;
 
-        rb = GetComponent<Rigidbody>();
-        if (rb != null) rb.interpolation = RigidbodyInterpolation.Interpolate;
+
+        // gather controller + arm colliders
+        characterController = GetComponent<CharacterController>();
+
+        // prevent self‑collision
+        foreach (var c in armColliders) Physics.IgnoreCollision(characterController, c, true);
     }
 
-    void Update() {
-        if (isBrokenFree) {
-            if (canFlex && canTraverse) {
-                if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
+    void FixedUpdate() {
+        if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
 
-                // Raw input so W=+1, S=-1, A=-1, D=+1
-                float h = Input.GetAxisRaw("Horizontal");
-                float v = Input.GetAxisRaw("Vertical");
-
-                Vector3 input = new Vector3(h, 0f, v);
-                if (input.sqrMagnitude > 0f) {
-                    input.Normalize();
-                    float speedMulti = (Mathf.Abs(input.x) > 0f && Mathf.Abs(input.z) > 0f)
-                        ? diagonalFactor
-                        : 1f;
-                    // Map to isometric axes
-                    Vector3 dir = isoForward * input.z + isoRight * (input.x * horizontalSpeedFactor);
-                    Vector3 move = dir * moveSpeed * speedMulti * Time.deltaTime;
-                    transform.Translate(move, Space.World);
-                }
-            }
-        }
-        else {
-            // “Break-out” mash logic
+        if (!isBrokenFree) {
+            // break‑out mash logic
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
                 Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D)) {
                 keysPressed++;
-                Debug.Log("Key pressed: " + keysPressed);
+                if (keysPressed > 15) {
+                    isBrokenFree = true;
+                    meshBase.gameObject.SetActive(false);
+                    // small drop via CC
+                    characterController.Move(new Vector3(0, rig_drop_distance, 0));
+                }
             }
-            if (keysPressed > 15) {
-                isBrokenFree = true;
-                Debug.Log("You broke free!");
-                meshBase.gameObject.SetActive(false);
-                Debug.Log("Position before drop: " + transform.position);
-                transform.Translate(0f, rig_drop_distance, 0f, Space.World);
-                Debug.Log("Position after drop: " + transform.position);
+            return;
+        }
+
+        // normal movement
+        if (canFlex && canTraverse) {
+            float h = Input.GetAxisRaw("Horizontal");
+            float v = Input.GetAxisRaw("Vertical");
+            var input = new Vector3(h, 0, v);
+            if (input.sqrMagnitude > 0) {
+                input.Normalize();
+                float speedMulti = (Mathf.Abs(input.x) > 0 && Mathf.Abs(input.z) > 0)
+                    ? diagonalFactor : 1f;
+                Vector3 dir = isoForward * input.z + isoRight * (input.x * horizontalSpeedFactor);
+                Vector3 desiredMove = dir * moveSpeed * speedMulti * Time.fixedDeltaTime;
+
+                // sweep each arm collider
+                float maxDist = desiredMove.magnitude;
+                Vector3 moveDir = desiredMove.normalized;
+                foreach (var col in armColliders) {
+                    if (!(col is BoxCollider box)) continue;
+
+                    Vector3 halfExtents = Vector3.Scale(box.size * 0.5f, box.transform.lossyScale);
+                    Quaternion orientation = box.transform.rotation;
+                    Vector3 center = box.transform.TransformPoint(box.center);
+
+                    if (Physics.BoxCast(center, halfExtents, moveDir, out RaycastHit hit, orientation, maxDist, playerBlockingLayerMask)) {
+                        maxDist = Mathf.Min(maxDist, hit.distance);
+                    }
+                }
+
+                // actually move
+                characterController.Move(moveDir * maxDist);
             }
         }
     }
-
     private IEnumerator Quack() {
         float half = quackDuration * 0.5f;
         Quaternion start = mouth.localRotation;

@@ -1,0 +1,3075 @@
+--- Starting Hierarchy Dump for quackbot_three ---
+GameObject: quackbot_three
+  Component: Transform
+    Property: position = (4.83, 0.02, -4.13)
+    Property: localPosition = (4.83, 0.02, -4.13)
+    Property: eulerAngles = (0.00, 90.00, 0.00)
+    Property: localEulerAngles = (0.00, 90.00, 0.00)
+    Property: right = (0.00, 0.00, -1.00)
+    Property: up = (0.00, 1.00, 0.00)
+    Property: forward = (1.00, 0.00, 0.00)
+    Property: rotation = (0.00000, 0.70711, 0.00000, 0.70711)
+    Property: localRotation = (0.00000, 0.70711, 0.00000, 0.70711)
+    Property: localScale = (1.00, 1.00, 1.00)
+    Property: parent = 
+    Property: worldToLocalMatrix = 0.00000	0.00000	-1.00000	-4.12717
+0.00000	1.00000	0.00000	-0.01500
+1.00000	0.00000	0.00000	-4.83446
+0.00000	0.00000	0.00000	1.00000
+
+    Property: localToWorldMatrix = 0.00000	0.00000	1.00000	4.83446
+0.00000	1.00000	0.00000	0.01500
+-1.00000	0.00000	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+    Property: root = quackbot_three (UnityEngine.Transform)
+    Property: childCount = 3
+    Property: lossyScale = (1.00, 1.00, 1.00)
+    Property: hasChanged = True
+    Property: hierarchyCapacity = 35
+    Property: hierarchyCount = 35
+    Property: transform = quackbot_three (UnityEngine.Transform)
+    Property: gameObject = quackbot_three (UnityEngine.GameObject)
+    Property: tag = Untagged
+    Property: name = quackbot_three
+    Property: hideFlags = None
+  Component: Animator
+    Property: isOptimizable = False
+    Property: isHuman = False
+    Property: hasRootMotion = False
+    Property: humanScale = 1
+    Property: isInitialized = True
+    Property: deltaPosition = (0.00, 0.00, 0.00)
+    Property: deltaRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+    Property: velocity = (0.00, 0.00, 0.00)
+    Property: angularVelocity = (0.00, 0.00, 0.00)
+    Property: rootPosition = (4.83, 0.02, -4.13)
+    Property: rootRotation = (0.00000, 0.70711, 0.00000, 0.70711)
+    Property: applyRootMotion = False
+    Property: linearVelocityBlending = False
+    Property: animatePhysics = False
+    Property: updateMode = Normal
+    Property: hasTransformHierarchy = True
+    Property: gravityWeight = 0
+    Property: bodyPosition = (0.00, 0.00, 0.00)
+    Property: bodyRotation = (0.00000, 0.00000, 20653510000000000000.00000, 0.00000)
+    Property: stabilizeFeet = False
+    Property: layerCount = 0
+    Property: parameters = UnityEngine.AnimatorControllerParameter[]
+    Property: parameterCount = 0
+    Property: feetPivotActive = 1
+    Property: pivotWeight = 0.5
+    Property: pivotPosition = (0.00, 0.00, 0.00)
+    Property: isMatchingTarget = False
+    Property: speed = 1
+    Property: targetPosition = (0.00, 0.00, 0.00)
+    Property: targetRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+    Property: avatarRoot = quackbot_three (UnityEngine.Transform)
+    Property: cullingMode = AlwaysAnimate
+    Property: playbackTime = -1
+    Property: recorderStartTime = -1
+    Property: recorderStopTime = -1
+    Property: recorderMode = Offline
+    Property: runtimeAnimatorController = 
+    Property: hasBoundPlayables = False
+    Property: avatar = 
+    Property: playableGraph = UnityEngine.Playables.PlayableGraph
+    Property: layersAffectMassCenter = False
+    Property: leftFeetBottomHeight = 0
+    Property: rightFeetBottomHeight = 0
+    Property: logWarnings = True
+    Property: fireEvents = True
+    Property: keepAnimatorControllerStateOnDisable = False
+    Property: keepAnimatorStateOnDisable = False
+    Property: writeDefaultValuesOnDisable = False
+    Property: enabled = True
+    Property: isActiveAndEnabled = True
+    Property: transform = quackbot_three (UnityEngine.Transform)
+    Property: gameObject = quackbot_three (UnityEngine.GameObject)
+    Property: tag = Untagged
+    Property: name = quackbot_three
+    Property: hideFlags = None
+  Component: RigBuilder
+    Property: effectors = System.Collections.Generic.List`1[UnityEngine.Animations.Rigging.RigEffectorData]
+    Property: layers = System.Collections.Generic.List`1[UnityEngine.Animations.Rigging.RigLayer]
+    Property: graph = UnityEngine.Playables.PlayableGraph
+    Property: destroyCancellationToken = System.Threading.CancellationToken
+    Property: useGUILayout = True
+    Property: didStart = True
+    Property: didAwake = True
+    Property: runInEditMode = True
+    Property: enabled = True
+    Property: isActiveAndEnabled = True
+    Property: transform = quackbot_three (UnityEngine.Transform)
+    Property: gameObject = quackbot_three (UnityEngine.GameObject)
+    Property: tag = Untagged
+    Property: name = quackbot_three
+    Property: hideFlags = None
+  Component: PlayerDuckController
+    Field: isoCamera = null
+    Field: armColliders = UnityEngine.Collider[]
+    Property: destroyCancellationToken = System.Threading.CancellationToken
+    Property: useGUILayout = True
+    Property: didStart = False
+    Property: didAwake = False
+    Property: runInEditMode = False
+    Property: enabled = True
+    Property: isActiveAndEnabled = True
+    Property: transform = quackbot_three (UnityEngine.Transform)
+    Property: gameObject = quackbot_three (UnityEngine.GameObject)
+    Property: tag = Untagged
+    Property: name = quackbot_three
+    Property: hideFlags = None
+  Component: CharacterController
+    Property: velocity = (0.00, 0.00, 0.00)
+    Property: isGrounded = False
+    Property: collisionFlags = None
+    Property: radius = 0.46
+    Property: height = 1.93
+    Property: center = (0.23, 0.97, 0.00)
+    Property: slopeLimit = 45
+    Property: stepOffset = 0.3
+    Property: skinWidth = 0.08
+    Property: minMoveDistance = 0.001
+    Property: detectCollisions = True
+    Property: enableOverlapRecovery = True
+    Property: enabled = True
+    Property: attachedRigidbody = 
+    Property: attachedArticulationBody = 
+    Property: isTrigger = False
+    Property: contactOffset = 0.01
+    Property: bounds = Center: (4.83, 0.99, -4.36), Extents: (0.46, 0.97, 0.46)
+    Property: hasModifiableContacts = False
+    Property: providesContacts = False
+    Property: layerOverridePriority = 0
+    Property: excludeLayers = UnityEngine.LayerMask
+    Property: includeLayers = UnityEngine.LayerMask
+    Property: GeometryHolder = UnityEngine.LowLevelPhysics.GeometryHolder
+    Property: sharedMaterial = 
+    Property: material =  (UnityEngine.PhysicsMaterial)
+    Property: transform = quackbot_three (UnityEngine.Transform)
+    Property: gameObject = quackbot_three (UnityEngine.GameObject)
+    Property: tag = Untagged
+    Property: name = quackbot_three
+    Property: hideFlags = None
+  GameObject: Armature (Rotate Pivot)
+    Component: Transform
+      Property: position = (4.79, 0.41, -4.13)
+      Property: localPosition = (0.00, 0.40, -0.04)
+      Property: eulerAngles = (270.00, 90.00, 0.00)
+      Property: localEulerAngles = (270.00, 0.00, 0.00)
+      Property: right = (0.00, 0.00, -1.00)
+      Property: up = (-1.00, 0.00, 0.00)
+      Property: forward = (0.00, 1.00, 0.00)
+      Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+      Property: localRotation = (-0.70711, 0.00000, 0.00000, 0.70711)
+      Property: localScale = (100.00, 100.00, 100.00)
+      Property: parent = quackbot_three (UnityEngine.Transform)
+      Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04795
+0.00000	0.01000	0.00000	-0.00414
+0.00000	0.00000	0.00000	1.00000
+
+      Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.79498
+0.00000	-0.00001	100.00000	0.41449
+-100.00000	0.00001	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+      Property: root = quackbot_three (UnityEngine.Transform)
+      Property: childCount = 2
+      Property: lossyScale = (100.00, 100.00, 100.00)
+      Property: hasChanged = True
+      Property: hierarchyCapacity = 35
+      Property: hierarchyCount = 35
+      Property: transform = Armature (Rotate Pivot) (UnityEngine.Transform)
+      Property: gameObject = Armature (Rotate Pivot) (UnityEngine.GameObject)
+      Property: tag = Untagged
+      Property: name = Armature (Rotate Pivot)
+      Property: hideFlags = None
+    GameObject: IK_Rig
+      Component: Transform
+        Property: position = (4.79, 0.03, -4.13)
+        Property: localPosition = (0.00, 0.00, 0.00)
+        Property: eulerAngles = (0.00, 90.00, 0.00)
+        Property: localEulerAngles = (90.00, 0.00, 0.00)
+        Property: right = (0.00, 0.00, -1.00)
+        Property: up = (0.00, 1.00, 0.00)
+        Property: forward = (1.00, 0.00, 0.00)
+        Property: rotation = (0.00000, 0.70711, 0.00000, 0.70711)
+        Property: localRotation = (0.70711, 0.00000, 0.00000, 0.70711)
+        Property: localScale = (0.01, 0.01, 0.01)
+        Property: parent = Armature (Rotate Pivot) (UnityEngine.Transform)
+        Property: worldToLocalMatrix = 0.00000	0.00000	-1.00000	-4.12717
+0.00000	1.00000	0.00000	-0.03242
+1.00000	0.00000	0.00000	-4.79498
+0.00000	0.00000	0.00000	1.00000
+
+        Property: localToWorldMatrix = 0.00000	0.00000	1.00000	4.79498
+0.00000	1.00000	0.00000	0.03242
+-1.00000	0.00000	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+        Property: root = quackbot_three (UnityEngine.Transform)
+        Property: childCount = 2
+        Property: lossyScale = (1.00, 1.00, 1.00)
+        Property: hasChanged = True
+        Property: hierarchyCapacity = 35
+        Property: hierarchyCount = 35
+        Property: transform = IK_Rig (UnityEngine.Transform)
+        Property: gameObject = IK_Rig (UnityEngine.GameObject)
+        Property: tag = Untagged
+        Property: name = IK_Rig
+        Property: hideFlags = None
+      Component: Rig
+        Property: weight = 1
+        Property: effectors = System.Collections.Generic.List`1[UnityEngine.Animations.Rigging.RigEffectorData]
+        Property: destroyCancellationToken = System.Threading.CancellationToken
+        Property: useGUILayout = True
+        Property: didStart = False
+        Property: didAwake = False
+        Property: runInEditMode = False
+        Property: enabled = True
+        Property: isActiveAndEnabled = True
+        Property: transform = IK_Rig (UnityEngine.Transform)
+        Property: gameObject = IK_Rig (UnityEngine.GameObject)
+        Property: tag = Untagged
+        Property: name = IK_Rig
+        Property: hideFlags = None
+      Component: TwoBoneIKConstraint
+        Property: weight = 1
+        Property: destroyCancellationToken = System.Threading.CancellationToken
+        Property: useGUILayout = True
+        Property: didStart = False
+        Property: didAwake = False
+        Property: runInEditMode = False
+        Property: enabled = True
+        Property: isActiveAndEnabled = True
+        Property: transform = IK_Rig (UnityEngine.Transform)
+        Property: gameObject = IK_Rig (UnityEngine.GameObject)
+        Property: tag = Untagged
+        Property: name = IK_Rig
+        Property: hideFlags = None
+      GameObject: Rig_target
+        Component: Transform
+          Property: position = (4.76, 2.59, -2.61)
+          Property: localPosition = (-1.52, 2.56, -0.03)
+          Property: eulerAngles = (0.00, 90.00, 0.00)
+          Property: localEulerAngles = (0.00, 0.00, 0.00)
+          Property: right = (0.00, 0.00, -1.00)
+          Property: up = (0.00, 1.00, 0.00)
+          Property: forward = (1.00, 0.00, 0.00)
+          Property: rotation = (0.00000, 0.70711, 0.00000, 0.70711)
+          Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+          Property: localScale = (0.10, 0.10, 0.10)
+          Property: parent = IK_Rig (UnityEngine.Transform)
+          Property: worldToLocalMatrix = 0.00000	0.00000	-10.00000	-26.10570
+0.00000	10.00001	0.00000	-25.94421
+10.00001	0.00000	0.00000	-47.60980
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = 0.00000	0.00000	0.10000	4.76098
+0.00000	0.10000	0.00000	2.59442
+-0.10000	0.00000	0.00000	-2.61057
+0.00000	0.00000	0.00000	1.00000
+
+          Property: root = quackbot_three (UnityEngine.Transform)
+          Property: childCount = 0
+          Property: lossyScale = (0.10, 0.10, 0.10)
+          Property: hasChanged = True
+          Property: hierarchyCapacity = 35
+          Property: hierarchyCount = 35
+          Property: transform = Rig_target (UnityEngine.Transform)
+          Property: gameObject = Rig_target (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = Rig_target
+          Property: hideFlags = None
+        Component: IsometricRaycaster
+          Field: mainCamera = Main Camera (UnityEngine.Camera)
+          Field: bone_point = BONE_root (UnityEngine.GameObject)
+          Field: rotate_pivot = Armature (Rotate Pivot) (UnityEngine.GameObject)
+          Field: innerZoneRangeX = 225
+          Field: minPivotAngle = -90
+          Field: maxPivotAngle = 90
+          Field: rotationSmoothSpeed = 5
+          Field: minIKX = -2.65
+          Field: maxIKX = -1.4
+          Field: scrollIncrement = 0.5
+          Field: innerZoneRangeY = 200
+          Field: minIKY = 0.05
+          Field: maxIKY = 2.562
+          Field: uiCanvas = Player UI Canvas (UnityEngine.Canvas)
+          Field: boundaryColor = RGBA(0.633, 1.000, 0.458, 1.000)
+          Field: fadeDistance = 50
+          Field: showDev = False
+          Property: destroyCancellationToken = System.Threading.CancellationToken
+          Property: useGUILayout = True
+          Property: didStart = False
+          Property: didAwake = False
+          Property: runInEditMode = False
+          Property: enabled = True
+          Property: isActiveAndEnabled = True
+          Property: transform = Rig_target (UnityEngine.Transform)
+          Property: gameObject = Rig_target (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = Rig_target
+          Property: hideFlags = None
+      GameObject: Rig_hint
+        Component: Transform
+          Property: position = (4.79, 3.64, -5.16)
+          Property: localPosition = (1.04, 3.61, 0.00)
+          Property: eulerAngles = (0.00, 90.00, 0.00)
+          Property: localEulerAngles = (0.00, 0.00, 0.00)
+          Property: right = (0.00, 0.00, -1.00)
+          Property: up = (0.00, 1.00, 0.00)
+          Property: forward = (1.00, 0.00, 0.00)
+          Property: rotation = (0.00000, 0.70711, 0.00000, 0.70711)
+          Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+          Property: localScale = (0.10, 0.10, 0.10)
+          Property: parent = IK_Rig (UnityEngine.Transform)
+          Property: worldToLocalMatrix = 0.00000	0.00000	-10.00000	-51.62973
+0.00000	10.00001	0.00000	-36.43111
+10.00001	0.00000	0.00000	-47.94980
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = 0.00000	0.00000	0.10000	4.79498
+0.00000	0.10000	0.00000	3.64311
+-0.10000	0.00000	0.00000	-5.16297
+0.00000	0.00000	0.00000	1.00000
+
+          Property: root = quackbot_three (UnityEngine.Transform)
+          Property: childCount = 0
+          Property: lossyScale = (0.10, 0.10, 0.10)
+          Property: hasChanged = True
+          Property: hierarchyCapacity = 35
+          Property: hierarchyCount = 35
+          Property: transform = Rig_hint (UnityEngine.Transform)
+          Property: gameObject = Rig_hint (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = Rig_hint
+          Property: hideFlags = None
+    GameObject: BONE_root
+      Component: Transform
+        Property: position = (4.79, 0.41, -4.13)
+        Property: localPosition = (0.00, 0.00, 0.00)
+        Property: eulerAngles = (0.00, 90.00, 0.01)
+        Property: localEulerAngles = (89.98, 359.99, 0.00)
+        Property: right = (0.00, 0.00, -1.00)
+        Property: up = (0.00, 1.00, 0.00)
+        Property: forward = (1.00, 0.00, 0.00)
+        Property: rotation = (0.00009, 0.70711, 0.00009, 0.70711)
+        Property: localRotation = (0.70711, -0.00009, 0.00009, 0.70711)
+        Property: localScale = (1.00, 1.00, 1.00)
+        Property: parent = Armature (Rotate Pivot) (UnityEngine.Transform)
+        Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+0.00000	0.01000	0.00000	-0.00413
+0.01000	0.00000	0.00000	-0.04795
+0.00000	0.00000	0.00000	1.00000
+
+        Property: localToWorldMatrix = -0.00001	0.00000	100.00000	4.79498
+0.02501	100.00000	0.00000	0.41449
+-100.00000	0.02501	-0.00001	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+        Property: root = quackbot_three (UnityEngine.Transform)
+        Property: childCount = 3
+        Property: lossyScale = (100.00, 100.00, 100.00)
+        Property: hasChanged = True
+        Property: hierarchyCapacity = 35
+        Property: hierarchyCount = 35
+        Property: transform = BONE_root (UnityEngine.Transform)
+        Property: gameObject = BONE_root (UnityEngine.GameObject)
+        Property: tag = Untagged
+        Property: name = BONE_root
+        Property: hideFlags = None
+      Component: Rigidbody
+        Property: linearVelocity = (0.00, 0.00, 0.00)
+        Property: angularVelocity = (0.00, 0.00, 0.00)
+        Property: linearDamping = 0
+        Property: angularDamping = 0.05
+        Property: mass = 1
+        Property: useGravity = True
+        Property: maxDepenetrationVelocity = 10
+        Property: isKinematic = True
+        Property: freezeRotation = False
+        Property: constraints = 80
+        Property: collisionDetectionMode = Discrete
+        Property: automaticCenterOfMass = True
+        Property: centerOfMass = (0.00, 0.00, 0.00)
+        Property: worldCenterOfMass = (4.79, 0.41, -4.13)
+        Property: automaticInertiaTensor = True
+        Property: inertiaTensorRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+        Property: inertiaTensor = (0.00, 1.00, 0.00)
+        Property: detectCollisions = True
+        Property: position = (4.79, 0.41, -4.13)
+        Property: rotation = (0.00009, 0.70711, 0.00009, 0.70711)
+        Property: interpolation = None
+        Property: solverIterations = 6
+        Property: sleepThreshold = 0.005
+        Property: maxAngularVelocity = 50
+        Property: maxLinearVelocity = 1E+16
+        Property: solverVelocityIterations = 1
+        Property: excludeLayers = UnityEngine.LayerMask
+        Property: includeLayers = UnityEngine.LayerMask
+        Property: drag = 0
+        Property: angularDrag = 0.05
+        Property: velocity = (0.00, 0.00, 0.00)
+        Property: sleepVelocity = 0
+        Property: sleepAngularVelocity = 0
+        Property: useConeFriction = False
+        Property: solverIterationCount = 6
+        Property: solverVelocityIterationCount = 1
+        Property: transform = BONE_root (UnityEngine.Transform)
+        Property: gameObject = BONE_root (UnityEngine.GameObject)
+        Property: tag = Untagged
+        Property: name = BONE_root
+        Property: hideFlags = None
+      GameObject: BONE_bottom arm
+        Component: Transform
+          Property: position = (4.79, 1.00, -3.70)
+          Property: localPosition = (0.00, 0.01, 0.00)
+          Property: eulerAngles = (359.99, 118.74, 0.02)
+          Property: localEulerAngles = (-0.01, 28.74, 0.01)
+          Property: right = (-0.48, 0.00, -0.88)
+          Property: up = (0.00, 1.00, 0.00)
+          Property: forward = (0.88, 0.00, -0.48)
+          Property: rotation = (0.00011, 0.86047, 0.00019, 0.50951)
+          Property: localRotation = (-0.00002, 0.24817, 0.00009, 0.96872)
+          Property: localScale = (1.00, 1.00, 1.00)
+          Property: parent = BONE_root (UnityEngine.Transform)
+          Property: worldToLocalMatrix = -0.00481	0.00000	-0.00877	-0.00936
+0.00000	0.01000	0.00000	-0.01001
+0.00877	0.00000	-0.00481	-0.05982
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = -48.08054	0.00000	87.68275	4.79498
+0.03827	99.99998	0.02098	1.00255
+-87.68272	0.04364	-48.08054	-3.69630
+0.00000	0.00000	0.00000	1.00000
+
+          Property: root = quackbot_three (UnityEngine.Transform)
+          Property: childCount = 3
+          Property: lossyScale = (100.00, 100.00, 100.00)
+          Property: hasChanged = True
+          Property: hierarchyCapacity = 35
+          Property: hierarchyCount = 35
+          Property: transform = BONE_bottom arm (UnityEngine.Transform)
+          Property: gameObject = BONE_bottom arm (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = BONE_bottom arm
+          Property: hideFlags = None
+        Component: Rigidbody
+          Property: linearVelocity = (0.00, 0.00, 0.00)
+          Property: angularVelocity = (0.00, 0.00, 0.00)
+          Property: linearDamping = 0
+          Property: angularDamping = 0.05
+          Property: mass = 1
+          Property: useGravity = True
+          Property: maxDepenetrationVelocity = 10
+          Property: isKinematic = False
+          Property: freezeRotation = False
+          Property: constraints = None
+          Property: collisionDetectionMode = ContinuousDynamic
+          Property: automaticCenterOfMass = True
+          Property: centerOfMass = (-0.07, 0.80, 0.13)
+          Property: worldCenterOfMass = (4.95, 1.80, -3.70)
+          Property: automaticInertiaTensor = True
+          Property: inertiaTensorRotation = (0.00005, -0.24817, -0.00021, 0.96872)
+          Property: inertiaTensor = (0.33, 0.03, 0.33)
+          Property: detectCollisions = True
+          Property: position = (4.79, 1.00, -3.70)
+          Property: rotation = (0.00011, 0.86047, 0.00019, 0.50951)
+          Property: interpolation = None
+          Property: solverIterations = 6
+          Property: sleepThreshold = 0.005
+          Property: maxAngularVelocity = 50
+          Property: maxLinearVelocity = 1E+16
+          Property: solverVelocityIterations = 1
+          Property: excludeLayers = UnityEngine.LayerMask
+          Property: includeLayers = UnityEngine.LayerMask
+          Property: drag = 0
+          Property: angularDrag = 0.05
+          Property: velocity = (0.00, 0.00, 0.00)
+          Property: sleepVelocity = 0
+          Property: sleepAngularVelocity = 0
+          Property: useConeFriction = False
+          Property: solverIterationCount = 6
+          Property: solverVelocityIterationCount = 1
+          Property: transform = BONE_bottom arm (UnityEngine.Transform)
+          Property: gameObject = BONE_bottom arm (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = BONE_bottom arm
+          Property: hideFlags = None
+        Component: ConfigurableJoint
+          Property: secondaryAxis = (0.00, 1.00, 0.00)
+          Property: xMotion = Locked
+          Property: yMotion = Locked
+          Property: zMotion = Locked
+          Property: angularXMotion = Locked
+          Property: angularYMotion = Locked
+          Property: angularZMotion = Free
+          Property: linearLimitSpring = UnityEngine.SoftJointLimitSpring
+          Property: angularXLimitSpring = UnityEngine.SoftJointLimitSpring
+          Property: angularYZLimitSpring = UnityEngine.SoftJointLimitSpring
+          Property: linearLimit = UnityEngine.SoftJointLimit
+          Property: lowAngularXLimit = UnityEngine.SoftJointLimit
+          Property: highAngularXLimit = UnityEngine.SoftJointLimit
+          Property: angularYLimit = UnityEngine.SoftJointLimit
+          Property: angularZLimit = UnityEngine.SoftJointLimit
+          Property: targetPosition = (0.00, 0.00, 0.00)
+          Property: targetVelocity = (0.00, 0.00, 0.00)
+          Property: xDrive = UnityEngine.JointDrive
+          Property: yDrive = UnityEngine.JointDrive
+          Property: zDrive = UnityEngine.JointDrive
+          Property: targetRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+          Property: targetAngularVelocity = (0.00, 0.00, 0.00)
+          Property: rotationDriveMode = XYAndZ
+          Property: angularXDrive = UnityEngine.JointDrive
+          Property: angularYZDrive = UnityEngine.JointDrive
+          Property: slerpDrive = UnityEngine.JointDrive
+          Property: projectionMode = None
+          Property: projectionDistance = 0.1
+          Property: projectionAngle = 180
+          Property: configuredInWorldSpace = False
+          Property: swapBodies = False
+          Property: connectedBody = BONE_root (UnityEngine.Rigidbody)
+          Property: connectedArticulationBody = 
+          Property: axis = (1.00, 0.00, 0.00)
+          Property: anchor = (0.00, 0.00, 0.00)
+          Property: connectedAnchor = (0.00, 0.01, 0.00)
+          Property: autoConfigureConnectedAnchor = True
+          Property: breakForce = Infinity
+          Property: breakTorque = Infinity
+          Property: enableCollision = False
+          Property: enablePreprocessing = True
+          Property: massScale = 1
+          Property: connectedMassScale = 1
+          Property: currentForce = (0.00, 0.00, 0.00)
+          Property: currentTorque = (0.00, 0.00, 0.00)
+          Property: transform = BONE_bottom arm (UnityEngine.Transform)
+          Property: gameObject = BONE_bottom arm (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = BONE_bottom arm
+          Property: hideFlags = None
+        Component: PhysicsIKDrive
+          Field: ikTarget = Rig_target (UnityEngine.Transform)
+          Property: destroyCancellationToken = System.Threading.CancellationToken
+          Property: useGUILayout = True
+          Property: didStart = False
+          Property: didAwake = False
+          Property: runInEditMode = False
+          Property: enabled = True
+          Property: isActiveAndEnabled = True
+          Property: transform = BONE_bottom arm (UnityEngine.Transform)
+          Property: gameObject = BONE_bottom arm (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = BONE_bottom arm
+          Property: hideFlags = None
+        GameObject: BONE_upper arm
+          Component: Transform
+            Property: position = (4.79, 2.59, -3.70)
+            Property: localPosition = (0.00, 0.02, 0.00)
+            Property: eulerAngles = (331.26, 90.00, 89.99)
+            Property: localEulerAngles = (331.26, 331.28, 89.96)
+            Property: right = (-0.48, 0.88, 0.00)
+            Property: up = (0.00, 0.00, 1.00)
+            Property: forward = (0.88, 0.48, 0.00)
+            Property: rotation = (0.36026, 0.60847, 0.60841, 0.36030)
+            Property: localRotation = (-0.33989, 0.00000, 0.61984, 0.70730)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = BONE_bottom arm (UnityEngine.Transform)
+            Property: worldToLocalMatrix = -0.00481	0.00877	0.00000	0.00030
+0.00000	0.00000	0.01000	0.03695
+0.00877	0.00481	0.00000	-0.05452
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -48.08054	0.00000	87.68275	4.79498
+87.68277	0.01054	48.08049	2.59416
+-0.00924	100.00000	-0.00507	-3.69560
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 3
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = BONE_upper arm (UnityEngine.Transform)
+            Property: gameObject = BONE_upper arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_upper arm
+            Property: hideFlags = None
+          Component: Rigidbody
+            Property: linearVelocity = (0.00, 0.00, 0.00)
+            Property: angularVelocity = (0.00, 0.00, 0.00)
+            Property: linearDamping = 0
+            Property: angularDamping = 0.05
+            Property: mass = 1
+            Property: useGravity = True
+            Property: maxDepenetrationVelocity = 10
+            Property: isKinematic = False
+            Property: freezeRotation = False
+            Property: constraints = None
+            Property: collisionDetectionMode = ContinuousDynamic
+            Property: automaticCenterOfMass = True
+            Property: centerOfMass = (-0.02, 0.48, -0.01)
+            Property: worldCenterOfMass = (4.80, 2.57, -3.22)
+            Property: automaticInertiaTensor = True
+            Property: inertiaTensorRotation = (-0.00001, -0.24815, 0.00005, 0.96872)
+            Property: inertiaTensor = (0.15, 0.00, 0.15)
+            Property: detectCollisions = True
+            Property: position = (4.79, 2.59, -3.70)
+            Property: rotation = (0.36026, 0.60847, 0.60841, 0.36030)
+            Property: interpolation = None
+            Property: solverIterations = 6
+            Property: sleepThreshold = 0.005
+            Property: maxAngularVelocity = 50
+            Property: maxLinearVelocity = 1E+16
+            Property: solverVelocityIterations = 1
+            Property: excludeLayers = UnityEngine.LayerMask
+            Property: includeLayers = UnityEngine.LayerMask
+            Property: drag = 0
+            Property: angularDrag = 0.05
+            Property: velocity = (0.00, 0.00, 0.00)
+            Property: sleepVelocity = 0
+            Property: sleepAngularVelocity = 0
+            Property: useConeFriction = False
+            Property: solverIterationCount = 6
+            Property: solverVelocityIterationCount = 1
+            Property: transform = BONE_upper arm (UnityEngine.Transform)
+            Property: gameObject = BONE_upper arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_upper arm
+            Property: hideFlags = None
+          Component: ConfigurableJoint
+            Property: secondaryAxis = (0.00, 1.00, 0.00)
+            Property: xMotion = Locked
+            Property: yMotion = Locked
+            Property: zMotion = Locked
+            Property: angularXMotion = Locked
+            Property: angularYMotion = Locked
+            Property: angularZMotion = Free
+            Property: linearLimitSpring = UnityEngine.SoftJointLimitSpring
+            Property: angularXLimitSpring = UnityEngine.SoftJointLimitSpring
+            Property: angularYZLimitSpring = UnityEngine.SoftJointLimitSpring
+            Property: linearLimit = UnityEngine.SoftJointLimit
+            Property: lowAngularXLimit = UnityEngine.SoftJointLimit
+            Property: highAngularXLimit = UnityEngine.SoftJointLimit
+            Property: angularYLimit = UnityEngine.SoftJointLimit
+            Property: angularZLimit = UnityEngine.SoftJointLimit
+            Property: targetPosition = (0.00, 0.00, 0.00)
+            Property: targetVelocity = (0.00, 0.00, 0.00)
+            Property: xDrive = UnityEngine.JointDrive
+            Property: yDrive = UnityEngine.JointDrive
+            Property: zDrive = UnityEngine.JointDrive
+            Property: targetRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: targetAngularVelocity = (0.00, 0.00, 0.00)
+            Property: rotationDriveMode = XYAndZ
+            Property: angularXDrive = UnityEngine.JointDrive
+            Property: angularYZDrive = UnityEngine.JointDrive
+            Property: slerpDrive = UnityEngine.JointDrive
+            Property: projectionMode = None
+            Property: projectionDistance = 0.1
+            Property: projectionAngle = 180
+            Property: configuredInWorldSpace = False
+            Property: swapBodies = False
+            Property: connectedBody = BONE_bottom arm (UnityEngine.Rigidbody)
+            Property: connectedArticulationBody = 
+            Property: axis = (1.00, 0.00, 0.00)
+            Property: anchor = (0.00, 0.00, 0.00)
+            Property: connectedAnchor = (0.00, 0.02, 0.00)
+            Property: autoConfigureConnectedAnchor = True
+            Property: breakForce = Infinity
+            Property: breakTorque = Infinity
+            Property: enableCollision = False
+            Property: enablePreprocessing = True
+            Property: massScale = 1
+            Property: connectedMassScale = 1
+            Property: currentForce = (0.00, 0.00, 0.00)
+            Property: currentTorque = (0.00, 0.00, 0.00)
+            Property: transform = BONE_upper arm (UnityEngine.Transform)
+            Property: gameObject = BONE_upper arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_upper arm
+            Property: hideFlags = None
+          Component: PhysicsIKDrive
+            Field: ikTarget = Rig_target (UnityEngine.Transform)
+            Property: destroyCancellationToken = System.Threading.CancellationToken
+            Property: useGUILayout = True
+            Property: didStart = False
+            Property: didAwake = False
+            Property: runInEditMode = False
+            Property: enabled = True
+            Property: isActiveAndEnabled = True
+            Property: transform = BONE_upper arm (UnityEngine.Transform)
+            Property: gameObject = BONE_upper arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_upper arm
+            Property: hideFlags = None
+          GameObject: BONE_control bone
+            Component: Transform
+              Property: position = (4.79, 2.59, -2.56)
+              Property: localPosition = (0.00, 0.01, 0.00)
+              Property: eulerAngles = (0.00, 180.00, 180.00)
+              Property: localEulerAngles = (90.00, 241.26, 0.00)
+              Property: right = (1.00, 0.00, 0.00)
+              Property: up = (0.00, -1.00, 0.00)
+              Property: forward = (0.00, 0.00, -1.00)
+              Property: rotation = (1.00000, 0.00000, 0.00000, 0.00000)
+              Property: localRotation = (0.36029, -0.60841, 0.60848, 0.36026)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = BONE_upper arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.01000	0.00000	0.00000	-0.04795
+0.00000	-0.01000	0.00000	0.02594
+0.00000	0.00000	-0.01000	-0.02558
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 100.00000	0.00004	0.00033	4.79498
+0.00000	-99.99998	0.00033	2.59428
+0.00032	-0.00034	-100.00000	-2.55845
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 1
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = BONE_control bone (UnityEngine.Transform)
+              Property: gameObject = BONE_control bone (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = BONE_control bone
+              Property: hideFlags = None
+            GameObject: BONE_control bone_end
+              Component: Transform
+                Property: position = (4.79, 2.03, -2.56)
+                Property: localPosition = (0.00, 0.01, 0.00)
+                Property: eulerAngles = (0.00, 180.00, 180.00)
+                Property: localEulerAngles = (0.00, 0.00, 0.00)
+                Property: right = (1.00, 0.00, 0.00)
+                Property: up = (0.00, -1.00, 0.00)
+                Property: forward = (0.00, 0.00, -1.00)
+                Property: rotation = (1.00000, 0.00000, 0.00000, 0.00000)
+                Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+                Property: localScale = (1.00, 1.00, 1.00)
+                Property: parent = BONE_control bone (UnityEngine.Transform)
+                Property: worldToLocalMatrix = 0.01000	0.00000	0.00000	-0.04795
+0.00000	-0.01000	0.00000	0.02029
+0.00000	0.00000	-0.01000	-0.02558
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 100.00000	0.00004	0.00033	4.79498
+0.00000	-99.99998	0.00033	2.02858
+0.00032	-0.00034	-100.00000	-2.55845
+0.00000	0.00000	0.00000	1.00000
+
+                Property: root = quackbot_three (UnityEngine.Transform)
+                Property: childCount = 0
+                Property: lossyScale = (100.00, 100.00, 100.00)
+                Property: hasChanged = True
+                Property: hierarchyCapacity = 35
+                Property: hierarchyCount = 35
+                Property: transform = BONE_control bone_end (UnityEngine.Transform)
+                Property: gameObject = BONE_control bone_end (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = BONE_control bone_end
+                Property: hideFlags = None
+          GameObject: BONE_mouth_pivot
+            Component: Transform
+              Property: position = (4.76, 2.55, -3.10)
+              Property: localPosition = (0.00, 0.01, 0.00)
+              Property: eulerAngles = (90.00, 89.99, 0.00)
+              Property: localEulerAngles = (0.00, 241.26, 270.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (1.00, 0.00, 0.00)
+              Property: forward = (0.00, -1.00, 0.00)
+              Property: rotation = (0.49997, 0.49997, -0.50003, 0.50003)
+              Property: localRotation = (0.60844, -0.60844, -0.36028, 0.36028)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = BONE_upper arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03103
+0.01000	0.00000	0.00000	-0.04763
+0.00000	-0.01000	0.00000	0.02554
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	100.00000	0.00001	4.76308
+-0.01051	-0.00003	-100.00000	2.55323
+-100.00000	0.00001	0.01051	-3.10305
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 2
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = BONE_mouth_pivot (UnityEngine.Transform)
+              Property: gameObject = BONE_mouth_pivot (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = BONE_mouth_pivot
+              Property: hideFlags = None
+            GameObject: BONE_mouth_pivot_end
+              Component: Transform
+                Property: position = (5.01, 2.55, -3.10)
+                Property: localPosition = (0.00, 0.00, 0.00)
+                Property: eulerAngles = (90.00, 89.99, 0.00)
+                Property: localEulerAngles = (0.00, 0.00, 0.00)
+                Property: right = (0.00, 0.00, -1.00)
+                Property: up = (1.00, 0.00, 0.00)
+                Property: forward = (0.00, -1.00, 0.00)
+                Property: rotation = (0.49997, 0.49997, -0.50003, 0.50003)
+                Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+                Property: localScale = (1.00, 1.00, 1.00)
+                Property: parent = BONE_mouth_pivot (UnityEngine.Transform)
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03103
+0.01000	0.00000	0.00000	-0.05013
+0.00000	-0.01000	0.00000	0.02554
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 0.00000	100.00000	0.00001	5.01308
+-0.01051	-0.00003	-100.00000	2.55323
+-100.00000	0.00001	0.01051	-3.10305
+0.00000	0.00000	0.00000	1.00000
+
+                Property: root = quackbot_three (UnityEngine.Transform)
+                Property: childCount = 0
+                Property: lossyScale = (100.00, 100.00, 100.00)
+                Property: hasChanged = True
+                Property: hierarchyCapacity = 35
+                Property: hierarchyCount = 35
+                Property: transform = BONE_mouth_pivot_end (UnityEngine.Transform)
+                Property: gameObject = BONE_mouth_pivot_end (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = BONE_mouth_pivot_end
+                Property: hideFlags = None
+            GameObject: MESH_bottom_mouth
+              Component: Transform
+                Property: position = (4.79, 2.55, -3.10)
+                Property: localPosition = (0.00, 0.00, 0.00)
+                Property: eulerAngles = (270.00, 90.01, 0.00)
+                Property: localEulerAngles = (0.00, 180.00, 180.00)
+                Property: right = (0.00, 0.00, -1.00)
+                Property: up = (-1.00, 0.00, 0.00)
+                Property: forward = (0.00, 1.00, 0.00)
+                Property: rotation = (0.50003, -0.50003, -0.49997, -0.49997)
+                Property: localRotation = (1.00000, 0.00000, 0.00000, 0.00000)
+                Property: localScale = (1.00, 1.00, 1.00)
+                Property: parent = BONE_mouth_pivot (UnityEngine.Transform)
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03103
+-0.01000	0.00000	0.00000	0.04795
+0.00000	0.01000	0.00000	-0.02554
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 0.00000	-100.00000	-0.00002	4.79498
+-0.01055	0.00002	100.00000	2.55323
+-100.00000	0.00000	-0.01055	-3.10305
+0.00000	0.00000	0.00000	1.00000
+
+                Property: root = quackbot_three (UnityEngine.Transform)
+                Property: childCount = 0
+                Property: lossyScale = (100.00, 100.00, 100.00)
+                Property: hasChanged = True
+                Property: hierarchyCapacity = 35
+                Property: hierarchyCount = 35
+                Property: transform = MESH_bottom_mouth (UnityEngine.Transform)
+                Property: gameObject = MESH_bottom_mouth (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_bottom_mouth
+                Property: hideFlags = None
+              Component: MeshFilter
+                Property: sharedMesh = MESH_bottom_mouth (UnityEngine.Mesh)
+                Property: mesh = MESH_bottom_mouth Instance (UnityEngine.Mesh)
+                Property: transform = MESH_bottom_mouth (UnityEngine.Transform)
+                Property: gameObject = MESH_bottom_mouth (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_bottom_mouth
+                Property: hideFlags = None
+              Component: MeshRenderer
+                Property: additionalVertexStreams = 
+                Property: enlightenVertexStream = 
+                Property: subMeshStartIndex = 0
+                Property: scaleInLightmap = 1
+                Property: receiveGI = Lightmaps
+                Property: stitchLightmapSeams = True
+                Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+                Property: lightProbeAnchor = 
+                Property: castShadows = True
+                Property: motionVectors = True
+                Property: useLightProbes = True
+                Property: bounds = Center: (4.79, 2.54, -2.85), Extents: (0.06, 0.06, 0.30)
+                Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+                Property: enabled = True
+                Property: isVisible = True
+                Property: shadowCastingMode = On
+                Property: receiveShadows = True
+                Property: forceRenderingOff = False
+                Property: staticShadowCaster = False
+                Property: motionVectorGenerationMode = Object
+                Property: lightProbeUsage = BlendProbes
+                Property: reflectionProbeUsage = BlendProbes
+                Property: renderingLayerMask = 1
+                Property: rendererPriority = 0
+                Property: rayTracingMode = DynamicTransform
+                Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+                Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+                Property: sortingLayerName = Default
+                Property: sortingLayerID = 0
+                Property: sortingOrder = 0
+                Property: isLOD0 = True
+                Property: allowOcclusionWhenDynamic = True
+                Property: isPartOfStaticBatch = False
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03103
+-0.01000	0.00000	0.00000	0.04795
+0.00000	0.01000	0.00000	-0.02554
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 0.00000	-100.00000	-0.00002	4.79498
+-0.01055	0.00002	100.00000	2.55323
+-100.00000	0.00000	-0.01055	-3.10305
+0.00000	0.00000	0.00000	1.00000
+
+                Property: lightProbeProxyVolumeOverride = 
+                Property: probeAnchor = 
+                Property: lightmapIndex = -1
+                Property: realtimeLightmapIndex = -1
+                Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: materials = UnityEngine.Material[]
+                Property: material = duck_mouth (Instance) (UnityEngine.Material)
+                Property: sharedMaterial = duck_mouth (Instance) (UnityEngine.Material)
+                Property: sharedMaterials = UnityEngine.Material[]
+                Property: LODGroup = 
+                Property: transform = MESH_bottom_mouth (UnityEngine.Transform)
+                Property: gameObject = MESH_bottom_mouth (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_bottom_mouth
+                Property: hideFlags = None
+          GameObject: MESH_upper_arm
+            Component: Transform
+              Property: position = (4.99, 2.59, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.00)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (359.99, 61.26, 270.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (-0.36031, 0.36024, -0.60842, 0.60846)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = BONE_upper arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04987
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-99.99996	-0.00003	4.98723
+-0.00016	0.00001	99.99998	2.59427
+-99.99998	0.00000	-0.00015	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 1
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_upper_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_arm
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_upper_arm (UnityEngine.Mesh)
+              Property: mesh = MESH_upper_arm Instance (UnityEngine.Mesh)
+              Property: transform = MESH_upper_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_arm
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (4.85, 2.59, -3.22), Extents: (0.14, 0.18, 0.66)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.01, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04987
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-99.99996	-0.00003	4.98723
+-0.00016	0.00001	99.99998	2.59427
+-99.99998	0.00000	-0.00015	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = middle_motor_join (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = middle_motor_join (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_upper_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_arm
+              Property: hideFlags = None
+            Component: BoxCollider
+              Property: center = (0.00, 0.00, 0.00)
+              Property: size = (0.01, 0.00, 0.00)
+              Property: extents = (0.01, 0.00, 0.00)
+              Property: enabled = True
+              Property: attachedRigidbody = BONE_upper arm (UnityEngine.Rigidbody)
+              Property: attachedArticulationBody = 
+              Property: isTrigger = False
+              Property: contactOffset = 0.01
+              Property: bounds = Center: (4.80, 2.57, -3.22), Extents: (0.09, 0.08, 0.66)
+              Property: hasModifiableContacts = False
+              Property: providesContacts = False
+              Property: layerOverridePriority = 0
+              Property: excludeLayers = UnityEngine.LayerMask
+              Property: includeLayers = UnityEngine.LayerMask
+              Property: GeometryHolder = UnityEngine.LowLevelPhysics.GeometryHolder
+              Property: sharedMaterial = 
+              Property: material =  (UnityEngine.PhysicsMaterial)
+              Property: transform = MESH_upper_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_arm
+              Property: hideFlags = None
+            GameObject: MESH_mouth_pivot
+              Component: Transform
+                Property: position = (4.79, 2.55, -3.10)
+                Property: localPosition = (-0.01, 0.00, 0.00)
+                Property: eulerAngles = (270.00, 90.00, 0.00)
+                Property: localEulerAngles = (0.00, 0.00, 0.00)
+                Property: right = (0.00, 0.00, -1.00)
+                Property: up = (-1.00, 0.00, 0.00)
+                Property: forward = (0.00, 1.00, 0.00)
+                Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+                Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+                Property: localScale = (1.00, 1.00, 1.00)
+                Property: parent = MESH_upper_arm (UnityEngine.Transform)
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03104
+-0.01000	0.00000	0.00000	0.04795
+0.00000	0.01000	0.00000	-0.02553
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.79498
+0.00008	0.00001	100.00000	2.55328
+-100.00000	0.00000	0.00008	-3.10390
+0.00000	0.00000	0.00000	1.00000
+
+                Property: root = quackbot_three (UnityEngine.Transform)
+                Property: childCount = 0
+                Property: lossyScale = (100.00, 100.00, 100.00)
+                Property: hasChanged = True
+                Property: hierarchyCapacity = 35
+                Property: hierarchyCount = 35
+                Property: transform = MESH_mouth_pivot (UnityEngine.Transform)
+                Property: gameObject = MESH_mouth_pivot (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_mouth_pivot
+                Property: hideFlags = None
+              Component: MeshFilter
+                Property: sharedMesh = MESH_mouth_pivot (UnityEngine.Mesh)
+                Property: mesh = MESH_mouth_pivot Instance (UnityEngine.Mesh)
+                Property: transform = MESH_mouth_pivot (UnityEngine.Transform)
+                Property: gameObject = MESH_mouth_pivot (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_mouth_pivot
+                Property: hideFlags = None
+              Component: MeshRenderer
+                Property: additionalVertexStreams = 
+                Property: enlightenVertexStream = 
+                Property: subMeshStartIndex = 0
+                Property: scaleInLightmap = 1
+                Property: receiveGI = Lightmaps
+                Property: stitchLightmapSeams = True
+                Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+                Property: lightProbeAnchor = 
+                Property: castShadows = True
+                Property: motionVectors = True
+                Property: useLightProbes = True
+                Property: bounds = Center: (4.79, 2.55, -3.10), Extents: (0.04, 0.05, 0.05)
+                Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+                Property: enabled = True
+                Property: isVisible = True
+                Property: shadowCastingMode = On
+                Property: receiveShadows = True
+                Property: forceRenderingOff = False
+                Property: staticShadowCaster = False
+                Property: motionVectorGenerationMode = Object
+                Property: lightProbeUsage = BlendProbes
+                Property: reflectionProbeUsage = BlendProbes
+                Property: renderingLayerMask = 1
+                Property: rendererPriority = 0
+                Property: rayTracingMode = DynamicTransform
+                Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+                Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+                Property: sortingLayerName = Default
+                Property: sortingLayerID = 0
+                Property: sortingOrder = 0
+                Property: isLOD0 = True
+                Property: allowOcclusionWhenDynamic = True
+                Property: isPartOfStaticBatch = False
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03104
+-0.01000	0.00000	0.00000	0.04795
+0.00000	0.01000	0.00000	-0.02553
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.79498
+0.00008	0.00001	100.00000	2.55328
+-100.00000	0.00000	0.00008	-3.10390
+0.00000	0.00000	0.00000	1.00000
+
+                Property: lightProbeProxyVolumeOverride = 
+                Property: probeAnchor = 
+                Property: lightmapIndex = -1
+                Property: realtimeLightmapIndex = -1
+                Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: materials = UnityEngine.Material[]
+                Property: material = mouth_hinge (Instance) (UnityEngine.Material)
+                Property: sharedMaterial = mouth_hinge (Instance) (UnityEngine.Material)
+                Property: sharedMaterials = UnityEngine.Material[]
+                Property: LODGroup = 
+                Property: transform = MESH_mouth_pivot (UnityEngine.Transform)
+                Property: gameObject = MESH_mouth_pivot (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_mouth_pivot
+                Property: hideFlags = None
+        GameObject: BONE_upper_hydraulic
+          Component: Transform
+            Property: position = (5.24, 2.13, -3.70)
+            Property: localPosition = (0.00, 0.01, 0.00)
+            Property: eulerAngles = (0.00, 90.00, 219.11)
+            Property: localEulerAngles = (0.00, 331.26, 219.09)
+            Property: right = (0.00, -0.63, 0.78)
+            Property: up = (0.00, -0.78, -0.63)
+            Property: forward = (1.00, 0.00, 0.00)
+            Property: rotation = (0.66632, -0.23669, 0.66632, -0.23669)
+            Property: localRotation = (-0.23387, 0.08302, 0.91291, -0.32406)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = BONE_bottom arm (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	-0.00631	0.00776	0.04213
+0.00000	-0.00776	-0.00631	-0.00677
+0.01000	0.00000	0.00000	-0.05245
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00003	-0.00002	100.00000	5.24483
+-63.08448	-77.59093	0.00000	2.13231
+77.59090	-63.08451	-0.00003	-3.69580
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 2
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = BONE_upper_hydraulic (UnityEngine.Transform)
+            Property: gameObject = BONE_upper_hydraulic (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_upper_hydraulic
+            Property: hideFlags = None
+          GameObject: BONE_upper_hydraulic_end
+            Component: Transform
+              Property: position = (5.24, 1.31, -4.36)
+              Property: localPosition = (0.00, 0.01, 0.00)
+              Property: eulerAngles = (0.00, 90.00, 219.11)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, -0.63, 0.78)
+              Property: up = (0.00, -0.78, -0.63)
+              Property: forward = (1.00, 0.00, 0.00)
+              Property: rotation = (0.66632, -0.23669, 0.66632, -0.23669)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = BONE_upper_hydraulic (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	-0.00631	0.00776	0.04213
+0.00000	-0.00776	-0.00631	-0.01732
+0.01000	0.00000	0.00000	-0.05245
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00003	-0.00002	100.00000	5.24483
+-63.08448	-77.59093	0.00000	1.31353
+77.59090	-63.08451	-0.00003	-4.36151
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = BONE_upper_hydraulic_end (UnityEngine.Transform)
+              Property: gameObject = BONE_upper_hydraulic_end (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = BONE_upper_hydraulic_end
+              Property: hideFlags = None
+          GameObject: MESH_upper_hydraulic
+            Component: Transform
+              Property: position = (5.28, 2.13, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.00)
+              Property: eulerAngles = (320.89, 180.00, 270.00)
+              Property: localEulerAngles = (0.00, 270.00, 90.00)
+              Property: right = (0.00, -0.78, -0.63)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 0.63, -0.78)
+              Property: rotation = (-0.66632, 0.66632, 0.23669, 0.23669)
+              Property: localRotation = (0.50000, 0.50000, -0.50000, -0.50000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = BONE_upper_hydraulic (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	-0.00776	-0.00631	-0.00677
+-0.01000	0.00000	0.00000	0.05277
+0.00000	0.00631	-0.00776	-0.04213
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = -0.00004	-100.00000	-0.00006	5.27673
+-77.59093	0.00001	63.08452	2.13231
+-63.08455	0.00006	-77.59092	-3.69580
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_upper_hydraulic (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_hydraulic (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_hydraulic
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_upper_hydraulic (UnityEngine.Mesh)
+              Property: mesh = MESH_upper_hydraulic Instance (UnityEngine.Mesh)
+              Property: transform = MESH_upper_hydraulic (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_hydraulic (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_hydraulic
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (5.24, 1.75, -4.01), Extents: (0.09, 0.48, 0.41)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.01, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = False
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	-0.00776	-0.00631	-0.00677
+-0.01000	0.00000	0.00000	0.05277
+0.00000	0.00631	-0.00776	-0.04213
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = -0.00004	-100.00000	-0.00006	5.27673
+-77.59093	0.00001	63.08452	2.13231
+-63.08455	0.00006	-77.59092	-3.69580
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = upper_hydr (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = upper_hydr (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_upper_hydraulic (UnityEngine.Transform)
+              Property: gameObject = MESH_upper_hydraulic (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_upper_hydraulic
+              Property: hideFlags = None
+        GameObject: MESH_lower_arm
+          Component: Transform
+            Property: position = (4.83, 1.00, -3.70)
+            Property: localPosition = (0.00, 0.00, 0.00)
+            Property: eulerAngles = (270.00, 90.00, 0.00)
+            Property: localEulerAngles = (270.02, 331.29, 0.00)
+            Property: right = (0.00, 0.00, -1.00)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 1.00, 0.00)
+            Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+            Property: localRotation = (-0.68495, -0.17533, -0.17563, 0.68502)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = BONE_bottom arm (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.82688
+0.00024	-0.00002	99.99996	1.00266
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 4
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_lower_arm (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_arm
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_lower_arm (UnityEngine.Mesh)
+            Property: mesh = MESH_lower_arm Instance (UnityEngine.Mesh)
+            Property: transform = MESH_lower_arm (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_arm
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (4.95, 1.80, -3.70), Extents: (0.21, 0.98, 0.18)
+            Property: localBounds = Center: (0.00, 0.00, 0.01), Extents: (0.00, 0.00, 0.01)
+            Property: enabled = True
+            Property: isVisible = True
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.82688
+0.00024	-0.00002	99.99996	1.00266
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = right_bottom_arm (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = right_bottom_arm (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_lower_arm (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_arm
+            Property: hideFlags = None
+          Component: BoxCollider
+            Property: center = (0.00, 0.00, 0.01)
+            Property: size = (0.00, 0.00, 0.02)
+            Property: extents = (0.00, 0.00, 0.01)
+            Property: enabled = True
+            Property: attachedRigidbody = BONE_bottom arm (UnityEngine.Rigidbody)
+            Property: attachedArticulationBody = 
+            Property: isTrigger = False
+            Property: contactOffset = 0.01
+            Property: bounds = Center: (4.95, 1.80, -3.70), Extents: (0.21, 0.98, 0.18)
+            Property: hasModifiableContacts = False
+            Property: providesContacts = False
+            Property: layerOverridePriority = 0
+            Property: excludeLayers = UnityEngine.LayerMask
+            Property: includeLayers = UnityEngine.LayerMask
+            Property: GeometryHolder = UnityEngine.LowLevelPhysics.GeometryHolder
+            Property: sharedMaterial = 
+            Property: material =  (UnityEngine.PhysicsMaterial)
+            Property: transform = MESH_lower_arm (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_arm (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_arm
+            Property: hideFlags = None
+          GameObject: MESH_bottom_plug
+            Component: Transform
+              Property: position = (5.05, 1.11, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.00)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = MESH_lower_arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05048
+0.00000	0.01000	0.00000	-0.01105
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	5.04845
+0.00024	-0.00002	99.99996	1.10516
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_bottom_plug (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_plug (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_plug
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_bottom_plug (UnityEngine.Mesh)
+              Property: mesh = MESH_bottom_plug Instance (UnityEngine.Mesh)
+              Property: transform = MESH_bottom_plug (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_plug (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_plug
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (5.05, 1.11, -3.70), Extents: (0.06, 0.09, 0.09)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05048
+0.00000	0.01000	0.00000	-0.01105
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	5.04845
+0.00024	-0.00002	99.99996	1.10516
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = bottom_plug (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = bottom_plug (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_bottom_plug (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_plug (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_plug
+              Property: hideFlags = None
+          GameObject: MESH_lower_side_arm
+            Component: Transform
+              Property: position = (4.83, 1.00, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.00)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = MESH_lower_arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.82688
+0.00024	-0.00002	99.99996	1.00266
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_lower_side_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_lower_side_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_lower_side_arm
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_lower_side_arm (UnityEngine.Mesh)
+              Property: mesh = MESH_lower_side_arm Instance (UnityEngine.Mesh)
+              Property: transform = MESH_lower_side_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_lower_side_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_lower_side_arm
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (4.79, 1.33, -3.70), Extents: (0.14, 0.50, 0.18)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.01)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.82688
+0.00024	-0.00002	99.99996	1.00266
+-99.99998	0.00001	0.00024	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = left_bottom_arm (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = left_bottom_arm (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_lower_side_arm (UnityEngine.Transform)
+              Property: gameObject = MESH_lower_side_arm (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_lower_side_arm
+              Property: hideFlags = None
+          GameObject: MESH_mm_cables
+            Component: Transform
+              Property: position = (5.02, 2.55, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.02)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = MESH_lower_arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05022
+0.00000	0.01000	0.00000	-0.02552
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	5.02180
+0.00024	-0.00002	99.99996	2.55225
+-99.99998	0.00001	0.00024	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_mm_cables (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_mm_cables (UnityEngine.Mesh)
+              Property: mesh = MESH_mm_cables Instance (UnityEngine.Mesh)
+              Property: transform = MESH_mm_cables (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (5.02, 2.42, -3.70), Extents: (0.02, 0.14, 0.09)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05022
+0.00000	0.01000	0.00000	-0.02552
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	5.02180
+0.00024	-0.00002	99.99996	2.55225
+-99.99998	0.00001	0.00024	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = mm_cables_housing (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = mm_cables_housing (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_mm_cables (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables
+              Property: hideFlags = None
+          GameObject: MESH_mm_cables_housing
+            Component: Transform
+              Property: position = (4.99, 2.59, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.02)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = MESH_lower_arm (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04993
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.99309
+0.00024	-0.00002	99.99996	2.59427
+-99.99998	0.00001	0.00024	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 1
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_mm_cables_housing (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables_housing (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables_housing
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_mm_cables_housing (UnityEngine.Mesh)
+              Property: mesh = MESH_mm_cables_housing Instance (UnityEngine.Mesh)
+              Property: transform = MESH_mm_cables_housing (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables_housing (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables_housing
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (5.01, 2.59, -3.70), Extents: (0.05, 0.11, 0.11)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04993
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00003	4.99309
+0.00024	-0.00002	99.99996	2.59427
+-99.99998	0.00001	0.00024	-3.69644
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = mm_cables (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = mm_cables (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_mm_cables_housing (UnityEngine.Transform)
+              Property: gameObject = MESH_mm_cables_housing (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_mm_cables_housing
+              Property: hideFlags = None
+            GameObject: MESH_eye
+              Component: Transform
+                Property: position = (5.10, 2.59, -3.70)
+                Property: localPosition = (0.00, 0.00, 0.00)
+                Property: eulerAngles = (270.00, 90.00, 0.00)
+                Property: localEulerAngles = (0.00, 0.00, 0.00)
+                Property: right = (0.00, 0.00, -1.00)
+                Property: up = (-1.00, 0.00, 0.00)
+                Property: forward = (0.00, 1.00, 0.00)
+                Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+                Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+                Property: localScale = (1.00, 1.00, 1.00)
+                Property: parent = MESH_mm_cables_housing (UnityEngine.Transform)
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05100
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = -0.00002	-100.00000	-0.00002	5.10032
+0.00000	-0.00002	100.00000	2.59421
+-100.00000	0.00002	0.00000	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+                Property: root = quackbot_three (UnityEngine.Transform)
+                Property: childCount = 0
+                Property: lossyScale = (100.00, 100.00, 100.00)
+                Property: hasChanged = True
+                Property: hierarchyCapacity = 35
+                Property: hierarchyCount = 35
+                Property: transform = MESH_eye (UnityEngine.Transform)
+                Property: gameObject = MESH_eye (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_eye
+                Property: hideFlags = None
+              Component: MeshFilter
+                Property: sharedMesh = MESH_eye (UnityEngine.Mesh)
+                Property: mesh = MESH_eye Instance (UnityEngine.Mesh)
+                Property: transform = MESH_eye (UnityEngine.Transform)
+                Property: gameObject = MESH_eye (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_eye
+                Property: hideFlags = None
+              Component: MeshRenderer
+                Property: additionalVertexStreams = 
+                Property: enlightenVertexStream = 
+                Property: subMeshStartIndex = 0
+                Property: scaleInLightmap = 1
+                Property: receiveGI = Lightmaps
+                Property: stitchLightmapSeams = True
+                Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+                Property: lightProbeAnchor = 
+                Property: castShadows = True
+                Property: motionVectors = True
+                Property: useLightProbes = True
+                Property: bounds = Center: (5.11, 2.59, -3.70), Extents: (0.05, 0.12, 0.12)
+                Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+                Property: enabled = True
+                Property: isVisible = True
+                Property: shadowCastingMode = On
+                Property: receiveShadows = True
+                Property: forceRenderingOff = False
+                Property: staticShadowCaster = False
+                Property: motionVectorGenerationMode = Object
+                Property: lightProbeUsage = BlendProbes
+                Property: reflectionProbeUsage = BlendProbes
+                Property: renderingLayerMask = 1
+                Property: rendererPriority = 0
+                Property: rayTracingMode = DynamicTransform
+                Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+                Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+                Property: sortingLayerName = Default
+                Property: sortingLayerID = 0
+                Property: sortingOrder = 0
+                Property: isLOD0 = True
+                Property: allowOcclusionWhenDynamic = True
+                Property: isPartOfStaticBatch = False
+                Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.05100
+0.00000	0.01000	0.00000	-0.02594
+0.00000	0.00000	0.00000	1.00000
+
+                Property: localToWorldMatrix = -0.00002	-100.00000	-0.00002	5.10032
+0.00000	-0.00002	100.00000	2.59421
+-100.00000	0.00002	0.00000	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+                Property: lightProbeProxyVolumeOverride = 
+                Property: probeAnchor = 
+                Property: lightmapIndex = -1
+                Property: realtimeLightmapIndex = -1
+                Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+                Property: materials = UnityEngine.Material[]
+                Property: material = DuckEyeHolo (Instance) (UnityEngine.Material)
+                Property: sharedMaterial = DuckEyeHolo (Instance) (UnityEngine.Material)
+                Property: sharedMaterials = UnityEngine.Material[]
+                Property: LODGroup = 
+                Property: transform = MESH_eye (UnityEngine.Transform)
+                Property: gameObject = MESH_eye (UnityEngine.GameObject)
+                Property: tag = Untagged
+                Property: name = MESH_eye
+                Property: hideFlags = None
+      GameObject: BONE_lower_hydraulic
+        Component: Transform
+          Property: position = (5.24, 1.01, -4.61)
+          Property: localPosition = (0.00, 0.01, 0.00)
+          Property: eulerAngles = (0.00, 90.00, 39.11)
+          Property: localEulerAngles = (0.00, 0.00, 39.10)
+          Property: right = (0.00, 0.63, -0.78)
+          Property: up = (0.00, 0.78, 0.63)
+          Property: forward = (1.00, 0.00, 0.00)
+          Property: rotation = (0.23669, 0.66632, 0.23669, 0.66632)
+          Property: localRotation = (0.00000, 0.00000, 0.33461, 0.94236)
+          Property: localScale = (1.00, 1.00, 1.00)
+          Property: parent = BONE_root (UnityEngine.Transform)
+          Property: worldToLocalMatrix = 0.00000	0.00631	-0.00776	-0.04213
+0.00000	0.00776	0.00631	0.02122
+0.01000	0.00000	0.00000	-0.05245
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = -0.00001	0.00001	100.00000	5.24483
+63.08450	77.59088	-0.00001	1.01095
+-77.59088	63.08450	-0.00002	-4.60752
+0.00000	0.00000	0.00000	1.00000
+
+          Property: root = quackbot_three (UnityEngine.Transform)
+          Property: childCount = 2
+          Property: lossyScale = (100.00, 100.00, 100.00)
+          Property: hasChanged = True
+          Property: hierarchyCapacity = 35
+          Property: hierarchyCount = 35
+          Property: transform = BONE_lower_hydraulic (UnityEngine.Transform)
+          Property: gameObject = BONE_lower_hydraulic (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = BONE_lower_hydraulic
+          Property: hideFlags = None
+        GameObject: BONE_lower_hydraulic_end
+          Component: Transform
+            Property: position = (5.24, 1.80, -3.97)
+            Property: localPosition = (0.00, 0.01, 0.00)
+            Property: eulerAngles = (0.00, 90.00, 39.11)
+            Property: localEulerAngles = (0.00, 0.00, 0.00)
+            Property: right = (0.00, 0.63, -0.78)
+            Property: up = (0.00, 0.78, 0.63)
+            Property: forward = (1.00, 0.00, 0.00)
+            Property: rotation = (0.23669, 0.66632, 0.23669, 0.66632)
+            Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = BONE_lower_hydraulic (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00631	-0.00776	-0.04213
+0.00000	0.00776	0.00631	0.01110
+0.01000	0.00000	0.00000	-0.05245
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -0.00001	0.00001	100.00000	5.24483
+63.08450	77.59088	-0.00001	1.79634
+-77.59088	63.08450	-0.00002	-3.96896
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 0
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = BONE_lower_hydraulic_end (UnityEngine.Transform)
+            Property: gameObject = BONE_lower_hydraulic_end (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = BONE_lower_hydraulic_end
+            Property: hideFlags = None
+        GameObject: MESH_lower_hydraulic
+          Component: Transform
+            Property: position = (5.28, 1.01, -4.61)
+            Property: localPosition = (0.00, 0.00, 0.00)
+            Property: eulerAngles = (309.11, 0.00, 90.00)
+            Property: localEulerAngles = (270.02, 0.00, 0.00)
+            Property: right = (0.00, 0.63, -0.78)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 0.78, 0.63)
+            Property: rotation = (-0.30379, 0.30379, 0.63852, 0.63852)
+            Property: localRotation = (-0.70711, 0.00000, 0.00000, 0.70711)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = BONE_lower_hydraulic (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00631	-0.00776	-0.04213
+-0.01000	0.00000	0.00000	0.05277
+0.00000	0.00776	0.00631	0.02122
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -0.00001	-100.00000	0.00000	5.27673
+63.08450	0.00000	77.59087	1.01095
+-77.59088	0.00001	63.08449	-4.60752
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 0
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_lower_hydraulic (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_hydraulic (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_hydraulic
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_lower_hydraulic (UnityEngine.Mesh)
+            Property: mesh = MESH_lower_hydraulic Instance (UnityEngine.Mesh)
+            Property: transform = MESH_lower_hydraulic (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_hydraulic (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_hydraulic
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (5.27, 1.37, -4.32), Extents: (0.07, 0.49, 0.43)
+            Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.01)
+            Property: enabled = True
+            Property: isVisible = False
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00631	-0.00776	-0.04213
+-0.01000	0.00000	0.00000	0.05277
+0.00000	0.00776	0.00631	0.02122
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -0.00001	-100.00000	0.00000	5.27673
+63.08450	0.00000	77.59087	1.01095
+-77.59088	0.00001	63.08449	-4.60752
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = lower_hydr (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = lower_hydr (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_lower_hydraulic (UnityEngine.Transform)
+            Property: gameObject = MESH_lower_hydraulic (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_lower_hydraulic
+            Property: hideFlags = None
+      GameObject: MESH_bottom_rotator
+        Component: Transform
+          Property: position = (4.83, 0.64, -4.13)
+          Property: localPosition = (0.00, 0.00, 0.00)
+          Property: eulerAngles = (270.00, 90.00, 0.00)
+          Property: localEulerAngles = (270.02, 0.01, 0.00)
+          Property: right = (0.00, 0.00, -1.00)
+          Property: up = (-1.00, 0.00, 0.00)
+          Property: forward = (0.00, 1.00, 0.00)
+          Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+          Property: localRotation = (-0.70711, 0.00009, -0.00009, 0.70711)
+          Property: localScale = (1.00, 1.00, 1.00)
+          Property: parent = BONE_root (UnityEngine.Transform)
+          Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.00636
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	0.63569
+-100.00000	0.00001	-0.00059	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+          Property: root = quackbot_three (UnityEngine.Transform)
+          Property: childCount = 4
+          Property: lossyScale = (100.00, 100.00, 100.00)
+          Property: hasChanged = True
+          Property: hierarchyCapacity = 35
+          Property: hierarchyCount = 35
+          Property: transform = MESH_bottom_rotator (UnityEngine.Transform)
+          Property: gameObject = MESH_bottom_rotator (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = MESH_bottom_rotator
+          Property: hideFlags = None
+        Component: MeshFilter
+          Property: sharedMesh = MESH_bottom_rotator (UnityEngine.Mesh)
+          Property: mesh = MESH_bottom_rotator Instance (UnityEngine.Mesh)
+          Property: transform = MESH_bottom_rotator (UnityEngine.Transform)
+          Property: gameObject = MESH_bottom_rotator (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = MESH_bottom_rotator
+          Property: hideFlags = None
+        Component: MeshRenderer
+          Property: additionalVertexStreams = 
+          Property: enlightenVertexStream = 
+          Property: subMeshStartIndex = 0
+          Property: scaleInLightmap = 1
+          Property: receiveGI = Lightmaps
+          Property: stitchLightmapSeams = True
+          Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+          Property: lightProbeAnchor = 
+          Property: castShadows = True
+          Property: motionVectors = True
+          Property: useLightProbes = True
+          Property: bounds = Center: (4.83, 0.64, -4.02), Extents: (0.39, 0.21, 0.50)
+          Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+          Property: enabled = True
+          Property: isVisible = True
+          Property: shadowCastingMode = On
+          Property: receiveShadows = True
+          Property: forceRenderingOff = False
+          Property: staticShadowCaster = False
+          Property: motionVectorGenerationMode = Object
+          Property: lightProbeUsage = BlendProbes
+          Property: reflectionProbeUsage = BlendProbes
+          Property: renderingLayerMask = 1
+          Property: rendererPriority = 0
+          Property: rayTracingMode = DynamicTransform
+          Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+          Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+          Property: sortingLayerName = Default
+          Property: sortingLayerID = 0
+          Property: sortingOrder = 0
+          Property: isLOD0 = True
+          Property: allowOcclusionWhenDynamic = True
+          Property: isPartOfStaticBatch = False
+          Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.00636
+0.00000	0.00000	0.00000	1.00000
+
+          Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	0.63569
+-100.00000	0.00001	-0.00059	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+          Property: lightProbeProxyVolumeOverride = 
+          Property: probeAnchor = 
+          Property: lightmapIndex = -1
+          Property: realtimeLightmapIndex = -1
+          Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+          Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+          Property: materials = UnityEngine.Material[]
+          Property: material = bottom_rotator (Instance) (UnityEngine.Material)
+          Property: sharedMaterial = bottom_rotator (Instance) (UnityEngine.Material)
+          Property: sharedMaterials = UnityEngine.Material[]
+          Property: LODGroup = 
+          Property: transform = MESH_bottom_rotator (UnityEngine.Transform)
+          Property: gameObject = MESH_bottom_rotator (UnityEngine.GameObject)
+          Property: tag = Untagged
+          Property: name = MESH_bottom_rotator
+          Property: hideFlags = None
+        GameObject: MESH_ball
+          Component: Transform
+            Property: position = (4.83, 0.44, -4.13)
+            Property: localPosition = (0.00, 0.00, 0.00)
+            Property: eulerAngles = (270.00, 90.00, 0.00)
+            Property: localEulerAngles = (0.00, 0.00, 0.00)
+            Property: right = (0.00, 0.00, -1.00)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 1.00, 0.00)
+            Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+            Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = MESH_bottom_rotator (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.00437
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.82688
+0.00000	-0.00001	100.00000	0.43676
+-100.00000	0.00001	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 0
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_ball (UnityEngine.Transform)
+            Property: gameObject = MESH_ball (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_ball
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_ball (UnityEngine.Mesh)
+            Property: mesh = MESH_ball Instance (UnityEngine.Mesh)
+            Property: transform = MESH_ball (UnityEngine.Transform)
+            Property: gameObject = MESH_ball (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_ball
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (4.83, 0.44, -4.13), Extents: (0.29, 0.29, 0.29)
+            Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+            Property: enabled = True
+            Property: isVisible = True
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.00437
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.82688
+0.00000	-0.00001	100.00000	0.43676
+-100.00000	0.00001	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = mouth_hinge (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = mouth_hinge (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_ball (UnityEngine.Transform)
+            Property: gameObject = MESH_ball (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_ball
+            Property: hideFlags = None
+        GameObject: MESH_bottom_join_base
+          Component: Transform
+            Property: position = (4.83, 1.00, -3.70)
+            Property: localPosition = (0.00, 0.00, 0.00)
+            Property: eulerAngles = (270.00, 90.00, 0.00)
+            Property: localEulerAngles = (0.00, 0.00, 0.00)
+            Property: right = (0.00, 0.00, -1.00)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 1.00, 0.00)
+            Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+            Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = MESH_bottom_rotator (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	1.00266
+-100.00000	0.00000	-0.00059	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 1
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_bottom_join_base (UnityEngine.Transform)
+            Property: gameObject = MESH_bottom_join_base (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_bottom_join_base
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_bottom_join_base (UnityEngine.Mesh)
+            Property: mesh = MESH_bottom_join_base Instance (UnityEngine.Mesh)
+            Property: transform = MESH_bottom_join_base (UnityEngine.Transform)
+            Property: gameObject = MESH_bottom_join_base (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_bottom_join_base
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (4.83, 1.02, -4.15), Extents: (0.37, 0.25, 0.67)
+            Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.01, 0.00, 0.00)
+            Property: enabled = True
+            Property: isVisible = True
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	1.00266
+-100.00000	0.00000	-0.00059	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = bottom_join_base (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = bottom_join_base (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_bottom_join_base (UnityEngine.Transform)
+            Property: gameObject = MESH_bottom_join_base (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_bottom_join_base
+            Property: hideFlags = None
+          Component: MeshCollider
+            Property: sharedMesh = MESH_bottom_join_base (UnityEngine.Mesh)
+            Property: convex = False
+            Property: cookingOptions = CookForFasterSimulation, EnableMeshCleaning, WeldColocatedVertices, UseFastMidphase
+            Property: smoothSphereCollisions = True
+            Property: skinWidth = 0
+            Property: inflateMesh = False
+            Property: enabled = True
+            Property: attachedRigidbody = BONE_root (UnityEngine.Rigidbody)
+            Property: attachedArticulationBody = 
+            Property: isTrigger = False
+            Property: contactOffset = 0.01
+            Property: bounds = Center: (4.83, 1.02, -4.15), Extents: (0.37, 0.25, 0.67)
+            Property: hasModifiableContacts = False
+            Property: providesContacts = False
+            Property: layerOverridePriority = 0
+            Property: excludeLayers = UnityEngine.LayerMask
+            Property: includeLayers = UnityEngine.LayerMask
+            Property: GeometryHolder = UnityEngine.LowLevelPhysics.GeometryHolder
+            Property: sharedMaterial = 
+            Property: material =  (UnityEngine.PhysicsMaterial)
+            Property: transform = MESH_bottom_join_base (UnityEngine.Transform)
+            Property: gameObject = MESH_bottom_join_base (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_bottom_join_base
+            Property: hideFlags = None
+          GameObject: MESH_bottom_joint_rivets
+            Component: Transform
+              Property: position = (4.83, 1.00, -3.70)
+              Property: localPosition = (0.00, 0.00, 0.00)
+              Property: eulerAngles = (270.00, 90.00, 0.00)
+              Property: localEulerAngles = (0.00, 0.00, 0.00)
+              Property: right = (0.00, 0.00, -1.00)
+              Property: up = (-1.00, 0.00, 0.00)
+              Property: forward = (0.00, 1.00, 0.00)
+              Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+              Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+              Property: localScale = (1.00, 1.00, 1.00)
+              Property: parent = MESH_bottom_join_base (UnityEngine.Transform)
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	1.00266
+-100.00000	0.00000	-0.00059	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: root = quackbot_three (UnityEngine.Transform)
+              Property: childCount = 0
+              Property: lossyScale = (100.00, 100.00, 100.00)
+              Property: hasChanged = True
+              Property: hierarchyCapacity = 35
+              Property: hierarchyCount = 35
+              Property: transform = MESH_bottom_joint_rivets (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_joint_rivets (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_joint_rivets
+              Property: hideFlags = None
+            Component: MeshFilter
+              Property: sharedMesh = MESH_bottom_joint_rivets (UnityEngine.Mesh)
+              Property: mesh = MESH_bottom_joint_rivets Instance (UnityEngine.Mesh)
+              Property: transform = MESH_bottom_joint_rivets (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_joint_rivets (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_joint_rivets
+              Property: hideFlags = None
+            Component: MeshRenderer
+              Property: additionalVertexStreams = 
+              Property: enlightenVertexStream = 
+              Property: subMeshStartIndex = 0
+              Property: scaleInLightmap = 1
+              Property: receiveGI = Lightmaps
+              Property: stitchLightmapSeams = True
+              Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+              Property: lightProbeAnchor = 
+              Property: castShadows = True
+              Property: motionVectors = True
+              Property: useLightProbes = True
+              Property: bounds = Center: (4.83, 1.02, -3.70), Extents: (0.10, 0.19, 0.21)
+              Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+              Property: enabled = True
+              Property: isVisible = True
+              Property: shadowCastingMode = On
+              Property: receiveShadows = True
+              Property: forceRenderingOff = False
+              Property: staticShadowCaster = False
+              Property: motionVectorGenerationMode = Object
+              Property: lightProbeUsage = BlendProbes
+              Property: reflectionProbeUsage = BlendProbes
+              Property: renderingLayerMask = 1
+              Property: rendererPriority = 0
+              Property: rayTracingMode = DynamicTransform
+              Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+              Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+              Property: sortingLayerName = Default
+              Property: sortingLayerID = 0
+              Property: sortingOrder = 0
+              Property: isLOD0 = True
+              Property: allowOcclusionWhenDynamic = True
+              Property: isPartOfStaticBatch = False
+              Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03696
+-0.01000	0.00000	0.00000	0.04827
+0.00000	0.01000	0.00000	-0.01003
+0.00000	0.00000	0.00000	1.00000
+
+              Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.82688
+-0.00059	-0.00001	100.00000	1.00266
+-100.00000	0.00000	-0.00059	-3.69645
+0.00000	0.00000	0.00000	1.00000
+
+              Property: lightProbeProxyVolumeOverride = 
+              Property: probeAnchor = 
+              Property: lightmapIndex = -1
+              Property: realtimeLightmapIndex = -1
+              Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+              Property: materials = UnityEngine.Material[]
+              Property: material = bottom_join_rivets (Instance) (UnityEngine.Material)
+              Property: sharedMaterial = bottom_join_rivets (Instance) (UnityEngine.Material)
+              Property: sharedMaterials = UnityEngine.Material[]
+              Property: LODGroup = 
+              Property: transform = MESH_bottom_joint_rivets (UnityEngine.Transform)
+              Property: gameObject = MESH_bottom_joint_rivets (UnityEngine.GameObject)
+              Property: tag = Untagged
+              Property: name = MESH_bottom_joint_rivets
+              Property: hideFlags = None
+        GameObject: MESH_br_bolt
+          Component: Transform
+            Property: position = (4.91, 0.83, -3.53)
+            Property: localPosition = (-0.01, 0.00, 0.00)
+            Property: eulerAngles = (270.00, 90.00, 0.00)
+            Property: localEulerAngles = (0.00, 0.00, 0.00)
+            Property: right = (0.00, 0.00, -1.00)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 1.00, 0.00)
+            Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+            Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = MESH_bottom_rotator (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03525
+-0.01000	0.00000	0.00000	0.04913
+0.00000	0.01000	0.00000	-0.00835
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.91300
+-0.00059	-0.00001	100.00000	0.83475
+-100.00000	0.00000	-0.00059	-3.52520
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 0
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_br_bolt (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_br_bolt (UnityEngine.Mesh)
+            Property: mesh = MESH_br_bolt Instance (UnityEngine.Mesh)
+            Property: transform = MESH_br_bolt (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (4.91, 0.83, -3.52), Extents: (0.01, 0.01, 0.01)
+            Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+            Property: enabled = True
+            Property: isVisible = True
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03525
+-0.01000	0.00000	0.00000	0.04913
+0.00000	0.01000	0.00000	-0.00835
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.91300
+-0.00059	-0.00001	100.00000	0.83475
+-100.00000	0.00000	-0.00059	-3.52520
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = br_bolt (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = br_bolt (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_br_bolt (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt
+            Property: hideFlags = None
+        GameObject: MESH_br_bolt2
+          Component: Transform
+            Property: position = (4.74, 0.83, -3.53)
+            Property: localPosition = (-0.01, 0.00, 0.00)
+            Property: eulerAngles = (270.00, 90.00, 0.00)
+            Property: localEulerAngles = (0.00, 0.00, 0.00)
+            Property: right = (0.00, 0.00, -1.00)
+            Property: up = (-1.00, 0.00, 0.00)
+            Property: forward = (0.00, 1.00, 0.00)
+            Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+            Property: localRotation = (0.00000, 0.00000, 0.00000, 1.00000)
+            Property: localScale = (1.00, 1.00, 1.00)
+            Property: parent = MESH_bottom_rotator (UnityEngine.Transform)
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03525
+-0.01000	0.00000	0.00000	0.04741
+0.00000	0.01000	0.00000	-0.00835
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.74075
+-0.00059	-0.00001	100.00000	0.83475
+-100.00000	0.00000	-0.00059	-3.52520
+0.00000	0.00000	0.00000	1.00000
+
+            Property: root = quackbot_three (UnityEngine.Transform)
+            Property: childCount = 0
+            Property: lossyScale = (100.00, 100.00, 100.00)
+            Property: hasChanged = True
+            Property: hierarchyCapacity = 35
+            Property: hierarchyCount = 35
+            Property: transform = MESH_br_bolt2 (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt2 (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt2
+            Property: hideFlags = None
+          Component: MeshFilter
+            Property: sharedMesh = MESH_br_bolt (UnityEngine.Mesh)
+            Property: mesh = MESH_br_bolt Instance (UnityEngine.Mesh)
+            Property: transform = MESH_br_bolt2 (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt2 (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt2
+            Property: hideFlags = None
+          Component: MeshRenderer
+            Property: additionalVertexStreams = 
+            Property: enlightenVertexStream = 
+            Property: subMeshStartIndex = 0
+            Property: scaleInLightmap = 1
+            Property: receiveGI = Lightmaps
+            Property: stitchLightmapSeams = True
+            Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+            Property: lightProbeAnchor = 
+            Property: castShadows = True
+            Property: motionVectors = True
+            Property: useLightProbes = True
+            Property: bounds = Center: (4.74, 0.83, -3.52), Extents: (0.01, 0.01, 0.01)
+            Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.00, 0.00, 0.00)
+            Property: enabled = True
+            Property: isVisible = True
+            Property: shadowCastingMode = On
+            Property: receiveShadows = True
+            Property: forceRenderingOff = False
+            Property: staticShadowCaster = False
+            Property: motionVectorGenerationMode = Object
+            Property: lightProbeUsage = BlendProbes
+            Property: reflectionProbeUsage = BlendProbes
+            Property: renderingLayerMask = 1
+            Property: rendererPriority = 0
+            Property: rayTracingMode = DynamicTransform
+            Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+            Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+            Property: sortingLayerName = Default
+            Property: sortingLayerID = 0
+            Property: sortingOrder = 0
+            Property: isLOD0 = True
+            Property: allowOcclusionWhenDynamic = True
+            Property: isPartOfStaticBatch = False
+            Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.03525
+-0.01000	0.00000	0.00000	0.04741
+0.00000	0.01000	0.00000	-0.00835
+0.00000	0.00000	0.00000	1.00000
+
+            Property: localToWorldMatrix = 0.00000	-100.00000	-0.00001	4.74075
+-0.00059	-0.00001	100.00000	0.83475
+-100.00000	0.00000	-0.00059	-3.52520
+0.00000	0.00000	0.00000	1.00000
+
+            Property: lightProbeProxyVolumeOverride = 
+            Property: probeAnchor = 
+            Property: lightmapIndex = -1
+            Property: realtimeLightmapIndex = -1
+            Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+            Property: materials = UnityEngine.Material[]
+            Property: material = br_bolt (Instance) (UnityEngine.Material)
+            Property: sharedMaterial = br_bolt (Instance) (UnityEngine.Material)
+            Property: sharedMaterials = UnityEngine.Material[]
+            Property: LODGroup = 
+            Property: transform = MESH_br_bolt2 (UnityEngine.Transform)
+            Property: gameObject = MESH_br_bolt2 (UnityEngine.GameObject)
+            Property: tag = Untagged
+            Property: name = MESH_br_bolt2
+            Property: hideFlags = None
+  GameObject: MESH_base
+    Component: Transform
+      Property: position = (4.83, 0.02, -4.13)
+      Property: localPosition = (0.00, 0.00, 0.00)
+      Property: eulerAngles = (270.00, 90.00, 0.00)
+      Property: localEulerAngles = (270.00, 0.00, 0.00)
+      Property: right = (0.00, 0.00, -1.00)
+      Property: up = (-1.00, 0.00, 0.00)
+      Property: forward = (0.00, 1.00, 0.00)
+      Property: rotation = (-0.50000, 0.50000, 0.50000, 0.50000)
+      Property: localRotation = (-0.70711, 0.00000, 0.00000, 0.70711)
+      Property: localScale = (100.00, 100.00, 100.00)
+      Property: parent = quackbot_three (UnityEngine.Transform)
+      Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04834
+0.00000	0.01000	0.00000	-0.00015
+0.00000	0.00000	0.00000	1.00000
+
+      Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.83446
+0.00000	-0.00001	100.00000	0.01500
+-100.00000	0.00001	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+      Property: root = quackbot_three (UnityEngine.Transform)
+      Property: childCount = 0
+      Property: lossyScale = (100.00, 100.00, 100.00)
+      Property: hasChanged = True
+      Property: hierarchyCapacity = 35
+      Property: hierarchyCount = 35
+      Property: transform = MESH_base (UnityEngine.Transform)
+      Property: gameObject = MESH_base (UnityEngine.GameObject)
+      Property: tag = Untagged
+      Property: name = MESH_base
+      Property: hideFlags = None
+    Component: MeshFilter
+      Property: sharedMesh = MESH_base (UnityEngine.Mesh)
+      Property: mesh = MESH_base Instance (UnityEngine.Mesh)
+      Property: transform = MESH_base (UnityEngine.Transform)
+      Property: gameObject = MESH_base (UnityEngine.GameObject)
+      Property: tag = Untagged
+      Property: name = MESH_base
+      Property: hideFlags = None
+    Component: MeshRenderer
+      Property: additionalVertexStreams = 
+      Property: enlightenVertexStream = 
+      Property: subMeshStartIndex = 0
+      Property: scaleInLightmap = 1
+      Property: receiveGI = Lightmaps
+      Property: stitchLightmapSeams = True
+      Property: lightmapTilingOffset = (0.00, 0.00, 0.00, 0.00)
+      Property: lightProbeAnchor = 
+      Property: castShadows = True
+      Property: motionVectors = True
+      Property: useLightProbes = True
+      Property: bounds = Center: (4.83, 0.27, -4.13), Extents: (0.80, 0.26, 0.80)
+      Property: localBounds = Center: (0.00, 0.00, 0.00), Extents: (0.01, 0.01, 0.00)
+      Property: enabled = True
+      Property: isVisible = True
+      Property: shadowCastingMode = On
+      Property: receiveShadows = True
+      Property: forceRenderingOff = False
+      Property: staticShadowCaster = False
+      Property: motionVectorGenerationMode = Object
+      Property: lightProbeUsage = BlendProbes
+      Property: reflectionProbeUsage = BlendProbes
+      Property: renderingLayerMask = 1
+      Property: rendererPriority = 0
+      Property: rayTracingMode = DynamicTransform
+      Property: rayTracingAccelerationStructureBuildFlags = PreferFastTrace
+      Property: rayTracingAccelerationStructureBuildFlagsOverride = False
+      Property: sortingLayerName = Default
+      Property: sortingLayerID = 0
+      Property: sortingOrder = 0
+      Property: isLOD0 = True
+      Property: allowOcclusionWhenDynamic = True
+      Property: isPartOfStaticBatch = False
+      Property: worldToLocalMatrix = 0.00000	0.00000	-0.01000	-0.04127
+-0.01000	0.00000	0.00000	0.04834
+0.00000	0.01000	0.00000	-0.00015
+0.00000	0.00000	0.00000	1.00000
+
+      Property: localToWorldMatrix = -0.00001	-100.00000	-0.00001	4.83446
+0.00000	-0.00001	100.00000	0.01500
+-100.00000	0.00001	0.00000	-4.12717
+0.00000	0.00000	0.00000	1.00000
+
+      Property: lightProbeProxyVolumeOverride = 
+      Property: probeAnchor = 
+      Property: lightmapIndex = -1
+      Property: realtimeLightmapIndex = -1
+      Property: lightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+      Property: realtimeLightmapScaleOffset = (1.00, 1.00, 0.00, 0.00)
+      Property: materials = UnityEngine.Material[]
+      Property: material = base (Instance) (UnityEngine.Material)
+      Property: sharedMaterial = base (Instance) (UnityEngine.Material)
+      Property: sharedMaterials = UnityEngine.Material[]
+      Property: LODGroup = 
+      Property: transform = MESH_base (UnityEngine.Transform)
+      Property: gameObject = MESH_base (UnityEngine.GameObject)
+      Property: tag = Untagged
+      Property: name = MESH_base
+      Property: hideFlags = None
+  GameObject: Main Camera
+    Component: Transform
+      Property: position = (10.68, 4.04, 1.16)
+      Property: localPosition = (-5.29, 4.02, 5.85)
+      Property: eulerAngles = (20.80, 228.22, 0.00)
+      Property: localEulerAngles = (20.80, 138.22, 0.00)
+      Property: right = (-0.67, 0.00, 0.75)
+      Property: up = (-0.26, 0.93, -0.24)
+      Property: forward = (-0.70, -0.36, -0.62)
+      Property: rotation = (-0.07371, 0.89777, -0.16479, -0.40177)
+      Property: localRotation = (0.06440, 0.91892, -0.16864, 0.35072)
+      Property: localScale = (1.00, 1.00, 1.00)
+      Property: parent = quackbot_three (UnityEngine.Transform)
+      Property: worldToLocalMatrix = -0.66629	0.00007	0.74569	6.25158
+-0.26476	0.93483	-0.23665	-0.66803
+-0.69711	-0.35511	-0.62285	9.60534
+0.00000	0.00000	0.00000	1.00000
+
+      Property: localToWorldMatrix = -0.66629	-0.26476	-0.69711	10.68446
+0.00007	0.93483	-0.35511	4.03500
+0.74569	-0.23665	-0.62285	1.16283
+0.00000	0.00000	0.00000	1.00000
+
+      Property: root = quackbot_three (UnityEngine.Transform)
+      Property: childCount = 0
+      Property: lossyScale = (1.00, 1.00, 1.00)
+      Property: hasChanged = True
+      Property: hierarchyCapacity = 35
+      Property: hierarchyCount = 35
+      Property: transform = Main Camera (UnityEngine.Transform)
+      Property: gameObject = Main Camera (UnityEngine.GameObject)
+      Property: tag = MainCamera
+      Property: name = Main Camera
+      Property: hideFlags = None
+    Component: Camera
+      Property: nearClipPlane = -20
+      Property: farClipPlane = 1000
+      Property: fieldOfView = 60
+      Property: renderingPath = UsePlayerSettings
+      Property: actualRenderingPath = Forward
+      Property: allowHDR = True
+      Property: allowMSAA = True
+      Property: allowDynamicResolution = False
+      Property: forceIntoRenderTexture = False
+      Property: orthographicSize = 2.75
+      Property: orthographic = True
+      Property: opaqueSortMode = Default
+      Property: transparencySortMode = Default
+      Property: transparencySortAxis = (0.00, 0.00, 1.00)
+      Property: depth = -1
+      Property: aspect = 1.777778
+      Property: velocity = (0.00, 0.00, 0.00)
+      Property: cullingMask = -1
+      Property: eventMask = -1
+      Property: layerCullSpherical = False
+      Property: cameraType = Game
+      Property: overrideSceneCullingMask = 0
+      Property: layerCullDistances = System.Single[]
+      Property: useOcclusionCulling = True
+      Property: cullingMatrix = -0.13629	0.00001	0.15253	1.27873
+-0.09628	0.33994	-0.08605	-0.24292
+-0.00137	-0.00070	-0.00122	-0.94195
+0.00000	0.00000	0.00000	1.00000
+
+      Property: backgroundColor = RGBA(0.192, 0.302, 0.475, 0.000)
+      Property: clearFlags = Nothing
+      Property: depthTextureMode = None
+      Property: clearStencilAfterLightingPass = False
+      Property: usePhysicalProperties = False
+      Property: iso = 200
+      Property: shutterSpeed = 0.005
+      Property: aperture = 16
+      Property: focusDistance = 10
+      Property: focalLength = 50
+      Property: bladeCount = 5
+      Property: curvature = (2.00, 11.00)
+      Property: barrelClipping = 0.25
+      Property: anamorphism = 0
+      Property: sensorSize = (36.00, 24.00)
+      Property: lensShift = (0.00, 0.00)
+      Property: gateFit = Horizontal
+      Property: rect = (x:0.00, y:0.00, width:1.00, height:1.00)
+      Property: pixelRect = (x:0.00, y:0.00, width:1920.00, height:1080.00)
+      Property: pixelWidth = 1920
+      Property: pixelHeight = 1080
+      Property: scaledPixelWidth = 1920
+      Property: scaledPixelHeight = 1080
+      Property: targetTexture = 
+      Property: activeTexture = 
+      Property: targetDisplay = 0
+      Property: cameraToWorldMatrix = -0.66629	-0.26476	0.69711	10.68446
+0.00007	0.93483	0.35511	4.03500
+0.74569	-0.23665	0.62285	1.16283
+0.00000	0.00000	0.00000	1.00000
+
+      Property: worldToCameraMatrix = -0.66629	0.00007	0.74569	6.25158
+-0.26476	0.93483	-0.23665	-0.66802
+0.69711	0.35511	0.62285	-9.60534
+0.00000	0.00000	0.00000	1.00000
+
+      Property: projectionMatrix = 0.20455	0.00000	0.00000	0.00000
+0.00000	0.36364	0.00000	0.00000
+0.00000	0.00000	-0.00196	-0.96078
+0.00000	0.00000	0.00000	1.00000
+
+      Property: nonJitteredProjectionMatrix = 0.20455	0.00000	0.00000	0.00000
+0.00000	0.36364	0.00000	0.00000
+0.00000	0.00000	-0.00196	-0.96078
+0.00000	0.00000	0.00000	1.00000
+
+      Property: useJitteredProjectionMatrixForTransparentRendering = True
+      Property: previousViewProjectionMatrix = -0.13629	0.00001	0.15253	1.27873
+0.09628	-0.33994	0.08605	0.24292
+0.00068	0.00035	0.00061	0.97098
+0.00000	0.00000	0.00000	1.00000
+
+      Property: scene = UnityEngine.SceneManagement.Scene
+      Property: stereoEnabled = False
+      Property: stereoSeparation = 0.022
+      Property: stereoConvergence = 10
+      Property: areVRStereoViewMatricesWithinSingleCullTolerance = False
+      Property: stereoTargetEye = Both
+      Property: stereoActiveEye = Mono
+      Property: sceneViewFilterMode = Off
+      Property: renderCloudsInSceneView = True
+      Property: commandBufferCount = 0
+      Property: isOrthoGraphic = False
+      Property: near = -20
+      Property: far = 1000
+      Property: fov = 60
+      Property: hdr = True
+      Property: stereoMirrorMode = False
+      Property: enabled = True
+      Property: isActiveAndEnabled = True
+      Property: transform = Main Camera (UnityEngine.Transform)
+      Property: gameObject = Main Camera (UnityEngine.GameObject)
+      Property: tag = MainCamera
+      Property: name = Main Camera
+      Property: hideFlags = None
+    Component: AudioListener
+      Property: velocityUpdateMode = Dynamic
+      Property: enabled = True
+      Property: isActiveAndEnabled = True
+      Property: transform = Main Camera (UnityEngine.Transform)
+      Property: gameObject = Main Camera (UnityEngine.GameObject)
+      Property: tag = MainCamera
+      Property: name = Main Camera
+      Property: hideFlags = None
+    Component: UniversalAdditionalCameraData
+      Property: version = 2
+      Property: renderShadows = True
+      Property: requiresDepthOption = UsePipelineSettings
+      Property: requiresColorOption = UsePipelineSettings
+      Property: renderType = Base
+      Property: cameraStack = System.Collections.Generic.List`1[UnityEngine.Camera]
+      Property: clearDepth = True
+      Property: requiresDepthTexture = True
+      Property: requiresColorTexture = True
+      Property: scriptableRenderer = UnityEngine.Rendering.Universal.UniversalRenderer
+      Property: volumeLayerMask = UnityEngine.LayerMask
+      Property: volumeTrigger = null
+      Property: requiresVolumeFrameworkUpdate = True
+      Property: volumeStack = 
+      Property: renderPostProcessing = True
+      Property: antialiasing = FastApproximateAntialiasing
+      Property: antialiasingQuality = High
+      Property: history = UnityEngine.Rendering.Universal.UniversalCameraHistory
+      Property: resetHistory = False
+      Property: stopNaN = False
+      Property: dithering = False
+      Property: allowXRRendering = True
+      Property: useScreenCoordOverride = False
+      Property: screenSizeOverride = (0.00, 0.00, 0.00, 0.00)
+      Property: screenCoordScaleBias = (0.00, 0.00, 0.00, 0.00)
+      Property: allowHDROutput = True
+      Property: destroyCancellationToken = System.Threading.CancellationToken
+      Property: useGUILayout = True
+      Property: didStart = True
+      Property: didAwake = True
+      Property: runInEditMode = True
+      Property: enabled = True
+      Property: isActiveAndEnabled = True
+      Property: transform = Main Camera (UnityEngine.Transform)
+      Property: gameObject = Main Camera (UnityEngine.GameObject)
+      Property: tag = MainCamera
+      Property: name = Main Camera
+      Property: hideFlags = None
+--- Finished Hierarchy Dump ---
