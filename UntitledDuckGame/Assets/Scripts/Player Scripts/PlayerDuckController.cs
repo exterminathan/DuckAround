@@ -37,6 +37,10 @@ public class PlayerDuckController : MonoBehaviour {
     private float rig_drop_distance = -0.14f;
     private float vertVelocity = 0f;
 
+    [Header("Physics Settings")]
+    [SerializeField] private float robotMass;
+    private Vector3 lastMoveDelta;
+
     [Header("Movement Compensation")]
     [SerializeField] private float horizontalSpeedFactor = 1f;
     #endregion
@@ -75,7 +79,7 @@ public class PlayerDuckController : MonoBehaviour {
                 Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D)) {
                 keysPressed++;
                 Debug.Log("Key pressed: " + keysPressed);
-                if (keysPressed > 15) {
+                if (keysPressed > 5) {
                     isBrokenFree = true;
                     meshBase.gameObject.SetActive(false);
 
@@ -116,24 +120,34 @@ public class PlayerDuckController : MonoBehaviour {
                 }
 
                 // actually move
-                characterController.Move(moveDir * maxDist);
+                lastMoveDelta = moveDir * maxDist;
+                characterController.Move(lastMoveDelta);
 
 
-                if (characterController.isGrounded) {
-                    vertVelocity = -2f;
-                }
-                else {
-                    vertVelocity -= 9.81f * Time.deltaTime;
-                }
-
+                //drop down if not grounded
+                vertVelocity = characterController.isGrounded ? -2f : vertVelocity - 9.81f * Time.deltaTime;
                 characterController.Move(Vector3.up * vertVelocity * Time.deltaTime);
             }
         }
     }
 
     void OnControllerColliderHit(ControllerColliderHit hit) {
+        //if worker?
         var npc = hit.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
+
+        //if some object
+        Rigidbody otherRb = hit.rigidbody;
+        if (otherRb != null && !otherRb.isKinematic) {
+            //velocity
+            Vector3 velocity = lastMoveDelta / Time.deltaTime;
+
+            //impulse
+            Vector3 impulse = velocity * robotMass;
+
+            //apply at contact point
+            otherRb.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
+        }
 
     }
 
