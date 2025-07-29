@@ -35,6 +35,7 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private float verticalMinClamp, verticalMaxClamp, horizontalMinClamp, horizontalMaxClamp;
     private int keysPressed = 0;
     private float rig_drop_distance = -0.14f;
+    private float vertVelocity = 0f;
 
     [Header("Movement Compensation")]
     [SerializeField] private float horizontalSpeedFactor = 1f;
@@ -116,6 +117,16 @@ public class PlayerDuckController : MonoBehaviour {
 
                 // actually move
                 characterController.Move(moveDir * maxDist);
+
+
+                if (characterController.isGrounded) {
+                    vertVelocity = -2f;
+                }
+                else {
+                    vertVelocity -= 9.81f * Time.deltaTime;
+                }
+
+                characterController.Move(Vector3.up * vertVelocity * Time.deltaTime);
             }
         }
     }

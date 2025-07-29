@@ -58,15 +58,12 @@ public class IsometricRaycaster : MonoBehaviour {
     void Start() {
         if (mainCamera == null) mainCamera = Camera.main;
         if (uiCanvas == null) uiCanvas = FindFirstObjectByType<Canvas>();
-        CreateBoundaryLines();
-        // gather all arm colliders for rotation‐sweep checks
     }
 
     void Update() {
         HandleRotation();
         HandleVerticalIK();
         HandleHorizontalIK();
-        UpdateBoundaryFade();
     }
 
     private void HandleRotation() {
