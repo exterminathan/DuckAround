@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerDuckController : MonoBehaviour {
@@ -38,8 +37,11 @@ public class PlayerDuckController : MonoBehaviour {
     private float vertVelocity = 0f;
 
     [Header("Physics Settings")]
-    [SerializeField] private float robotMass;
-    private Vector3 lastMoveDelta;
+    public float robotMass;
+    public Vector3 lastMoveDelta { get; private set; }
+    public float bodyImpulseDampFactor;
+    public float armImpulseDampFactor;
+    public float pushThreshold { get; set; }
 
     [Header("Movement Compensation")]
     [SerializeField] private float horizontalSpeedFactor = 1f;
@@ -139,12 +141,24 @@ public class PlayerDuckController : MonoBehaviour {
         //if some object
         Rigidbody otherRb = hit.rigidbody;
         if (otherRb != null && !otherRb.isKinematic) {
-            //velocity
             Vector3 velocity = lastMoveDelta / Time.deltaTime;
 
-            //impulse
-            Vector3 impulse = velocity * robotMass;
+            // calc normal
+            Vector3 normal = hit.normal;
+            float vNorm = Vector3.Dot(velocity, normal);
+            if (Mathf.Abs(vNorm) < pushThreshold) return;
 
+            // reduced mass: μ = m1*m2/(m1+m2)
+            float m1 = robotMass;
+            float m2 = otherRb.mass;
+
+            float μ = m1 * m2 / (m1 + m2);
+
+
+            //impulse: μ * vNorm * normal * dampFactor
+            Vector3 impulse = normal * vNorm * μ * bodyImpulseDampFactor;
+
+            Debug.Log($"{name} → {hit.gameObject.name}: impulse {impulse.magnitude} at {normal}");
             //apply at contact point
             otherRb.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
         }

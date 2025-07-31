@@ -24,4 +24,11 @@ public static class WaypointChecks {
         if (target == null || self == null) return false;
         return Vector3.Distance(self.position, target.transform.position) <= threshold;
     }
+
+    public static bool HasTargetWaypoint(Dictionary<string, object> state) {
+        var target = state.GetValueOrDefault("TargetWaypoint") as Waypoint;
+
+        Debug.Log($"{((target == null) ? "null" : "nah")}");
+        return (target != null);
+    }
 }

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public static class CollisionChecks {
     public static bool HasCollision(Dictionary<string, object> state) {

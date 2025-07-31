@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil.Cil;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof(BehaviourTree))]
 public class WorkerAIController : MonoBehaviour {
@@ -24,13 +25,17 @@ public class WorkerAIController : MonoBehaviour {
     public bool ragdollRBEnabled = false;
     private bool rgFlag = false;
     private Rigidbody[] rigidbodies;
+    //colliders separated by type
+    //because.. wait actually there is no reason
+    //might be useful later and why not
     private Dictionary<Type, Collider[]> rigidbodyColliders = new Dictionary<Type, Collider[]>();
 
     private GameObject originalFBX;
+    public LayerMask workerCollisionLayerMask;
 
 
     void Awake() {
-        // ragdoll testing
+        // ragdoll section
         //assumes there are no children objects with colliders/rbs
         //EXCEEPT those that are on the rig
         //might be problematic if worker holding something/etc
@@ -76,15 +81,16 @@ public class WorkerAIController : MonoBehaviour {
     }
 
     void Update() {
-        // read the desired state from the blackboard
+        // check for ragdoll
         bool desired = _blackboard.ContainsKey("IsRagdollActive")
                        && (bool)_blackboard["IsRagdollActive"];
 
-        // only flip once when it actually changes
         if (desired != rgFlag) {
             ApplyRagdoll(desired);
             rgFlag = desired;
         }
+
+
 
         _tree.Root?.Execute(_blackboard);
     }
@@ -118,11 +124,7 @@ public class WorkerAIController : MonoBehaviour {
 
     // Collisions
     void OnCollisionEnter(Collision other) {
-        if (other.gameObject.layer == LayerMask.NameToLayer("AICollision")) {
-            Destroy(other.gameObject);
-            _blackboard["IsCollided"] = true;
-        }
-        if (other.gameObject.layer == LayerMask.NameToLayer("Player")) {
+        if ((workerCollisionLayerMask & (1 << other.gameObject.layer)) != 0) {
             _blackboard["IsCollided"] = true;
         }
     }

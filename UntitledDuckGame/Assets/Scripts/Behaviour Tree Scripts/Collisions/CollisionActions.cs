@@ -14,7 +14,6 @@ public static class CollisionActions {
     public static bool RecoverFromCollision(Dictionary<string, object> state) {
         state["IsAllowedToMove"] = true;
 
-        // TODO: disable ragdoll and restore animator/controller here
         state["IsRagdollActive"] = false;
 
         state.Remove("CollisionStartTime");

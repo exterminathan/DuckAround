@@ -1,4 +1,5 @@
 // IsometricRaycaster.cs
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -45,7 +46,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
     [Header("Collision Settings")]
     [Tooltip("Layers that block arm rotation")]
-    public LayerMask playerBlockingLayerMask;
+    public LayerMask rotationBlockingLayerMask;
     #endregion
 
     private Image leftBoundaryImage;
@@ -53,17 +54,40 @@ public class IsometricRaycaster : MonoBehaviour {
     private Image topBoundaryImage;
     private Image bottomBoundaryImage;
 
-    public Collider[] armColliders;
+    public GameObject[] armObjects;
+    //assigned at runtime
+    private Collider[] armColliders;
+    public ArmHitForwarder[] armPushers { get; private set; }
+
 
     void Start() {
         if (mainCamera == null) mainCamera = Camera.main;
         if (uiCanvas == null) uiCanvas = FindFirstObjectByType<Canvas>();
+
+        armColliders = armObjects
+            .SelectMany(o => o.GetComponentsInChildren<Collider>())
+            .ToArray();
+
+        armPushers = armObjects
+            .SelectMany(o => o.GetComponentsInChildren<ArmHitForwarder>())
+            .ToArray();
     }
 
     void Update() {
         HandleRotation();
         HandleVerticalIK();
         HandleHorizontalIK();
+    }
+
+    void LateUpdate() {
+        //update arm pusher velocity/position
+        foreach (var p in armPushers) {
+            Vector3 currentPos = p.transform.position;
+            Vector3 delta = currentPos - p.lastPos;
+
+            p.velocity = delta / Time.deltaTime;
+            p.lastPos = currentPos;
+        }
     }
 
     private void HandleRotation() {
@@ -79,32 +103,61 @@ public class IsometricRaycaster : MonoBehaviour {
         float rawDelta = Mathf.DeltaAngle(currY, smoothedY);
         float allowedDelta = rawDelta;
 
-        // sweep each box collider through its arc
-        foreach (var col in armColliders) {
-            if (!(col is BoxCollider box)) continue;
-            Vector3 halfExtents = Vector3.Scale(box.size * 0.5f, box.transform.lossyScale);
-            Vector3 center = box.transform.TransformPoint(box.center);
-            Quaternion boxRot = box.transform.rotation;
-
-            // compute where this collider would end up
-            Vector3 toPos = pivot.position
-                + Quaternion.Euler(0f, rawDelta, 0f)
-                  * (box.transform.position - pivot.position);
-            Vector3 dir = toPos - center;
-            float dist = dir.magnitude;
-            if (dist < 0.0001f) continue;
-
-            dir.Normalize();
-            if (Physics.BoxCast(center, halfExtents, dir, out RaycastHit hit, boxRot, dist, playerBlockingLayerMask)) {
-                float frac = hit.distance / dist;
-                allowedDelta = Mathf.Min(allowedDelta, rawDelta * frac);
-            }
-        }
-
         // apply the clamped rotation
         var eul = pivot.localEulerAngles;
         eul.y = currY + allowedDelta;
-        pivot.localEulerAngles = eul;
+
+
+        // sweep checks for arm colliders position after rotation about pivot
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+            Vector3 halfExtents = Vector3.Scale(box.size * 0.5f, box.transform.lossyScale);
+            // box center after pivot rotation
+            Vector3 worldOffset = box.transform.position - pivot.position;
+            Vector3 rotatedCenter = pivot.position
+                                  + Quaternion.Euler(0f, rawDelta, 0f)
+                                    * worldOffset;
+            // final orientation
+            Quaternion rotatedOri = box.transform.rotation
+                                  * Quaternion.Euler(0f, rawDelta, 0f);
+
+            // clamp if overlapped
+            Collider[] hits = Physics.OverlapBox(
+                rotatedCenter,
+                halfExtents,
+                rotatedOri,
+                rotationBlockingLayerMask,
+                QueryTriggerInteraction.Ignore
+            );
+            if (hits.Length > 0) {
+                // figure out safe rotation angle
+                float low = 0f, high = rawDelta;
+                for (int i = 0; i < 4; i++) {
+                    float mid = (low + high) * 0.5f;
+                    Vector3 midCenter = pivot.position
+                                      + Quaternion.Euler(0f, mid, 0f)
+                                        * worldOffset;
+                    Quaternion midOri = box.transform.rotation
+                                      * Quaternion.Euler(0f, mid, 0f);
+
+                    if (Physics.OverlapBox(midCenter, halfExtents, midOri,
+                            rotationBlockingLayerMask,
+                            QueryTriggerInteraction.Ignore).Length == 0) {
+                        low = mid;
+                    }
+                    else {
+                        high = mid;
+                    }
+                }
+                allowedDelta = Mathf.Min(allowedDelta, low);
+            }
+        }
+
+        // finalized rotation
+        var e = pivot.localEulerAngles;
+        e.y = currY + allowedDelta;
+        pivot.localEulerAngles = e;
     }
 
     private void HandleVerticalIK() {
