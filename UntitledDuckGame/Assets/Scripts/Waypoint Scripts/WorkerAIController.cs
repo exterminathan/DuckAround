@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil.Cil;
 using UnityEngine;
-using UnityEngine.UI;
+using FMOD.Studio;
+using FMODUnity;
+using Unity.VisualScripting;
+
 
 [RequireComponent(typeof(BehaviourTree))]
 public class WorkerAIController : MonoBehaviour {
@@ -28,10 +31,16 @@ public class WorkerAIController : MonoBehaviour {
     //colliders separated by type
     //because.. wait actually there is no reason
     //might be useful later and why not
-    private Dictionary<Type, Collider[]> rigidbodyColliders = new Dictionary<Type, Collider[]>();
+    public Dictionary<Type, Collider[]> rigidbodyColliders { get; private set; } = new Dictionary<Type, Collider[]>();
 
     private GameObject originalFBX;
     public LayerMask workerCollisionLayerMask;
+
+    [Header("Audio")]
+    private EventInstance ragdollSound;
+
+    [Header("Self")]
+    [SerializeField] private Collider workerPrimaryCollider;
 
 
     void Awake() {
@@ -67,7 +76,8 @@ public class WorkerAIController : MonoBehaviour {
             ["ArriveThreshold"] = ArriveThreshold,
             ["IsAllowedToMove"] = IsAllowedToMove,
             ["IsCollided"] = IsCollided,
-            ["IsRagdollActive"] = IsRagdollActive
+            ["IsRagdollActive"] = IsRagdollActive,
+            ["WorkerAIController"] = this,
 
         };
 
@@ -81,21 +91,10 @@ public class WorkerAIController : MonoBehaviour {
     }
 
     void Update() {
-        // check for ragdoll
-        bool desired = _blackboard.ContainsKey("IsRagdollActive")
-                       && (bool)_blackboard["IsRagdollActive"];
-
-        if (desired != rgFlag) {
-            ApplyRagdoll(desired);
-            rgFlag = desired;
-        }
-
-
-
         _tree.Root?.Execute(_blackboard);
     }
 
-    private void ApplyRagdoll(bool on) {
+    public void ApplyRagdoll(bool on) {
         // toggle Animator (fetched from blackboard)
         if (_blackboard.TryGetValue("Animator", out var a) && a is Animator animator) {
             animator.enabled = !on;
@@ -112,6 +111,10 @@ public class WorkerAIController : MonoBehaviour {
             foreach (var col in kvp.Value) {
                 col.enabled = on;
             }
+        }
+
+        if (workerPrimaryCollider != null) {
+            workerPrimaryCollider.enabled = !on;
         }
 
         if (!on) {
@@ -132,9 +135,6 @@ public class WorkerAIController : MonoBehaviour {
     public void SetStateAtValue(string key, object newVal) {
         if (_blackboard.ContainsKey(key)) _blackboard[key] = newVal;
     }
-
-
-
 
     //used by debug to set destination
     //

@@ -6,7 +6,8 @@ public static class CollisionBTBuilder {
         {
             new CheckNode(CollisionChecks.HasCollision, "CheckCollision"),
             new ActionNode(AnimationActions.SetIdle, "SetIdle"),
-            new ActionNode(CollisionActions.HandleCollision, "HandleCollision")
+            new ActionNode(CollisionActions.HandleCollision, "HandleCollision"),
+            new ActionNode(RagdollActions.EnterRagdoll, "EnterRagdoll")
         }, "CollisionHandler");
     }
 
@@ -15,8 +16,11 @@ public static class CollisionBTBuilder {
         {
             new CheckNode(CollisionChecks.HasStopTimeElapsed,   "CheckStopElapsed"),
             new CheckNode(CollisionChecks.IsRagdollActive, "CheckRagdollActive"),
+            new ActionNode(RagdollActions.ExitRagdoll, "ExitRagdoll"),
+            new ActionNode(RagdollActions.ResetWorkerPositionAfterRagdoll, "ResetWorkerPosition"),
             new ActionNode(AnimationActions.SetWalking, "SetWalking"),
-            new ActionNode(CollisionActions.RecoverFromCollision, "RecoverFromCollision")
+            new ActionNode(CollisionActions.RecoverFromCollision, "RecoverFromCollision"),
+
         }, "RecoverHandler");
     }
 }

@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2292141352662129175}
   - component: {fileID: 695300767009659761}
-  - component: {fileID: 8688436180528747467}
   - component: {fileID: 8803836917785800303}
   m_Layer: 0
   m_Name: Main Camera
@@ -85,14 +84,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &8688436180528747467
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 589886465336379118}
-  m_Enabled: 1
 --- !u!114 &8803836917785800303
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,10 +190,10 @@ MonoBehaviour:
   boundaryColor: {r: 0.6333313, g: 1, b: 0.4575472, a: 1}
   fadeDistance: 50
   showDev: 0
-  playerBlockingLayerMask:
+  rotationBlockingLayerMask:
     serializedVersion: 2
     m_Bits: 0
-  armColliders: []
+  armObjects: []
 --- !u!1 &6122409478122950566
 GameObject:
   m_ObjectHideFlags: 0
@@ -1132,6 +1123,9 @@ MonoBehaviour:
   verticalMaxClamp: 3.3
   horizontalMinClamp: -3
   horizontalMaxClamp: -1
+  robotMass: 0
+  bodyImpulseDampFactor: 0
+  armImpulseDampFactor: 0
   horizontalSpeedFactor: 0.5
   armColliders:
   - {fileID: 6418687873595364275}
