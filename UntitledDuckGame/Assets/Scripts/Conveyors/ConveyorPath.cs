@@ -1,9 +1,5 @@
-using System;
 using System.Collections.Generic;
-using Mono.Cecil;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.XR;
 
 public class ConveyorPath : MonoBehaviour {
 
@@ -11,6 +7,7 @@ public class ConveyorPath : MonoBehaviour {
     [SerializeField] private int lineSubdiv = 8;
     [SerializeField] private int cornerSubdiv = 8;
     private List<Vector3> cornerPoints = new();
+    private List<Vector3> cornerCenters = new();
 
     // Path segment types
     public interface ISegment {
@@ -41,7 +38,8 @@ public class ConveyorPath : MonoBehaviour {
 
     //path builder
     private void Rebuild() {
-        cornerPoints = new();
+        cornerPoints.Clear();
+        cornerCenters.Clear();
         segments.Clear();
         totalLength = 0f;
 
@@ -71,7 +69,7 @@ public class ConveyorPath : MonoBehaviour {
                 }
 
                 // for vis
-                cornerPoints.Add(pCenter);
+                cornerCenters.Add(pCenter);
                 //
 
                 // derived from basic internal angle, but for one quadrant
@@ -182,8 +180,15 @@ public class ConveyorPath : MonoBehaviour {
         }
 
         for (int i = 0; i < cornerPoints.Count; i++) {
-            Gizmos.color = (i == 0) ? Color.black : Color.green;
-            Gizmos.DrawSphere(cornerPoints[i], .05f);
+            // draw centers big
+            Gizmos.color = Color.black;
+            foreach (var c in cornerCenters)
+                Gizmos.DrawSphere(c, 0.075f);
+
+            // draw arc points small
+            Gizmos.color = Color.green;
+            foreach (var p in cornerPoints)
+                Gizmos.DrawSphere(p, 0.05f);
         }
     }
 #endif
