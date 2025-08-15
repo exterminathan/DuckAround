@@ -1,3 +1,4 @@
+//PlayerDuckController.cs
 using System.Collections;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private Transform root;
     [SerializeField] private Transform mouth;
     [SerializeField] private Transform meshBase;
+    [SerializeField] private IsometricRaycaster isometricRaycaster;
     [SerializeField] private float quackRotation = 30f;
     [SerializeField] private float quackDuration = 0.1f;
 
@@ -95,7 +97,7 @@ public class PlayerDuckController : MonoBehaviour {
         }
 
         // normal movement
-        if (canFlex && canTraverse) {
+        if (canFlex && canTraverse && !isometricRaycaster.isHolding) {
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             var input = new Vector3(h, 0, v);

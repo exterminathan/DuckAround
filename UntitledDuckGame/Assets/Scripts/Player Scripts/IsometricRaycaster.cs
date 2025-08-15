@@ -1,14 +1,8 @@
 // IsometricRaycaster.cs
 using System.Linq;
-using NUnit.Framework.Constraints;
 using UnityEngine;
-using UnityEngine.AI;
 using UnityEngine.UI;
 
-// during click on interactable like alarm
-// save current rotation
-// rotate to face it, do interaction
-// reset rotation to before after click released
 
 public enum InteractionType { None, Pickup, Operate }
 public enum HoldMode { None, Pickup, Interact }
@@ -19,8 +13,6 @@ public interface IInteractable {
     void OnHoldDrag(RaycastHit hit, Vector2 mouseDelta);
     void OnHoldEnd();
 }
-
-
 
 public class IsometricRaycaster : MonoBehaviour {
     #region Public Variables
@@ -60,34 +52,36 @@ public class IsometricRaycaster : MonoBehaviour {
     [Header("Collision Settings")]
     [Tooltip("Layers that block arm rotation")]
     public LayerMask rotationBlockingLayerMask;
+    public GameObject[] armObjects;
+    public ArmHitForwarder[] armPushers { get; private set; }
+    public bool isHolding { set; get; } = false;
     #endregion
 
+    #region Private Variables
     private Image leftBoundaryImage;
     private Image rightBoundaryImage;
     private Image topBoundaryImage;
     private Image bottomBoundaryImage;
 
-    public GameObject[] armObjects;
-    //assigned at runtime
     private Collider[] armColliders;
-    public ArmHitForwarder[] armPushers { get; private set; }
-
-    public bool isHolding { set; get; } = false;
-
-    private Vector3 preHoldRotation;
 
     [Header("Holding Settings")]
     private HoldMode _holdMode = HoldMode.None;
+    private Vector3 preHoldRotation;
     private Vector3 preHoldIKPos;
     private Vector3 lastMousePos;
     private IInteractable activeInteractable;
     private RaycastHit holdHit;
     private Collider holdCollider;
+    #endregion
 
+    #region Unity Functions
     void Start() {
+        //asign cam and player ui
         if (mainCamera == null) mainCamera = Camera.main;
         if (uiCanvas == null) uiCanvas = FindFirstObjectByType<Canvas>();
 
+        //populate arm colliders and pushers
         armColliders = armObjects
             .SelectMany(o => o.GetComponentsInChildren<Collider>())
             .ToArray();
@@ -119,7 +113,9 @@ public class IsometricRaycaster : MonoBehaviour {
             p.lastPos = currentPos;
         }
     }
+    #endregion
 
+    #region Movement
     private void HandleRotation() {
         float centerX = Screen.width * 0.5f;
         float minX = centerX - innerZoneRangeX;
@@ -212,22 +208,6 @@ public class IsometricRaycaster : MonoBehaviour {
         }
     }
 
-    private void HandleHoldInteraction() {
-        Vector2 mouseDelta = (Vector2)(Input.mousePosition - lastMousePos);
-        lastMousePos = Input.mousePosition;
-
-        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-
-        if (holdCollider != null && holdCollider.Raycast(ray, out var h, 1000f)) {
-            holdHit = h;
-        }
-
-        if (activeInteractable != null) {
-            activeInteractable.OnHoldDrag(holdHit, mouseDelta);
-        }
-    }
-
-
     public void RotateToTarget(Transform target) {
         if (target == null) return;
 
@@ -241,10 +221,25 @@ public class IsometricRaycaster : MonoBehaviour {
         e.y = targetY;
         rotate_pivot.transform.localEulerAngles = e;
     }
-
-
     public void ResetRotation() {
         rotate_pivot.transform.localEulerAngles = preHoldRotation;
+    }
+    #endregion
+
+    #region Interaction
+    private void HandleHoldInteraction() {
+        Vector2 mouseDelta = (Vector2)(Input.mousePosition - lastMousePos);
+        lastMousePos = Input.mousePosition;
+
+        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (holdCollider != null && holdCollider.Raycast(ray, out var h, 1000f)) {
+            holdHit = h;
+        }
+
+        if (activeInteractable != null) {
+            activeInteractable.OnHoldDrag(holdHit, mouseDelta);
+        }
     }
 
     public void BeginHold(RaycastHit hit, PlayerDuckController player) {
@@ -298,7 +293,7 @@ public class IsometricRaycaster : MonoBehaviour {
         _holdMode = HoldMode.None;
         isHolding = false;
     }
-
+    #endregion
 
     #region Debug
     void CreateBoundaryLines() {

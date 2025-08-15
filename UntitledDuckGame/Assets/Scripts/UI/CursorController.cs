@@ -1,3 +1,5 @@
+// CursorController.cs
+using Mono.Cecil.Cil;
 using UnityEngine;
 
 public class CursorController : MonoBehaviour {
@@ -23,6 +25,12 @@ public class CursorController : MonoBehaviour {
     Vector3 outerMoveVelocity;
     Vector3 outerScaleVelocity;
 
+    private bool isHovering = false;
+    private bool inRange = false;
+
+    //public reference to where cursor hit
+    [HideInInspector] public Ray cursorHit;
+
     void Awake() {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.None;
@@ -32,35 +40,37 @@ public class CursorController : MonoBehaviour {
     void Update() {
         Vector3 mousePos = Input.mousePosition;
 
+        // damp cursor movement
         innerCursor.position = Vector3.SmoothDamp(
             innerCursor.position, mousePos, ref innerMoveVelocity, moveSmoothTime
         );
 
-        bool hovering = false;
-        var ray = Camera.main.ScreenPointToRay(mousePos);
         //check if hit interactive object, and is within distance to player
-        if (Physics.Raycast(ray, out var hit) && hit.collider.CompareTag("Interactive"))
-            hovering = true;
+        var ray = Camera.main.ScreenPointToRay(mousePos);
+        if (Physics.Raycast(ray, out var hit) && hit.collider.CompareTag("Interactive")) {
+            isHovering = true;
 
-        Vector3 targetScale = hovering ? hoverScale : defaultScale;
-        outerCursor.localScale = Vector3.SmoothDamp(
-            outerCursor.localScale, targetScale, ref outerScaleVelocity, scaleSmoothTime
-        );
+            //get distance from player to hit location in 2d space
+            Vector3 playerPosFlat = playerDuckController.transform.position;
+            Vector3 hitPosFlat = hit.point;
+            playerPosFlat.y = hitPosFlat.y = 0f;
 
-        //get distance from player to hit location in 2d space
+            float distanceToPlayer = Vector3.Distance(playerPosFlat, hitPosFlat);
+            inRange = distanceToPlayer < hoverEngageDistance;
+        }
+        else {
+            isHovering = false;
+            inRange = false;
+        }
 
-        Vector3 playerPosFlat = playerDuckController.transform.position;
-        Vector3 hitPosFlat = hit.point;
-        playerPosFlat.y = hitPosFlat.y = 0f;
+        //scale outer cursor based on hover state
+        Vector3 targetScale = isHovering ? hoverScale : defaultScale;
+        outerCursor.localScale = Vector3.SmoothDamp(outerCursor.localScale, targetScale, ref outerScaleVelocity, scaleSmoothTime);
 
-        // Debug.Log($"Hit location: {hit.point}");
-        // Debug.Log($"Player location: {playerDuckController.transform.position}");
-        // Debug.Log($"Flat distance to player: {Vector3.Distance(playerPosFlat, hitPosFlat)}");
 
-        float distanceToPlayer = Vector3.Distance(playerPosFlat, hitPosFlat);
 
         if (isometricRaycaster != null) {
-            if (hovering && Input.GetMouseButtonDown(0) && distanceToPlayer < hoverEngageDistance) {
+            if (isHovering && Input.GetMouseButtonDown(0) && inRange) {
                 isometricRaycaster.BeginHold(hit, playerDuckController);
 
 
@@ -70,5 +80,6 @@ public class CursorController : MonoBehaviour {
 
             }
         }
+
     }
 }

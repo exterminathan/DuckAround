@@ -28,15 +28,15 @@ public static class RagdollActions {
 
         foreach (var kvp in colliders) {
             foreach (var col in kvp.Value) {
-                Debug.Log($"val: {col.bounds.center}");
+                //Debug.Log($"val: {col.bounds.center}");
                 sum += col.bounds.center;
                 ct++;
             }
         }
-        Debug.Log($"Count: {ct}");
+        //Debug.Log($"Count: {ct}");
 
         Vector3 avg = sum / ct;
-        Debug.Log($"Avg: {avg}");
+        //Debug.Log($"Avg: {avg}");
 
         // move player to that position
         Vector3 newPos = new Vector3(avg.x, ctrl.transform.position.y, avg.z);
