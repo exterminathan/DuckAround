@@ -76,7 +76,7 @@ public class PlayerDuckController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
 
         if (!isBrokenFree) {
-            // break‑out mash logic
+            // break‑out key spam 
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
                 Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D)) {
                 keysPressed++;
@@ -112,7 +112,7 @@ public class PlayerDuckController : MonoBehaviour {
                 foreach (var col in armColliders) {
                     if (!(col is BoxCollider box)) continue;
 
-                    Vector3 halfExtents = Vector3.Scale(box.size * 0.5f, box.transform.lossyScale);
+                    Vector3 halfExtents = Vector3.Scale(box.size * 0.05f, box.transform.lossyScale);
                     Quaternion orientation = box.transform.rotation;
                     Vector3 center = box.transform.TransformPoint(box.center);
 
@@ -184,4 +184,6 @@ public class PlayerDuckController : MonoBehaviour {
 
         Debug.Log("Quack!");
     }
+
+
 }

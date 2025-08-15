@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CursorController : MonoBehaviour {
     [Header("Cursor Graphics")]
@@ -14,6 +13,11 @@ public class CursorController : MonoBehaviour {
     [Header("Movement Settings")]
     public float moveSmoothTime = 0.02f;
 
+    [Header("Player Interaction")]
+    [SerializeField] private PlayerDuckController playerDuckController;
+    [SerializeField] private IsometricRaycaster isometricRaycaster;
+    public float hoverEngageDistance = 2.75f;
+
     // ** Separate velocities for inner & outer **
     Vector3 innerMoveVelocity;
     Vector3 outerMoveVelocity;
@@ -22,26 +26,49 @@ public class CursorController : MonoBehaviour {
     void Awake() {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.None;
+
     }
 
     void Update() {
         Vector3 mousePos = Input.mousePosition;
 
-        // 1) Both now use their own velocity
         innerCursor.position = Vector3.SmoothDamp(
             innerCursor.position, mousePos, ref innerMoveVelocity, moveSmoothTime
         );
 
-        // 2) Raycast hover check (same as before)
         bool hovering = false;
         var ray = Camera.main.ScreenPointToRay(mousePos);
+        //check if hit interactive object, and is within distance to player
         if (Physics.Raycast(ray, out var hit) && hit.collider.CompareTag("Interactive"))
             hovering = true;
 
-        // 3) Scale ring smoothly
         Vector3 targetScale = hovering ? hoverScale : defaultScale;
         outerCursor.localScale = Vector3.SmoothDamp(
             outerCursor.localScale, targetScale, ref outerScaleVelocity, scaleSmoothTime
         );
+
+        //get distance from player to hit location in 2d space
+
+        Vector3 playerPosFlat = playerDuckController.transform.position;
+        Vector3 hitPosFlat = hit.point;
+        playerPosFlat.y = hitPosFlat.y = 0f;
+
+        // Debug.Log($"Hit location: {hit.point}");
+        // Debug.Log($"Player location: {playerDuckController.transform.position}");
+        // Debug.Log($"Flat distance to player: {Vector3.Distance(playerPosFlat, hitPosFlat)}");
+
+        float distanceToPlayer = Vector3.Distance(playerPosFlat, hitPosFlat);
+
+        if (isometricRaycaster != null) {
+            if (hovering && Input.GetMouseButtonDown(0) && distanceToPlayer < hoverEngageDistance) {
+                isometricRaycaster.BeginHold(hit, playerDuckController);
+
+
+            }
+            if (isometricRaycaster.isHolding && Input.GetMouseButtonUp(0)) {
+                isometricRaycaster.EndHold(playerDuckController);
+
+            }
+        }
     }
 }

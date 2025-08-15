@@ -1,5 +1,6 @@
 // IsometricRaycaster.cs
 using System.Linq;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -8,6 +9,18 @@ using UnityEngine.UI;
 // save current rotation
 // rotate to face it, do interaction
 // reset rotation to before after click released
+
+public enum InteractionType { None, Pickup, Operate }
+public enum HoldMode { None, Pickup, Interact }
+
+public interface IInteractable {
+    InteractionType Type { get; }
+    void OnHoldStart(RaycastHit hit, Transform rigTarget);
+    void OnHoldDrag(RaycastHit hit, Vector2 mouseDelta);
+    void OnHoldEnd();
+}
+
+
 
 public class IsometricRaycaster : MonoBehaviour {
     #region Public Variables
@@ -59,6 +72,17 @@ public class IsometricRaycaster : MonoBehaviour {
     private Collider[] armColliders;
     public ArmHitForwarder[] armPushers { get; private set; }
 
+    public bool isHolding { set; get; } = false;
+
+    private Vector3 preHoldRotation;
+
+    [Header("Holding Settings")]
+    private HoldMode _holdMode = HoldMode.None;
+    private Vector3 preHoldIKPos;
+    private Vector3 lastMousePos;
+    private IInteractable activeInteractable;
+    private RaycastHit holdHit;
+    private Collider holdCollider;
 
     void Start() {
         if (mainCamera == null) mainCamera = Camera.main;
@@ -74,9 +98,15 @@ public class IsometricRaycaster : MonoBehaviour {
     }
 
     void Update() {
-        HandleRotation();
-        HandleVerticalIK();
-        HandleHorizontalIK();
+
+        if (_holdMode != HoldMode.Interact) {
+            HandleRotation();
+            HandleVerticalIK();
+            HandleHorizontalIK();
+        }
+        else {
+            HandleHoldInteraction();
+        }
     }
 
     void LateUpdate() {
@@ -112,7 +142,7 @@ public class IsometricRaycaster : MonoBehaviour {
         foreach (var c in armColliders) {
             if (!(c is BoxCollider box)) continue;
 
-            Vector3 halfExtents = Vector3.Scale(box.size * 0.5f, box.transform.lossyScale);
+            Vector3 halfExtents = Vector3.Scale(box.size * 0.05f, box.transform.lossyScale);
             // box center after pivot rotation
             Vector3 worldOffset = box.transform.position - pivot.position;
             Vector3 rotatedCenter = pivot.position
@@ -181,6 +211,94 @@ public class IsometricRaycaster : MonoBehaviour {
             ik_target.localPosition = local;
         }
     }
+
+    private void HandleHoldInteraction() {
+        Vector2 mouseDelta = (Vector2)(Input.mousePosition - lastMousePos);
+        lastMousePos = Input.mousePosition;
+
+        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+
+        if (holdCollider != null && holdCollider.Raycast(ray, out var h, 1000f)) {
+            holdHit = h;
+        }
+
+        if (activeInteractable != null) {
+            activeInteractable.OnHoldDrag(holdHit, mouseDelta);
+        }
+    }
+
+
+    public void RotateToTarget(Transform target) {
+        if (target == null) return;
+
+        preHoldRotation = rotate_pivot.transform.localEulerAngles;
+
+        Vector3 dir = target.position - rotate_pivot.transform.position;
+        dir.y = 0f;
+
+        float targetY = Quaternion.LookRotation(dir).eulerAngles.y;
+        Vector3 e = rotate_pivot.transform.localEulerAngles;
+        e.y = targetY;
+        rotate_pivot.transform.localEulerAngles = e;
+    }
+
+
+    public void ResetRotation() {
+        rotate_pivot.transform.localEulerAngles = preHoldRotation;
+    }
+
+    public void BeginHold(RaycastHit hit, PlayerDuckController player) {
+        holdHit = hit;
+        lastMousePos = Input.mousePosition;
+        preHoldRotation = rotate_pivot.transform.localEulerAngles;
+        preHoldIKPos = ik_target.position;
+
+        activeInteractable = hit.collider.GetComponent<IInteractable>();
+        Debug.Log($"activeInteractable: {activeInteractable}");
+        if (activeInteractable != null) {
+            _holdMode = (activeInteractable.Type == InteractionType.Operate) ? HoldMode.Interact : HoldMode.Pickup;
+        }
+        else {
+            // Fallback by tag if no component present
+            _holdMode = hit.collider.CompareTag("Interactive") ? HoldMode.Interact : HoldMode.Pickup;
+        }
+
+        string interactableTypeName = activeInteractable != null ? activeInteractable.GetType().Name : "nul";
+        Debug.Log($"[InteractMode] {HoldMode.None} -> {_holdMode} using {interactableTypeName}");
+
+        isHolding = true;
+        holdCollider = hit.collider;
+
+        if (_holdMode == HoldMode.Interact) {
+            RotateToTarget(hit.transform);
+            ik_target.position = hit.point;
+            activeInteractable?.OnHoldStart(hit, ik_target);
+        }
+        // Pickup: do nothing special; movement and rotation remain enabled
+    }
+
+    public void EndHold(PlayerDuckController player) {
+        if (!isHolding) return;
+
+        if (_holdMode == HoldMode.Interact) {
+            activeInteractable?.OnHoldEnd();
+            ResetRotation();
+            ik_target.position = preHoldIKPos;
+        }
+
+
+        if (_holdMode != HoldMode.None) {
+            string interactableTypeName = activeInteractable != null ? activeInteractable.GetType().Name : "nul";
+            Debug.Log($"[InteractMode] {_holdMode} -> {HoldMode.None} from {interactableTypeName}");
+        }
+
+        holdCollider = null;
+
+        activeInteractable = null;
+        _holdMode = HoldMode.None;
+        isHolding = false;
+    }
+
 
     #region Debug
     void CreateBoundaryLines() {

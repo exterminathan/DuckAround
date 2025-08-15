@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mono.Cecil.Cil;
 using UnityEngine;
 using FMOD.Studio;
-using FMODUnity;
-using Unity.VisualScripting;
+
 
 
 [RequireComponent(typeof(BehaviourTree))]
@@ -41,6 +39,10 @@ public class WorkerAIController : MonoBehaviour {
 
     [Header("Self")]
     [SerializeField] private Collider workerPrimaryCollider;
+
+    // --- Added: cache last collision point for gizmo drawing ---
+    private Vector3 _lastCollisionPoint;
+    private bool _hasCollisionPoint;
 
 
     void Awake() {
@@ -127,6 +129,19 @@ public class WorkerAIController : MonoBehaviour {
 
     // Collisions
     void OnCollisionEnter(Collision other) {
+        if (other.contactCount > 0) {
+            var hitPoint = other.contacts[0].point;
+            Debug.Log($"worker collided with {other.gameObject.name} at {hitPoint}");
+
+            // --- Changed: cache for gizmo drawing and draw a short runtime ray (optional) ---
+            _lastCollisionPoint = hitPoint;
+            _hasCollisionPoint = true;
+            Debug.DrawRay(hitPoint, Vector3.up * 0.25f, Color.red, 2f);
+        }
+        else {
+            Debug.Log($"worker collided with {other.gameObject.name} (no contacts reported)");
+        }
+
         if ((workerCollisionLayerMask & (1 << other.gameObject.layer)) != 0) {
             _blackboard["IsCollided"] = true;
         }
@@ -165,5 +180,13 @@ public class WorkerAIController : MonoBehaviour {
             }
         }
         return closest;
+    }
+
+    // --- Added: draw cached gizmo safely in editor (Scene view) ---
+    void OnDrawGizmosSelected() {
+        if (_hasCollisionPoint) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(_lastCollisionPoint, 0.1f);
+        }
     }
 }
