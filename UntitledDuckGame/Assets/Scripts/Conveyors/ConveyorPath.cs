@@ -1,10 +1,16 @@
+using System;
 using System.Collections.Generic;
+using Mono.Cecil;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class ConveyorPath : MonoBehaviour {
 
     [SerializeField] private List<ConveyorNode> nodes = new();
     [SerializeField] private int lineSubdiv = 8;
+    [SerializeField] private int cornerSubdiv = 8;
+    private List<Vector3> cornerPoints = new();
 
     // Path segment types
     public interface ISegment {
@@ -35,17 +41,89 @@ public class ConveyorPath : MonoBehaviour {
 
     //path builder
     private void Rebuild() {
+        cornerPoints = new();
         segments.Clear();
         totalLength = 0f;
-        if (nodes == null || nodes.Count < 2) return;
 
-        // straight segments between all nodes
+        if (nodes == null || nodes.Count < 2)
+            return;
+
         for (int i = 0; i < nodes.Count - 1; i++) {
-            Vector3 pA = nodes[i].Position;
-            Vector3 pB = nodes[i + 1].Position;
-            var straight = new StraightSegment(pA, pB);
-            segments.Add(straight);
-            totalLength += straight.Length;
+            ConveyorNode nA = nodes[i];
+            ConveyorNode nB = nodes[i + 1];
+
+            Vector3 pA = nA.Position;
+            Vector3 pB = nB.Position;
+
+            if (nodes[i].cornerRadius != 0f) {
+                // Handle corner segments
+                float direction = -Mathf.Sign(nA.cornerRadius);
+                float radius = Mathf.Abs(pA.x - pB.x);
+
+                // forward vector of second node in corner
+                Vector3 pBf = nB.Forward;
+
+                // add first node in corner to vector of second to find center
+                Vector3 pCenter = pA + pBf;
+
+                if (nA.DebugOn) {
+                    Debug.Log($"pA: {pA}, pBf: {pBf}, pCenter: {pCenter}");
+                }
+
+                // for vis
+                cornerPoints.Add(pCenter);
+                //
+
+                // derived from basic internal angle, but for one quadrant
+                Vector3 offset = pA - pCenter;  // from center to first point
+
+                float intAngleRad = Mathf.Atan2(offset.z, offset.x);
+                float step = Mathf.PI / 2f / cornerSubdiv * direction;
+
+                if (nA.DebugOn) {
+                    Debug.Log($"internal angle: {intAngleRad} rad/{Mathf.Rad2Deg * intAngleRad}°, step: {step}");
+                }
+
+
+                Vector3 pU, pW;
+                pU = pA;
+
+                //iterate per corner segments
+                for (int j = 0; j < cornerSubdiv; j++) {
+                    intAngleRad += step;
+                    // polar coords X and Y
+                    float nX = pCenter.x + radius * Mathf.Cos(intAngleRad);
+                    float nZ = pCenter.z + radius * Mathf.Sin(intAngleRad);
+
+                    // location of next point
+                    pW = new Vector3(nX, pA.y, nZ);
+
+
+                    //vector from center to next point 
+                    Vector3 pN = new Vector3(nX, pA.y, nZ);
+                    Debug.DrawLine(pCenter, pN, Color.red);
+
+                    // for vis
+                    cornerPoints.Add(pN);
+                    //
+
+                    //add segment
+                    var straight = new StraightSegment(pU, pW);
+                    segments.Add(straight);
+                    totalLength += straight.Length;
+
+                    //intAngleRad += Mathf.PI / (cornerSubdiv * 2) * direction;
+                    pU = pW;
+                }
+
+
+            }
+            else {
+                //straight segment
+                var straight = new StraightSegment(pA, pB);
+                segments.Add(straight);
+                totalLength += straight.Length;
+            }
         }
     }
 
@@ -67,10 +145,30 @@ public class ConveyorPath : MonoBehaviour {
 
 
 #if UNITY_EDITOR
+    private void OnEnable() {
+        ConveyorNode.OnAnyNodeMoved += HandleNodeMovedOrChanged;
+        ConveyorNode.OnDebugActivated += HandleNodeMovedOrChanged;
+        ConveyorNode.OnDebugDeactivated += HandleNodeMovedOrChanged;
+        Rebuild();
+    }
+
+    private void OnDisable() {
+        ConveyorNode.OnAnyNodeMoved -= HandleNodeMovedOrChanged;
+        ConveyorNode.OnDebugActivated -= HandleNodeMovedOrChanged;
+        ConveyorNode.OnDebugDeactivated -= HandleNodeMovedOrChanged;
+    }
+
+    private void HandleNodeMovedOrChanged(ConveyorNode n) {
+        if (nodes != null && nodes.Contains(n)) {
+            Rebuild();
+        }
+    }
     private void OnValidate() { Rebuild(); }
     private void Reset() { Rebuild(); }
 
     private void OnDrawGizmos() {
+        if (!Application.isPlaying) Rebuild();
+
         if (segments.Count == 0) Rebuild();
         Gizmos.color = Color.yellow;
         foreach (var seg in segments) {
@@ -81,6 +179,11 @@ public class ConveyorPath : MonoBehaviour {
                 Gizmos.DrawLine(prev, p);
                 prev = p;
             }
+        }
+
+        for (int i = 0; i < cornerPoints.Count; i++) {
+            Gizmos.color = (i == 0) ? Color.black : Color.green;
+            Gizmos.DrawSphere(cornerPoints[i], .05f);
         }
     }
 #endif

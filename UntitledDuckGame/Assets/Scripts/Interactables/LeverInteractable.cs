@@ -8,8 +8,8 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
     [SerializeField] private float maxAngle = 45f;
 
     [Header("Input Tuning")]
-    [SerializeField] private float degreesPerPixel = 0.15f;   // sensitivity
-    [SerializeField] private bool invertDrag = false;         // invert if needed
+    [SerializeField] private float degreesPerPixel = 0.15f;
+    [SerializeField] private bool invertDrag = false;
 
     public InteractionType Type => InteractionType.Operate;
 
@@ -46,7 +46,7 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
     public void OnHoldEnd() {
         isHeld = false;
         // keep final angle; if you want it to spring back, uncomment next line:
-        // currentAngle = 0f; ApplyAngle();
+        currentAngle = 0f; ApplyAngle();
     }
 
     private void ApplyAngle() {

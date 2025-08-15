@@ -55,6 +55,7 @@ public class IsometricRaycaster : MonoBehaviour {
     public GameObject[] armObjects;
     public ArmHitForwarder[] armPushers { get; private set; }
     public bool isHolding { set; get; } = false;
+    public bool isInteracting { set; get; } = false;
     #endregion
 
     #region Private Variables
@@ -252,6 +253,12 @@ public class IsometricRaycaster : MonoBehaviour {
         Debug.Log($"activeInteractable: {activeInteractable}");
         if (activeInteractable != null) {
             _holdMode = (activeInteractable.Type == InteractionType.Operate) ? HoldMode.Interact : HoldMode.Pickup;
+            if (_holdMode == HoldMode.Interact) {
+                isInteracting = true;
+            }
+            else {
+                isInteracting = false;
+            }
         }
         else {
             // Fallback by tag if no component present
@@ -292,6 +299,7 @@ public class IsometricRaycaster : MonoBehaviour {
         activeInteractable = null;
         _holdMode = HoldMode.None;
         isHolding = false;
+        isInteracting = false;
     }
     #endregion
 

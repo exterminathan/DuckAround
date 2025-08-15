@@ -97,7 +97,7 @@ public class PlayerDuckController : MonoBehaviour {
         }
 
         // normal movement
-        if (canFlex && canTraverse && !isometricRaycaster.isHolding) {
+        if (canFlex && canTraverse && !isometricRaycaster.isInteracting) {
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
             var input = new Vector3(h, 0, v);
