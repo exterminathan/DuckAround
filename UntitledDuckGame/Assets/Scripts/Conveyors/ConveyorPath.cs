@@ -3,13 +3,7 @@ using UnityEngine;
 
 public class ConveyorPath : MonoBehaviour {
 
-    [SerializeField] private List<ConveyorNode> nodes = new();
-    [SerializeField] private int lineSubdiv = 8;
-    [SerializeField] private int cornerSubdiv = 8;
-    private List<Vector3> cornerPoints = new();
-    private List<Vector3> cornerCenters = new();
-
-    // Path segment types
+    #region Segment Types
     public interface ISegment {
         float Length { get; }
         Vector3 GetPoint(float t);
@@ -29,13 +23,25 @@ public class ConveyorPath : MonoBehaviour {
         public Vector3 GetPoint(float t) => Vector3.Lerp(a, b, Mathf.Clamp01(t));
         public Vector3 GetTangent(float t) => dir;
     }
+    #endregion
 
+    [Header("Conveyor Path Settings")]
+    [SerializeField] private List<ConveyorNode> nodes = new();
+    [SerializeField] private int lineSubdiv = 8;
+    [SerializeField] private int cornerSubdiv = 8;
 
+    #region Private Variables
+    private List<Vector3> cornerPoints = new();
+    private List<Vector3> cornerCenters = new();
     private readonly List<ISegment> segments = new();
     private float totalLength;
+    #endregion
+
+    #region Public Properties
     public float TotalLength => totalLength;
+    #endregion
 
-
+    #region Path Builder Functions
     //path builder
     private void Rebuild() {
         cornerPoints.Clear();
@@ -53,19 +59,25 @@ public class ConveyorPath : MonoBehaviour {
             Vector3 pA = nA.Position;
             Vector3 pB = nB.Position;
 
-            if (nodes[i].cornerRadius != 0f) {
+            //condition where the two nodes aren't at equal positions
+            bool isProper = Mathf.Abs(Mathf.Abs(pA.x - pB.x) - Mathf.Abs(pA.z - pB.z)) < 1e-2f;
+
+            if (nodes[i].turnDirection != 0f && isProper) {
                 // Handle corner segments
-                float direction = -Mathf.Sign(nA.cornerRadius);
+                float direction = -Mathf.Sign(nA.turnDirection);
                 float radius = Mathf.Abs(pA.x - pB.x);
 
-                // forward vector of second node in corner
+                // forward vector of second node in corner 
                 Vector3 pBf = nB.Forward;
 
+                // * corner radius of first node
+                Vector3 pBfScaled = pBf * radius;
+
                 // add first node in corner to vector of second to find center
-                Vector3 pCenter = pA + pBf;
+                Vector3 pCenter = pA + pBfScaled;
 
                 if (nA.DebugOn) {
-                    Debug.Log($"pA: {pA}, pBf: {pBf}, pCenter: {pCenter}");
+                    Debug.Log($"pA: {pA}, pBf: {pBf}, pBf Scaled: {pBfScaled}, pCenter: {pCenter}");
                 }
 
                 // for vis
@@ -124,8 +136,10 @@ public class ConveyorPath : MonoBehaviour {
             }
         }
     }
+    #endregion
 
-    //path sampler
+    #region Path Helper Functions
+    //path sampler 
     public (Vector3 pos, Vector3 tangent) SampleByDistance(float s) {
         s = Mathf.Clamp(s, 0, totalLength);
         float accum = 0f;
@@ -141,7 +155,55 @@ public class ConveyorPath : MonoBehaviour {
         return (last.GetPoint(1f), last.GetTangent(1f));
     }
 
+    // path sampler with smoothing
+    public (Vector3 pos, Vector3 tangent) SampleByDistanceSmoothed(float s, float halfWindow) {
+        var (pos, _) = SampleByDistance(s);
 
+        if (totalLength <= 1e-4f) return (pos, Vector3.forward);
+
+        // clamp window
+        float ds = Mathf.Max(1e-3f, Mathf.Min(Mathf.Abs(halfWindow), totalLength * 0.05f));
+        float s0 = Mathf.Clamp(s - ds, 0f, totalLength);
+        float s1 = Mathf.Clamp(s + ds, 0f, totalLength);
+
+        // safety check for collapsed ends
+        if (Mathf.Approximately(s0, s1)) {
+            ds = Mathf.Max(ds, totalLength * 0.005f + 1e-3f);
+            s0 = Mathf.Clamp(s - ds, 0f, totalLength);
+            s1 = Mathf.Clamp(s + ds, 0f, totalLength);
+        }
+
+        Vector3 p0 = PositionAtDistance(s0);
+        Vector3 p1 = PositionAtDistance(s1);
+        Vector3 tan = p1 - p0;
+
+        if (tan.sqrMagnitude < 1e-8f) {
+            tan = SampleByDistance(s).tangent;
+        }
+
+        return (pos, tan.normalized);
+    }
+
+    // return position along distance
+    public Vector3 PositionAtDistance(float s) {
+        s = Mathf.Clamp(s, 0f, totalLength);
+        float accum = 0f;
+
+        foreach (var seg in segments) {
+            if (s <= accum + seg.Length || seg == segments[^1]) {
+                float t = (seg.Length > 1e-5f) ? (s - accum) / seg.Length : 0f;
+                return seg.GetPoint(t);
+            }
+            accum += seg.Length;
+        }
+
+        var last = segments[^1];
+        return last.GetPoint(1f);
+    }
+    #endregion
+
+    // Live Feedback System In-Editor for Nodes & Paths
+    #region Live Path Feedback
 #if UNITY_EDITOR
     private void OnEnable() {
         ConveyorNode.OnAnyNodeMoved += HandleNodeMovedOrChanged;
@@ -192,4 +254,5 @@ public class ConveyorPath : MonoBehaviour {
         }
     }
 #endif
+    #endregion
 }

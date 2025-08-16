@@ -276,7 +276,9 @@ public class IsometricRaycaster : MonoBehaviour {
             ik_target.position = hit.point;
             activeInteractable?.OnHoldStart(hit, ik_target);
         }
-        // Pickup: do nothing special; movement and rotation remain enabled
+        if (_holdMode == HoldMode.Pickup) {
+            activeInteractable?.OnHoldStart(hit, ik_target);
+        }
     }
 
     public void EndHold(PlayerDuckController player) {
@@ -286,6 +288,9 @@ public class IsometricRaycaster : MonoBehaviour {
             activeInteractable?.OnHoldEnd();
             ResetRotation();
             ik_target.position = preHoldIKPos;
+        }
+        if (_holdMode == HoldMode.Pickup) {
+            activeInteractable?.OnHoldEnd();
         }
 
 

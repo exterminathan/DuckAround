@@ -6,8 +6,7 @@ public class ConveyorNode : MonoBehaviour {
     public static event Action<ConveyorNode> OnAnyNodeMoved;
     public static event Action<ConveyorNode> OnDebugActivated;
     public static event Action<ConveyorNode> OnDebugDeactivated;
-
-    public float cornerRadius = 0f;
+    public float turnDirection = 0f;
 
     public Vector3 Position => transform.position;
     public Vector3 Forward => transform.forward.normalized;
