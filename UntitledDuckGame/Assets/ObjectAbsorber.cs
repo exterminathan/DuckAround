@@ -7,33 +7,40 @@ public class ObjectAbsorber : MonoBehaviour {
     private Quaternion initRotation;
     public LayerMask ignoredLayer;
 
-    private Collider parentCollider;
+    private Collider[] parentColliders;
+
+    private Transform childCollector;
 
     void Start() {
         initRotation = transform.rotation;
-        parentCollider = GetComponent<Collider>();
+        parentColliders = GetComponentsInChildren<Collider>();
+
+        // get child of transform that contains child object with ChildCollector component (to avoid name based search)
+        childCollector = GetComponentInChildren<ChildCollector>().gameObject.transform;
 
     }
 
     void Update() {
-        if (transform.hasChanged) {
-            for (int h = transform.childCount - 1; h >= 0; h--) {
-                Transform child = transform.GetChild(h);
+        if (childCollector.hasChanged) {
+            for (int h = childCollector.childCount - 1; h >= 0; h--) {
+                Transform child = childCollector.GetChild(h);
                 //if child not within bounds of parent, unparent it
                 Collider childCol = child.GetComponent<Collider>();
 
                 Vector3 checkPos = childCol != null ? childCol.bounds.center : child.position;
-                if (!parentCollider.bounds.Contains(checkPos)) {
+                Bounds parentBounds = GetCombinedBounds(parentColliders);
+                if (!parentBounds.Contains(checkPos)) {
                     child.SetParent(null);
                 }
 
 
             }
-            if (Quaternion.Angle(initRotation, transform.rotation) >= 135f) {
+            float tilt = Vector3.Angle(transform.up, Vector3.up);
+            if (tilt >= 135f) {
 
-                for (int i = transform.childCount - 1; i >= 0; i--) {
-                    Transform child = transform.GetChild(i);
-                    Debug.Log($"Unparenting {child.name} from {transform.name}");
+                for (int i = childCollector.childCount - 1; i >= 0; i--) {
+                    Transform child = childCollector.GetChild(i);
+                    Debug.Log($"Unparenting {child.name} from {childCollector.name}");
 
                     Renderer childRenderer = child.GetComponentInChildren<Renderer>();
                     if (childRenderer != null) {
@@ -44,13 +51,13 @@ public class ObjectAbsorber : MonoBehaviour {
                 }
             }
 
-            transform.hasChanged = false;
+            childCollector.hasChanged = false;
         }
     }
 
     void OnCollisionEnter(Collision other) {
         if ((ignoredLayer & (1 << other.gameObject.layer)) != 0) {
-            Debug.Log($"Collision with player: {other.transform.name}");
+            Debug.Log($"Collision with: {other.transform.name}");
         }
         else {
             StartCoroutine(ParentAfterDelay(other.transform));
@@ -60,7 +67,7 @@ public class ObjectAbsorber : MonoBehaviour {
     private IEnumerator ParentAfterDelay(Transform child) {
         yield return new WaitForSeconds(2f);
 
-        child.SetParent(transform);
+        child.SetParent(childCollector);
 
         Renderer childRenderer = child.GetComponentInChildren<Renderer>();
         if (childRenderer != null) {
@@ -86,5 +93,18 @@ public class ObjectAbsorber : MonoBehaviour {
         if (endIntensity <= 0f) {
             mat.DisableKeyword("_EMISSION");
         }
+    }
+
+    private Bounds GetCombinedBounds(Collider[] colliders) {
+        if (colliders == null || colliders.Length == 0) {
+            return new Bounds(Vector3.zero, Vector3.zero);
+        }
+
+        Bounds combinedBounds = colliders[0].bounds;
+
+        for (int i = 1; i < colliders.Length; i++) {
+            combinedBounds.Encapsulate(colliders[i].bounds);
+        }
+        return combinedBounds;
     }
 }

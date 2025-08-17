@@ -7,6 +7,11 @@ public class CursorController : MonoBehaviour {
     public RectTransform innerCursor;
     public RectTransform outerCursor;
 
+    [Header("Cursor Colors")]
+    public Color idleColor;
+    public Color hoverColor;
+    public Color holdColor;
+
     [Header("Outer Ring Settings")]
     public Vector3 defaultScale = Vector3.one;
     public Vector3 hoverScale = Vector3.one * 1.5f;
@@ -35,6 +40,8 @@ public class CursorController : MonoBehaviour {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.None;
 
+        //set inner and outter cursors to idlecolor
+        SetCursorColor(idleColor, 0);
     }
 
     void Update() {
@@ -66,20 +73,41 @@ public class CursorController : MonoBehaviour {
         //scale outer cursor based on hover state
         Vector3 targetScale = isHovering ? hoverScale : defaultScale;
         outerCursor.localScale = Vector3.SmoothDamp(outerCursor.localScale, targetScale, ref outerScaleVelocity, scaleSmoothTime);
-
+        SetCursorColor(isHovering ? hoverColor : idleColor, 2);
 
 
         if (isometricRaycaster != null) {
             if (isHovering && Input.GetMouseButtonDown(0) && inRange) {
                 isometricRaycaster.BeginHold(hit, playerDuckController);
+                SetCursorColor(holdColor, 1);
 
 
             }
             if (isometricRaycaster.isHolding && Input.GetMouseButtonUp(0)) {
                 isometricRaycaster.EndHold(playerDuckController);
+                SetCursorColor(idleColor, 1);
 
             }
         }
 
+    }
+
+    /// <summary>
+    /// Sets the cursor color based on the provided flag.
+    /// 1 for inner cursor, 2 for outer cursor, 0 for both.
+    /// </summary>
+    public void SetCursorColor(Color color, float cursorFlag) {
+        switch (cursorFlag) {
+            case 1: //set only inner cursor to color
+                innerCursor.GetComponent<UnityEngine.UI.Image>().color = color;
+                break;
+            case 2: //set only outer cursor to color
+                outerCursor.GetComponent<UnityEngine.UI.Image>().color = color;
+                break;
+            default:
+                innerCursor.GetComponent<UnityEngine.UI.Image>().color = color;
+                outerCursor.GetComponent<UnityEngine.UI.Image>().color = color;
+                break;
+        }
     }
 }
