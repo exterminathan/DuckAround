@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class UnitSpawner : MonoBehaviour {
-    public Transform unit;
+    public Transform[] units;
     public ConveyorPath cPath;
 
 
@@ -13,8 +13,8 @@ public class UnitSpawner : MonoBehaviour {
     }
 
     private void SpawnUnit() {
-        if (unit != null) {
-            var obj = Instantiate(unit, transform.position, transform.rotation);
+        if (units != null) {
+            var obj = Instantiate(units[Random.Range(0, units.Length)], transform.position, transform.rotation);
             obj.GetComponent<ConveyorObjectMover>().path = cPath;
         }
         else {
