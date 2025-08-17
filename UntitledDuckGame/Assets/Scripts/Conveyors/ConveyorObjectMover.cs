@@ -45,20 +45,19 @@ public class ConveyorObjectMover : MonoBehaviour {
         nonLoopDistance = 0f;
         s = 0f;
 
-        pickupInteractable = GetComponent<PickupInteractable>();
+        pickupInteractable = GetComponentInChildren<PickupInteractable>();
         Debug.Log($"{pickupInteractable} on start");
         wasPickupActive = false;
 
-        interactionCollider = GetComponent<BoxCollider>();
-        collCollider = GetComponentInChildren<MeshCollider>();
-
+        interactionCollider = GetComponentInChildren<BoxCollider>();
         if (interactionCollider == null) {
-            interactionCollider = GetComponent<BoxCollider>();
+
             interactionCollider.enabled = true;
 
         }
+        collCollider = GetComponentInChildren<MeshCollider>();
         if (collCollider == null) {
-            collCollider = GetComponentInChildren<MeshCollider>();
+
             collCollider.enabled = false;
         }
     }
@@ -80,13 +79,12 @@ public class ConveyorObjectMover : MonoBehaviour {
         Debug.Log($"{pickupInteractable} on enable");
         wasPickupActive = false;
 
+        interactionCollider = GetComponentInChildren<BoxCollider>();
         if (interactionCollider == null) {
-            interactionCollider = GetComponent<BoxCollider>();
             interactionCollider.enabled = true;
-
         }
+        collCollider = GetComponentInChildren<MeshCollider>();
         if (collCollider == null) {
-            collCollider = GetComponentInChildren<MeshCollider>();
             collCollider.enabled = false;
         }
     }
