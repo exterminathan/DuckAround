@@ -187,5 +187,19 @@ public class PlayerDuckController : MonoBehaviour {
         Debug.Log("Quack!");
     }
 
+    public IEnumerator ToggleMouth(bool openMouth, float duration) {
+        Quaternion start = mouth.localRotation;
+        Quaternion target = openMouth
+            ? start * Quaternion.Euler(0f, quackRotation / 2, 0f)
+            : start * Quaternion.identity;
+
+        for (float t = 0f; t < duration; t += Time.deltaTime) {
+            mouth.localRotation = Quaternion.Lerp(start, target, t / duration);
+            yield return null;
+        }
+        mouth.localRotation = target;
+
+    }
+
 
 }

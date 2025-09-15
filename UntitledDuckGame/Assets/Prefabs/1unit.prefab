@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 0}
-  speed: 3
+  speed: 1
   loop: 0
   initRotation: {x: -0.70710677, y: 0, z: 0, w: 0.70710677}
   startOffset: 0

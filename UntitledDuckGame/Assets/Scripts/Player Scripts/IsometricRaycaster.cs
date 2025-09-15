@@ -74,6 +74,7 @@ public class IsometricRaycaster : MonoBehaviour {
     private IInteractable activeInteractable;
     private RaycastHit holdHit;
     private Collider holdCollider;
+    public Transform playerHoldSlot;
     #endregion
 
     #region Unity Functions
@@ -278,6 +279,7 @@ public class IsometricRaycaster : MonoBehaviour {
         }
         if (_holdMode == HoldMode.Pickup) {
             activeInteractable?.OnHoldStart(hit, ik_target);
+
         }
     }
 
