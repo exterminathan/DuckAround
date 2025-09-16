@@ -9502,11 +9502,6 @@ Material:
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!136 &1021974016 stripped
-CapsuleCollider:
-  m_CorrespondingSourceObject: {fileID: 72841625472366195, guid: e1177475e43ec6647a40bd220916e136, type: 3}
-  m_PrefabInstance: {fileID: 8803753984493349936}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1047241496 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2690728251696220866, guid: 88b8898eea3e4304d9df233b848dde92, type: 3}
@@ -14161,7 +14156,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.725
+      value: 1.68
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -14169,7 +14164,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.809
+      value: -6.12
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -19169,10 +19164,6 @@ PrefabInstance:
       propertyPath: StartWaypoint
       value: 
       objectReference: {fileID: 7975336412792225021}
-    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
-      propertyPath: workerPrimaryCollider
-      value: 
-      objectReference: {fileID: 1021974016}
     - target: {fileID: 5313156870828043675, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Material
       value: 
@@ -19266,8 +19257,7 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1014758786}
     m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 2710651264814847485, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+    m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1177475e43ec6647a40bd220916e136, type: 3}
