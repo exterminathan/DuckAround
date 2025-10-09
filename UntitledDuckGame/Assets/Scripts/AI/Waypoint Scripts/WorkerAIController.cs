@@ -132,6 +132,13 @@ public class WorkerAIController : MonoBehaviour {
         if (other.contactCount > 0) {
             var hitPoint = other.contacts[0].point;
             Debug.Log($"worker collided with {other.gameObject.name} at {hitPoint}");
+            Debug.DrawLine(hitPoint, hitPoint + new Vector3(0, 5, 0), Color.red, 20f);
+            foreach (var c in other.contacts) {
+                Debug.DrawRay(c.point, c.normal * 0.5f, Color.green, 20f);
+            }
+
+            //TODO: DEBUG WHY THE COLLISION GETS FLAGGED SO FAR OUTSIDE THE DUCK COLLIDERS
+
 
             // --- Changed: cache for gizmo drawing and draw a short runtime ray (optional) ---
             _lastCollisionPoint = hitPoint;

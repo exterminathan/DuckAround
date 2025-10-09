@@ -9926,10 +9926,10 @@ MonoBehaviour:
   workers:
   - {fileID: 808820923}
   waypoints:
-  - {fileID: 7975336412792225021}
-  - {fileID: 765369735}
-  - {fileID: 103292382}
-  - {fileID: 1871451497}
+  - {fileID: 1119718491}
+  - {fileID: 1439024873}
+  - {fileID: 1846575334}
+  - {fileID: 1148941549}
 --- !u!1001 &1107559114
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13866,6 +13866,10 @@ PrefabInstance:
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: 1895591853}
+    - target: {fileID: 695300767009659761, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: orthographic size
+      value: 2.75
+      objectReference: {fileID: 0}
     - target: {fileID: 697281457628500343, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
