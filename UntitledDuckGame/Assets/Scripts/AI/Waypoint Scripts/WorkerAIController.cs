@@ -189,11 +189,24 @@ public class WorkerAIController : MonoBehaviour {
         return closest;
     }
 
-    // --- Added: draw cached gizmo safely in editor (Scene view) ---
+    // Gizmo for last collision point
     void OnDrawGizmosSelected() {
         if (_hasCollisionPoint) {
             Gizmos.color = Color.red;
             Gizmos.DrawSphere(_lastCollisionPoint, 0.1f);
         }
+    }
+
+    private void OnValidate() {
+#if UNITY_EDITOR
+        if (!Application.isPlaying && gameObject.scene.isLoaded) {
+            if (TargetWaypoint != null) {
+                Debug.Log("TargetWaypoint changed in editor: " + TargetWaypoint.name);
+                UnityEditor.EditorApplication.delayCall += () => {
+                    if (this != null) SetNewDestination(TargetWaypoint);
+                };
+            }
+        }
+#endif
     }
 }

@@ -22,7 +22,7 @@ public class PlayerDuckController : MonoBehaviour {
 
     #region Game & Movement Settings
     [Header("Game Settings")]
-    [SerializeField] private bool isHoldingInMouth = false;
+    //[SerializeField] private bool isHoldingInMouth = false;
     [SerializeField] private bool isBrokenFree = false;
     [SerializeField] private LayerMask playerBlockingLayerMask;
 
@@ -32,7 +32,7 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private float moveSpeed = 5f;
     [Range(0.5f, 2f)]
     [SerializeField] private float diagonalFactor = 1.85f;
-    [SerializeField] private float dampeningFactor = 0.05f;
+    //[SerializeField] private float dampeningFactor = 0.05f;
     [SerializeField] private float verticalMinClamp, verticalMaxClamp, horizontalMinClamp, horizontalMaxClamp;
     private int keysPressed = 0;
     private float rig_drop_distance = -0.14f;
@@ -75,8 +75,13 @@ public class PlayerDuckController : MonoBehaviour {
     }
 
     void Update() {
+        // TODO:
+        //quack - NEED TO ISOLATE
         if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
 
+        // TODO: 
+        // spam keys to break out 
+        // really only for tutorial so need to separate
         if (!isBrokenFree) {
             // break‑out key spam 
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||

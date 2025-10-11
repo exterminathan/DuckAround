@@ -188,7 +188,7 @@ GameObject:
   - component: {fileID: 4094550433133554733}
   - component: {fileID: 72841625472366195}
   m_Layer: 16
-  m_Name: Worker_PREFAB
+  m_Name: WorkerBase_PREFAB
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -519,19 +519,19 @@ PrefabInstance:
     - target: {fileID: -5091000605360409096, guid: 7363a30fe163560438ca660c1b2849ba, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: b2e391b0f08ed2646bd7a2a6d87ed1d5, type: 2}
     - target: {fileID: -5091000605360409096, guid: 7363a30fe163560438ca660c1b2849ba, type: 3}
       propertyPath: 'm_Materials.Array.data[1]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: d7191a8d79639414195173ef7d25f86d, type: 2}
     - target: {fileID: -5091000605360409096, guid: 7363a30fe163560438ca660c1b2849ba, type: 3}
       propertyPath: 'm_Materials.Array.data[2]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: ca90e6c7f7539c6469553753b2b3dd13, type: 2}
     - target: {fileID: -5091000605360409096, guid: 7363a30fe163560438ca660c1b2849ba, type: 3}
       propertyPath: 'm_Materials.Array.data[3]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: 6a406ca382d72d74783bf4de62af04d4, type: 2}
     - target: {fileID: -4221658404464332952, guid: 7363a30fe163560438ca660c1b2849ba, type: 3}
       propertyPath: m_Layer
       value: 17
