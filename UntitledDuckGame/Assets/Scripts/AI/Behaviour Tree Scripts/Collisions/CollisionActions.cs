@@ -18,7 +18,6 @@ public static class CollisionActions {
 
         state.Remove("CollisionStartTime");
 
-        Debug.Log("Recovering");
         return true;
     }
 }

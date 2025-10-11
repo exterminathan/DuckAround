@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class WaypointActions {
@@ -13,7 +14,8 @@ public static class WaypointActions {
         state["FullPath"] = path;
         state["PathIndex"] = 0;
 
-        //Debug.Log($"[BT] Path found from {start.name} → {target.name} ({path.Count} nodes)");
+        string pathStr = string.Join(" → ", path.Select(wp => wp.name[^1]));
+        Debug.Log($"[BT] Target Found → {target.name[^1]} (Path: {pathStr})");
         return true;
     }
 
@@ -35,11 +37,11 @@ public static class WaypointActions {
                 state["StartWaypoint"] = state["TargetWaypoint"];
                 state["TargetWaypoint"] = null;
             }
-            Debug.Log("[BT] Finished entire path; at target now");
+            //Debug.Log("[BT] Finished entire path; at target now");
             anim.SetBool("isWalking", false);
-            Debug.Log("Animator isWalking set to false");
+            Debug.Log("Animator isWalking set to false upon finishing path");
 
-            Debug.Log("Reset path details upon finishing path");
+            //Debug.Log("Reset path details upon finishing path");
 
             return true;
         }
@@ -59,7 +61,7 @@ public static class WaypointActions {
 
         if (Vector3.Distance(selfTrans.position, targetWP.transform.position) <= thresh) {
             state["PathIndex"] = index + 1;
-            Debug.Log($"[BT] Arrived at waypoint {index}, advancing to {index + 1}");
+            //Debug.Log($"[BT] Arrived at waypoint {index}, advancing to {index + 1}");
         }
 
         return false;

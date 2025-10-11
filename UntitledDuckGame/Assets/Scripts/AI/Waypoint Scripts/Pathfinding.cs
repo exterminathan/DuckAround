@@ -31,7 +31,6 @@ public static class Pathfinding {
             node = cameFrom[node];
         }
         path.Reverse();
-        Debug.Log($"Path found from {start.name} to {goal.name} with {path.Count} waypoints.");
         return path;
     }
 }

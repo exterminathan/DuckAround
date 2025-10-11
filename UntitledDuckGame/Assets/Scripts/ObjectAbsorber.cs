@@ -16,7 +16,7 @@ public class ObjectAbsorber : MonoBehaviour {
         parentColliders = GetComponentsInChildren<Collider>();
 
         // get child of transform that contains child object with ChildCollector component (to avoid name based search)
-        childCollector = GetComponentInChildren<ChildCollector>().gameObject.transform;
+        childCollector = gameObject.transform;
 
     }
 
