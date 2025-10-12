@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: e60dcef08a633da4b89b22d2b1c8cad5, type: 2}
+    - target: {fileID: 2016835934967983468, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3083547651758665615, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Name
       value: WorkerHelmet_PREFAB
