@@ -18,8 +18,13 @@ public static class CollisionBTBuilder {
             new CheckNode(CollisionChecks.IsRagdollActive, "CheckRagdollActive"),
             new ActionNode(RagdollActions.ExitRagdoll, "ExitRagdoll"),
             new ActionNode(RagdollActions.ResetWorkerPositionAfterRagdoll, "ResetWorkerPosition"),
-            new ActionNode(AnimationActions.SetWalking, "SetWalking"),
             new ActionNode(CollisionActions.RecoverFromCollision, "RecoverFromCollision"),
+
+            //if no target, set idle
+            new Sequence(new List<Node> {
+                new CheckNode(WaypointChecks.HasTargetWaypoint, "CheckHasTargetWaypoint"),
+                new ActionNode(AnimationActions.SetWalking, "SetWalking"),
+            }, "CheckNoTargetIdleAfterRecovery"),
 
         }, "RecoverHandler");
     }

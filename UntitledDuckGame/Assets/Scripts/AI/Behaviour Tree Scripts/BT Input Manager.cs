@@ -1,7 +1,4 @@
-using AmplifyShaderEditor;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class BTInputManager : MonoBehaviour {
     public WorkerAIController[] workers;
