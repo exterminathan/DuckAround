@@ -22,7 +22,6 @@ public static class DetectionBTBuilder {
                 })
             }, "ChaseBranch"),
 
-            // Otherwise: opportunistically start chase if we see the player
             new Sequence(new List<Node> {
                 new CheckNode(DetectionChecks.DetectPlayer, "DetectPlayer"),
                 new ActionNode(DetectionActions.BeginChase, "BeginChase")

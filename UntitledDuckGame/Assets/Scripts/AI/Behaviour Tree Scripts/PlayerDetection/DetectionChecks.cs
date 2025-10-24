@@ -4,6 +4,13 @@ using System.Collections.Generic;
 public class DetectionChecks
 {
     public static bool DetectPlayer(Dictionary<string, object> state) {
+        var isRagdoll = state.ContainsKey("IsRagdollActive") && (bool)state["IsRagdollActive"];
+        var canMove = state.ContainsKey("IsAllowedToMove") && (bool)state["IsAllowedToMove"];
+        if (isRagdoll || !canMove) {
+            state["PlayerTransform"] = null;
+            return false;
+        }
+
         //Debug.Log("[DetectionChecks] DetectPlayer called.");
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         var range = (float)state["PlayerDetectionRange"];
@@ -15,7 +22,7 @@ public class DetectionChecks
 
         state["PlayerTransform"] = seen ? hits[0].transform : null;
 
-        if (seen) state["LastSeenTime"] = Time.time;
+        if (seen) state["LastDetectionTime"] = Time.time;
         return seen;
     }
 
@@ -24,7 +31,7 @@ public class DetectionChecks
     
     public static bool LostPlayer(Dictionary<string, object> state) {
         //Debug.Log("[DetectionChecks] LostPlayer called.");
-        float last = (float)state["LastSeenTime"];
+        float last = (float)state["LastDetectionTime"];
         float chaseDuration = (float)state["PlayerChaseTimer"];
         //Debug.Log("Time left: " + (Time.time - last) + " / " + chaseDuration);
 

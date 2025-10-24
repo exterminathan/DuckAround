@@ -157,8 +157,6 @@ public class WorkerAIController : MonoBehaviour {
 
             //TODO: DEBUG WHY THE COLLISION GETS FLAGGED SO FAR OUTSIDE THE DUCK COLLIDERS
 
-
-            // --- Changed: cache for gizmo drawing and draw a short runtime ray (optional) ---
             _lastCollisionPoint = hitPoint;
             _hasCollisionPoint = true;
             Debug.DrawRay(hitPoint, Vector3.up * 0.25f, Color.red, 2f);

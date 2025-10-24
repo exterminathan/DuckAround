@@ -7,6 +7,7 @@ public static class RagdollActions {
     public static bool EnterRagdoll(Dictionary<string, object> state) {
         var ctrl = state["WorkerAIController"] as WorkerAIController;
         ctrl.ApplyRagdoll(true);
+
         AudioManager.instance.PlayOneShot(FMODEvents.instance.ragdollSound, ctrl.transform.position);
         return true;
     }
