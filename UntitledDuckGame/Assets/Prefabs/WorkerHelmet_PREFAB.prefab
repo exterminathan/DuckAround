@@ -25,12 +25,24 @@ PrefabInstance:
       value: WorkerHelmet_PREFAB
       objectReference: {fileID: 0}
     - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
-      propertyPath: PlayerChaseTimer
-      value: 10
+      propertyPath: ChaseSpeed
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: WorkerAnimator
+      value: 
+      objectReference: {fileID: 7701275989601816197}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: PlayerChaseTimer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: WorkerAlertAnimator
+      value: 
+      objectReference: {fileID: 2844896679356398088}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: PlayerDetectionRange
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: PlayerDetectionLayerMask.m_Bits
@@ -50,7 +62,7 @@ PrefabInstance:
       objectReference: {fileID: -6096448504595923017, guid: 95693a8f7ff277d4390387f2818d9dc5, type: 3}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.76
+      value: -0.44
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.y
@@ -58,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.75
+      value: 15.39
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalRotation.w
@@ -134,6 +146,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1344031555409270383}
   m_Mesh: {fileID: 1270494388766054137, guid: 95693a8f7ff277d4390387f2818d9dc5, type: 3}
+--- !u!95 &2844896679356398088 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6124258155841199261, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+  m_PrefabInstance: {fileID: 8324523671969195669}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6172382015762652753 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2751156837214009540, guid: e1177475e43ec6647a40bd220916e136, type: 3}
@@ -150,5 +167,10 @@ MeshFilter:
 --- !u!1 &6434606396001306906 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3083547651758665615, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+  m_PrefabInstance: {fileID: 8324523671969195669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &7701275989601816197 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 1830374157460432912, guid: e1177475e43ec6647a40bd220916e136, type: 3}
   m_PrefabInstance: {fileID: 8324523671969195669}
   m_PrefabAsset: {fileID: 0}

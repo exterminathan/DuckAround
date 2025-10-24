@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class AnimationActions {
     public static bool SetWalking(Dictionary<string, object> state) {
-        if (!state.TryGetValue("Animator", out var a) || !(a is Animator animator))
+        if (!state.TryGetValue("WorkerAnimator", out var a) || !(a is Animator animator))
             return false;
 
         bool currWalking = animator.GetBool("isWalking");
@@ -16,7 +16,7 @@ public static class AnimationActions {
     }
 
     public static bool SetIdle(Dictionary<string, object> state) {
-        if (!state.TryGetValue("Animator", out var a) || !(a is Animator animator))
+        if (!state.TryGetValue("WorkerAnimator", out var a) || !(a is Animator animator))
             return false;
 
         bool currWalking = animator.GetBool("isWalking");
@@ -29,7 +29,7 @@ public static class AnimationActions {
     }
 
     public static bool GetWalking(Dictionary<string, object> state) {
-        if (!state.TryGetValue("Animator", out var a) || !(a is Animator animator))
+        if (!state.TryGetValue("WorkerAnimator", out var a) || !(a is Animator animator))
             return false;
 
         return animator.GetBool("isWalking");

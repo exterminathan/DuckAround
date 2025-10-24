@@ -5,8 +5,11 @@ public static class DetectionActions {
     public static bool BeginChase(Dictionary<string, object> state) {
         Debug.Log("[DetectionActions] BeginChase called.");
         //check if ragdoll or can't move
+        var ctrl = (WorkerAIController)state["WorkerAIController"];
+
         var isRagdoll = state.ContainsKey("IsRagdollActive") && (bool)state["IsRagdollActive"];
         var canMove = state.ContainsKey("IsAllowedToMove") && (bool)state["IsAllowedToMove"];
+
         if (isRagdoll || !canMove) {
             state["PlayerTransform"] = null;
             return false;
@@ -15,6 +18,10 @@ public static class DetectionActions {
         float lastSeen = state.ContainsKey("LastSeenTime") ? (float)state["LastSeenTime"] : 0f;
 
         Debug.Log("Time since last seen: " + (Time.time - lastSeen));
+
+        GlobalAlarm.RequestIncrease(1f);
+        ctrl.SetAlertAnimationActive(true);
+
         state["IsChasing"] = true;
         state.Remove("FullPath");
 
@@ -51,7 +58,10 @@ public static class DetectionActions {
 
     public static bool EndChase(Dictionary<string, object> state) {
         Debug.Log("[DetectionActions] EndChase called.");
+        var ctrl = (WorkerAIController)state["WorkerAIController"];
         state["IsChasing"] = false;
+
+        ctrl.SetAlertAnimationActive(false);
 
         return true;
     }

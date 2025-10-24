@@ -25,7 +25,7 @@ public static class WaypointActions {
         var selfTrans = state.GetValueOrDefault("SelfTransform") as Transform;
         float speed = state.GetValueOrDefault("Speed") is float s ? s : 0f;
         float thresh = state.GetValueOrDefault("ArriveThreshold") is float t ? t : 0.1f;
-        Animator anim = state.GetValueOrDefault("Animator") as Animator;
+        Animator anim = state.GetValueOrDefault("WorkerAnimator") as Animator;
 
         if (path == null || selfTrans == null)
             return true;

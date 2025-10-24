@@ -14,7 +14,7 @@ public class AlarmManager : MonoBehaviour
         if (lvl != cachedAlarm)
         {
             cachedAlarm = lvl;
-            alarmText.text = lvl.ToString();
+            alarmText.text = lvl.ToString("F1");
         }
     }
 }

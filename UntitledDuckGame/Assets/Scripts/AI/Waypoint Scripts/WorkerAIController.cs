@@ -20,6 +20,10 @@ public class WorkerAIController : MonoBehaviour {
     public bool IsCollided = false;
     public bool IsRagdollActive = false;
 
+    [Header("Animators")]
+    [SerializeField] public Animator WorkerAnimator;
+    [SerializeField] public Animator WorkerAlertAnimator;
+
     [Header("Player Detection")]
     [SerializeField] public float PlayerDetectionRange = 5f;
     [SerializeField] public float PlayerChaseTimer = 3f;
@@ -81,6 +85,8 @@ public class WorkerAIController : MonoBehaviour {
 
         _blackboard = new Dictionary<string, object> {
             ["SelfTransform"] = transform,
+            //animators
+            ["AlertAnimator"] = WorkerAlertAnimator,
             //waypoints
             ["StartWaypoint"] = StartWaypoint,
             ["TargetWaypoint"] = TargetWaypoint,
@@ -101,9 +107,13 @@ public class WorkerAIController : MonoBehaviour {
 
         };
 
-        var anim = GetComponentInChildren<Animator>();
-        if (anim != null)
-            _blackboard["Animator"] = anim;
+        var workerAnim = WorkerAnimator;
+        if (workerAnim != null)
+            _blackboard["WorkerAnimator"] = workerAnim;
+
+        var alertAnim = WorkerAlertAnimator;
+        if (alertAnim != null)
+            _blackboard["AlertAnimator"] = alertAnim;
 
         ApplyRagdoll(false);
         rgFlag = false;
@@ -116,8 +126,12 @@ public class WorkerAIController : MonoBehaviour {
 
     public void ApplyRagdoll(bool on) {
         // toggle Animator (fetched from blackboard)
-        if (_blackboard.TryGetValue("Animator", out var a) && a is Animator animator) {
+        if (_blackboard.TryGetValue("WorkerAnimator", out var a) && a is Animator animator) {
             animator.enabled = !on;
+        }
+        if (_blackboard.TryGetValue("AlertAnimator", out var aa) && aa is Animator alertAnimator) {
+            alertAnimator.ResetTrigger("Activate");
+            alertAnimator.SetTrigger("Deactivate"); 
         }
 
         // rigidbodies: non-kinematic when ragdoll==on
@@ -174,9 +188,26 @@ public class WorkerAIController : MonoBehaviour {
         if (_blackboard.ContainsKey(key)) _blackboard[key] = newVal;
     }
 
+    //small helper function for alert animation settings
+    public void SetAlertAnimationActive(bool active) {
+        if (_blackboard.TryGetValue("AlertAnimator", out var aa) && aa is Animator alertAnimator) {
+            if (active) {
+                alertAnimator.ResetTrigger("Deactivate");
+                alertAnimator.SetTrigger("Activate");
+            }
+            else {
+                alertAnimator.ResetTrigger("Activate");
+                alertAnimator.SetTrigger("Deactivate");
+            }
+        }
+    }
+
     //used by debug to set destination
     //
     public void SetNewDestination(Waypoint newTarget) {
+        if (newTarget == null) {
+            return;
+        }
         TargetWaypoint = newTarget;
         _blackboard["TargetWaypoint"] = newTarget;
 
@@ -215,7 +246,7 @@ public class WorkerAIController : MonoBehaviour {
 
     private void OnValidate() {
 #if UNITY_EDITOR
-        if (!Application.isPlaying && gameObject.scene.isLoaded) {
+        if (Application.isPlaying && gameObject.scene.isLoaded) {
             if (TargetWaypoint != null) {
                 Debug.Log("TargetWaypoint changed in editor: " + TargetWaypoint.name);
                 UnityEditor.EditorApplication.delayCall += () => {
