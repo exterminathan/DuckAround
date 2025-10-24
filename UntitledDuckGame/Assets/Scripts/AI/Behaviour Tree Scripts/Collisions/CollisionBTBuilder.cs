@@ -7,6 +7,7 @@ public static class CollisionBTBuilder {
             new CheckNode(CollisionChecks.HasCollision, "CheckCollision"),
             new ActionNode(AnimationActions.SetIdle, "SetIdle"),
             new ActionNode(CollisionActions.HandleCollision, "HandleCollision"),
+            new ActionNode(DetectionActions.EndChase, "EndChaseIfCollided"),
             new ActionNode(RagdollActions.EnterRagdoll, "EnterRagdoll")
         }, "CollisionHandler");
     }

@@ -16,9 +16,25 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2527949572684353254, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: attenuationObject
+      value: 
+      objectReference: {fileID: 6434606396001306906}
     - target: {fileID: 3083547651758665615, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Name
       value: WorkerHelmet_PREFAB
+      objectReference: {fileID: 0}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: PlayerChaseTimer
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: PlayerDetectionRange
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4094550433133554733, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+      propertyPath: PlayerDetectionLayerMask.m_Bits
+      value: 2056
       objectReference: {fileID: 0}
     - target: {fileID: 6756622653507200485, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Mesh
@@ -27,22 +43,22 @@ PrefabInstance:
     - target: {fileID: 7030218543940312765, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: db0eb1c36d35fdf42902da9ccae3debd, type: 2}
     - target: {fileID: 7031326139741045661, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_Mesh
       value: 
       objectReference: {fileID: -6096448504595923017, guid: 95693a8f7ff277d4390387f2818d9dc5, type: 3}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.2259624
+      value: 2.76
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.9850001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.7574157
+      value: -3.75
       objectReference: {fileID: 0}
     - target: {fileID: 7823550869398122974, guid: e1177475e43ec6647a40bd220916e136, type: 3}
       propertyPath: m_LocalRotation.w
@@ -131,3 +147,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6172382015762652753}
   m_Mesh: {fileID: -6096448504595923017, guid: 95693a8f7ff277d4390387f2818d9dc5, type: 3}
+--- !u!1 &6434606396001306906 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3083547651758665615, guid: e1177475e43ec6647a40bd220916e136, type: 3}
+  m_PrefabInstance: {fileID: 8324523671969195669}
+  m_PrefabAsset: {fileID: 0}

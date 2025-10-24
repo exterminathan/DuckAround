@@ -7,6 +7,7 @@ public class PrimaryBTBuilder {
         {
             CollisionBTBuilder.BuildCollisionSequence(),
             CollisionBTBuilder.BuildRecoverySequence(),
+            DetectionBTBuilder.BuildDetectionBranch(),
             WaypointBTBuilder.BuildWaypointTraversal()
         }, "WorkerBehaviour");
     }

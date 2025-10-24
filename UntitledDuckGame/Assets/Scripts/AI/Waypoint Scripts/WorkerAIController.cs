@@ -12,12 +12,19 @@ public class WorkerAIController : MonoBehaviour {
     public Waypoint StartWaypoint;
     public Waypoint TargetWaypoint;
     public float MoveSpeed = 3f;
+    public float ChaseSpeed = 5f;
     public float ArriveThreshold = 0.1f;
 
     [Header("State Control Flags")]
     public bool IsAllowedToMove = true;
     public bool IsCollided = false;
     public bool IsRagdollActive = false;
+
+    [Header("Player Detection")]
+    [SerializeField] public float PlayerDetectionRange = 5f;
+    [SerializeField] public float PlayerChaseTimer = 3f;
+    [SerializeField] public LayerMask PlayerDetectionLayerMask;
+    [SerializeField] public Transform PlayerTransform;
 
     private BehaviourTree _tree;
     private Dictionary<string, object> _blackboard;
@@ -36,6 +43,8 @@ public class WorkerAIController : MonoBehaviour {
 
     [Header("Audio")]
     private EventInstance ragdollSound;
+
+    
 
     [Header("Self")]
     [SerializeField] private Collider workerPrimaryCollider;
@@ -72,14 +81,23 @@ public class WorkerAIController : MonoBehaviour {
 
         _blackboard = new Dictionary<string, object> {
             ["SelfTransform"] = transform,
+            //waypoints
             ["StartWaypoint"] = StartWaypoint,
             ["TargetWaypoint"] = TargetWaypoint,
             ["Speed"] = MoveSpeed,
             ["ArriveThreshold"] = ArriveThreshold,
             ["IsAllowedToMove"] = IsAllowedToMove,
+            //ragdoll
             ["IsCollided"] = IsCollided,
             ["IsRagdollActive"] = IsRagdollActive,
             ["WorkerAIController"] = this,
+            //player Detection
+            ["PlayerDetectionRange"] = PlayerDetectionRange,
+            ["PlayerChaseTimer"] = PlayerChaseTimer,
+            ["IsChasing"] = false,
+            ["ChaseSpeed"] = ChaseSpeed,
+            ["LastDetectionTime"] = 0f,
+            ["PlayerTransform"] = null,
 
         };
 
