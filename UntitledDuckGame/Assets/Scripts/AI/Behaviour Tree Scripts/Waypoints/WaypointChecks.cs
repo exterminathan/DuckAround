@@ -20,9 +20,16 @@ public static class WaypointChecks {
         var target = state.GetValueOrDefault("TargetWaypoint") as Waypoint;
         var self = state.GetValueOrDefault("SelfTransform") as Transform;
         var threshold = (float)state.GetValueOrDefault("ArriveThreshold");
+        var ctrl = state.GetValueOrDefault("WorkerAIController") as WorkerAIController;
 
         if (target == null || self == null) return false;
-        return Vector3.Distance(self.position, target.transform.position) <= threshold;
+        bool isAt = Vector3.Distance(self.position, target.transform.position) <= threshold;
+        
+        if (isAt) {
+            ctrl.WorkerVisController.SetVisualColor(StateName.IDLE);
+        }
+        
+        return isAt;
     }
 
     public static bool HasTargetWaypoint(Dictionary<string, object> state) {

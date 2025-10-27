@@ -105,7 +105,7 @@
                 float2 center = float2(0.5, 0.5);
                 float dist = distance(IN.texcoord, center);
                 float r01 = saturate(dist / 0.5);
-                float edgeFade = (_EdgeFadePower <= 0.0) ? 1.0 : pow(r01, _EdgeFadePower);
+                float edgeFade = (_EdgeFadePower <= 0.0) ? 1.0 : pow(1.0 - r01, _EdgeFadePower);
                 c.a *= edgeFade;
 
 				return c;

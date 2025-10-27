@@ -23,6 +23,7 @@ public static class DetectionActions {
         GlobalAlarm.RequestIncrease(1f);
         //alert animation when beginning chase
         ctrl.SetAlertAnimationActive(true);
+        ctrl.WorkerVisController.SetVisualColor(StateName.CHASING);
 
 
         state["IsChasing"] = true;
@@ -68,6 +69,10 @@ public static class DetectionActions {
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         state["IsChasing"] = false;
 
+        //reset animator speed
+        var animator = (Animator)state["WorkerAnimator"];
+        animator.speed = 1f;
+
         //hide alert animation when chase is over
         ctrl.SetAlertAnimationActive(false);
 
@@ -80,6 +85,8 @@ public static class DetectionActions {
         state["IsChasing"] = false;
         state["LastDetectionTime"] = 0f;
         state["PlayerTransform"] = null;
+
+        ctrl.WorkerVisController.SetVisualColor(StateName.PATROL, true);
 
         state["IsAllowedToMove"] = false;
         state.Remove("FullPath");

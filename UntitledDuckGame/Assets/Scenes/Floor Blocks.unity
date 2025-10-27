@@ -583,7 +583,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.13
+      value: -2.44
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.y
@@ -591,7 +591,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.31
+      value: 1.47
       objectReference: {fileID: 0}
     - target: {fileID: 7855308169354317159, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1374,7 +1374,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1156633755
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1750,6 +1750,20 @@ MonoBehaviour:
   innerCircle: {fileID: 1420375994}
   outerCircle: {fileID: 1318512360}
   lerpSpeed: 2
+  innerOpacity: 0.098
+  outerOpacity: 1
+  colorlerpSpeed: 100
+  colorStates:
+  - StateName: 0
+    StateColor: {r: 0, g: 0.7203593, b: 1, a: 1}
+  - StateName: 1
+    StateColor: {r: 0, g: 0.19350243, b: 1, a: 1}
+  - StateName: 2
+    StateColor: {r: 1, g: 0.7607844, b: 0, a: 1}
+  - StateName: 3
+    StateColor: {r: 1, g: 0, b: 0, a: 1}
+  - StateName: 4
+    StateColor: {r: 1, g: 1, b: 1, a: 0}
 --- !u!1001 &1439627804
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2340,7 +2354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1898882067
 MonoBehaviour:
   m_ObjectHideFlags: 0

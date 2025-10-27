@@ -24,7 +24,13 @@ public class DetectionChecks
 
         state["PlayerTransform"] = seen ? hits[0].transform : null;
 
-        if (seen) state["LastDetectionTime"] = Time.time;
+        if (seen) {
+            state["LastDetectionTime"] = Time.time;
+
+            // set detection visual to yellow
+            ctrl.WorkerVisController.SetVisualColor(StateName.ALERT);
+
+        }
         return seen;
     }
 
@@ -38,6 +44,9 @@ public class DetectionChecks
         // Debug.Log("Time left: " + (Time.time - last) + " / " + chaseDuration);
 
         bool endCond = Time.time - last > chaseDuration;
+        if (endCond) {
+            ctrl.WorkerVisController.SetVisualColor(StateName.PATROL);
+        }
 
         return endCond;
     }

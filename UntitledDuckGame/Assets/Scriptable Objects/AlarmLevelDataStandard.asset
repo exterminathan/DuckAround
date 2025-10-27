@@ -15,43 +15,36 @@ MonoBehaviour:
   alarmLevels:
   - Level: 0
     playerChaseSpeed: 3
-    playerDetectionAngle: 45
+    playerDetectionAngle: 20
     playerDetectionDistance: 3
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 7
   - Level: 1
     playerChaseSpeed: 5
     playerDetectionAngle: 45
     playerDetectionDistance: 5
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 9
   - Level: 2
     playerChaseSpeed: 3
     playerDetectionAngle: 20
     playerDetectionDistance: 7
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
-    chaseTimer: 0
+    chaseTimer: 15
   - Level: 3
     playerChaseSpeed: 0
     playerDetectionAngle: 0
     playerDetectionDistance: 0
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 0
   - Level: 0
     playerChaseSpeed: 0
     playerDetectionAngle: 0
     playerDetectionDistance: 0
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 0
   - Level: 0
     playerChaseSpeed: 0
     playerDetectionAngle: 0
     playerDetectionDistance: 0
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 0
   - Level: 0
     playerChaseSpeed: 0
     playerDetectionAngle: 0
     playerDetectionDistance: 0
-    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
     chaseTimer: 0

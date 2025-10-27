@@ -155,7 +155,11 @@ public class WorkerAIController : MonoBehaviour {
                 originalFBX.transform.localPosition = Vector3.zero;
                 Debug.Log(originalFBX.name + $" position reset to {originalFBX.transform.localPosition}");
             }
+
+            //turn on detection visual
+            WorkerVisController.SetVisualColor(StateName.PATROL);
         }
+
     }
 
     // Collisions

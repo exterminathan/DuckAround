@@ -16,8 +16,7 @@ public class AlarmConfig : ScriptableObject
         [Header("WorkerDetectionZone")]
         public float playerDetectionAngle;
         public float playerDetectionDistance;
-        public Color playerDetectionColor;
-
+        
 
         [Header("Chase Settings")]
         public float chaseTimer;

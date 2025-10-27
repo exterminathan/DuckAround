@@ -90,9 +90,9 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Angle: 0
-    - _Arc1: 90
-    - _Arc2: 180
+    - _Angle: 45
+    - _Arc1: 160
+    - _Arc2: 160
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -105,7 +105,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 10
     - _DstBlendAlpha: 10
-    - _EdgeFadePower: 0
+    - _EdgeFadePower: 5
     - _EdgeFeather: 0
     - _EmissionStrength: 0
     - _EnvironmentReflections: 1
