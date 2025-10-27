@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+
 public static class DetectionActions {
     private static float chaseReAcquireCooldown = .5f;
     public static bool BeginChase(Dictionary<string, object> state) {
@@ -15,12 +16,14 @@ public static class DetectionActions {
             return false;
         }
 
-        float lastSeen = state.ContainsKey("LastSeenTime") ? (float)state["LastSeenTime"] : 0f;
+        float lastSeen = state.ContainsKey("LastDetectionTime") ? (float)state["LastDetectionTime"] : 0f;
 
         Debug.Log("Time since last seen: " + (Time.time - lastSeen));
 
         GlobalAlarm.RequestIncrease(1f);
+        //alert animation when beginning chase
         ctrl.SetAlertAnimationActive(true);
+
 
         state["IsChasing"] = true;
         state.Remove("FullPath");
@@ -40,16 +43,20 @@ public static class DetectionActions {
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         var self = ctrl.transform;
         var player = (Transform)state["PlayerTransform"];
-        var speed = (float)state["ChaseSpeed"];
-        var isChasing = (bool)state["IsChasing"];
+        var chaseSpeed = GlobalAlarm.GetCurrentLevelData().playerChaseSpeed;
+
+        var animator = (Animator)state["WorkerAnimator"];
 
         if (player == null) return false;
 
-        Vector3 dir = (player.position - self.position);
+        Vector3 dir = player.position - self.position;
             dir.y = 0f;
             if (dir.sqrMagnitude > 0.001f) {
                 self.rotation = Quaternion.LookRotation(dir);
-                self.position += speed * self.forward * ctrl.MoveSpeed * Time.deltaTime;
+            self.position += chaseSpeed * self.forward * ctrl.MoveSpeed * Time.deltaTime;
+
+            //change animator speed 
+            animator.speed = chaseSpeed;
             }
 
 
@@ -61,6 +68,7 @@ public static class DetectionActions {
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         state["IsChasing"] = false;
 
+        //hide alert animation when chase is over
         ctrl.SetAlertAnimationActive(false);
 
         return true;

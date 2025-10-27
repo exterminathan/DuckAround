@@ -10,6 +10,8 @@ public static class AnimationActions {
         if (currWalking)
             return true;
 
+        animator.speed = 1f;
+
         animator.SetBool("isWalking", true);
         Debug.Log("Animator isWalking set to: " + animator.GetBool("isWalking"));
         return true;

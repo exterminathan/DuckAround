@@ -4,17 +4,17 @@ using TMPro;
 public class AlarmManager : MonoBehaviour
 {
     [SerializeField] private TMP_Text alarmText;
-    private float cachedAlarm = 0f;
+    private AlarmLevel cachedAlarm = AlarmLevel.L0;
 
 
 	// Update is called once per frame
 	void Update()
     {
-        float lvl = GlobalAlarm.Level; 
-        if (lvl != cachedAlarm)
+        AlarmLevel currentLevel = GlobalAlarm.Level;
+        if (currentLevel != cachedAlarm)
         {
-            cachedAlarm = lvl;
-            alarmText.text = lvl.ToString("F1");
+            cachedAlarm = currentLevel;
+            alarmText.text = GlobalAlarm.LevelToString();
         }
     }
 }

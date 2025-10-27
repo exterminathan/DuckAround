@@ -6,6 +6,7 @@ public class DetectionChecks
     public static bool DetectPlayer(Dictionary<string, object> state) {
         var isRagdoll = state.ContainsKey("IsRagdollActive") && (bool)state["IsRagdollActive"];
         var canMove = state.ContainsKey("IsAllowedToMove") && (bool)state["IsAllowedToMove"];
+
         if (isRagdoll || !canMove) {
             state["PlayerTransform"] = null;
             return false;
@@ -13,11 +14,12 @@ public class DetectionChecks
 
         //Debug.Log("[DetectionChecks] DetectPlayer called.");
         var ctrl = (WorkerAIController)state["WorkerAIController"];
-        var range = (float)state["PlayerDetectionRange"];
+        var range = GlobalAlarm.GetCurrentLevelData().playerDetectionDistance;
+        var angle = GlobalAlarm.GetCurrentLevelData().playerDetectionAngle;
 
         var hits = Physics.OverlapSphere(ctrl.transform.position, range, ctrl.PlayerDetectionLayerMask);
         //check if hit is in front 90 degrees of AI
-        bool seen = hits.Length > 0 && Vector3.Dot(ctrl.transform.forward, (hits[0].transform.position - ctrl.transform.position).normalized) > 0f;
+        bool seen = hits.Length > 0 && Vector3.Angle(ctrl.transform.forward, (hits[0].transform.position - ctrl.transform.position).normalized) <= angle * 0.5f;
         Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (ctrl.transform.forward * range), seen ? Color.red : Color.green, 0.1f);
 
         state["PlayerTransform"] = seen ? hits[0].transform : null;
@@ -30,12 +32,13 @@ public class DetectionChecks
         => state.ContainsKey("IsChasing") && (bool)state["IsChasing"];
     
     public static bool LostPlayer(Dictionary<string, object> state) {
-        //Debug.Log("[DetectionChecks] LostPlayer called.");
+        var ctrl = (WorkerAIController)state["WorkerAIController"];
         float last = (float)state["LastDetectionTime"];
-        float chaseDuration = (float)state["PlayerChaseTimer"];
-        //Debug.Log("Time left: " + (Time.time - last) + " / " + chaseDuration);
+        float chaseDuration = GlobalAlarm.GetCurrentLevelData().chaseTimer;
+        // Debug.Log("Time left: " + (Time.time - last) + " / " + chaseDuration);
 
+        bool endCond = Time.time - last > chaseDuration;
 
-        return Time.time - last > chaseDuration;
+        return endCond;
     }
 }

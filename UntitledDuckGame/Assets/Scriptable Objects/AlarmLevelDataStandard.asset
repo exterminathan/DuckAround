@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1024e47d8b86a2e4bb937f4f5a5482f4, type: 3}
+  m_Name: AlarmLevelDataStandard
+  m_EditorClassIdentifier: 
+  alarmLevels:
+  - Level: 0
+    playerChaseSpeed: 3
+    playerDetectionAngle: 45
+    playerDetectionDistance: 3
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 7
+  - Level: 1
+    playerChaseSpeed: 5
+    playerDetectionAngle: 45
+    playerDetectionDistance: 5
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 9
+  - Level: 2
+    playerChaseSpeed: 3
+    playerDetectionAngle: 20
+    playerDetectionDistance: 7
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 0
+  - Level: 3
+    playerChaseSpeed: 0
+    playerDetectionAngle: 0
+    playerDetectionDistance: 0
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 0
+  - Level: 0
+    playerChaseSpeed: 0
+    playerDetectionAngle: 0
+    playerDetectionDistance: 0
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 0
+  - Level: 0
+    playerChaseSpeed: 0
+    playerDetectionAngle: 0
+    playerDetectionDistance: 0
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 0
+  - Level: 0
+    playerChaseSpeed: 0
+    playerDetectionAngle: 0
+    playerDetectionDistance: 0
+    playerDetectionColor: {r: 0, g: 0, b: 0, a: 0}
+    chaseTimer: 0

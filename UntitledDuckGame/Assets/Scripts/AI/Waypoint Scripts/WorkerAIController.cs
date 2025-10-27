@@ -8,6 +8,7 @@ using FMOD.Studio;
 
 [RequireComponent(typeof(BehaviourTree))]
 public class WorkerAIController : MonoBehaviour {
+
     [Header("State Path Settings")]
     public Waypoint StartWaypoint;
     public Waypoint TargetWaypoint;
@@ -26,9 +27,10 @@ public class WorkerAIController : MonoBehaviour {
 
     [Header("Player Detection")]
     [SerializeField] public float PlayerDetectionRange = 5f;
-    [SerializeField] public float PlayerChaseTimer = 3f;
+    [SerializeField] public float PlayerDetectionAngle = 45f;
     [SerializeField] public LayerMask PlayerDetectionLayerMask;
     [SerializeField] public Transform PlayerTransform;
+    [SerializeField] public WorkerVisualController WorkerVisController;
 
     private BehaviourTree _tree;
     private Dictionary<string, object> _blackboard;
@@ -98,10 +100,7 @@ public class WorkerAIController : MonoBehaviour {
             ["IsRagdollActive"] = IsRagdollActive,
             ["WorkerAIController"] = this,
             //player Detection
-            ["PlayerDetectionRange"] = PlayerDetectionRange,
-            ["PlayerChaseTimer"] = PlayerChaseTimer,
             ["IsChasing"] = false,
-            ["ChaseSpeed"] = ChaseSpeed,
             ["LastDetectionTime"] = 0f,
             ["PlayerTransform"] = null,
 
@@ -169,8 +168,6 @@ public class WorkerAIController : MonoBehaviour {
                 Debug.DrawRay(c.point, c.normal * 0.5f, Color.green, 20f);
             }
 
-            //TODO: DEBUG WHY THE COLLISION GETS FLAGGED SO FAR OUTSIDE THE DUCK COLLIDERS
-
             _lastCollisionPoint = hitPoint;
             _hasCollisionPoint = true;
             Debug.DrawRay(hitPoint, Vector3.up * 0.25f, Color.red, 2f);
@@ -194,6 +191,7 @@ public class WorkerAIController : MonoBehaviour {
             if (active) {
                 alertAnimator.ResetTrigger("Deactivate");
                 alertAnimator.SetTrigger("Activate");
+
             }
             else {
                 alertAnimator.ResetTrigger("Activate");
