@@ -19,12 +19,6 @@ public class GlobalAlarm : MonoBehaviour {
     }
 
     void Update() {
-        // decay value
-        if (currentValue > 0f) {
-            currentValue -= decayRate * Time.deltaTime;
-            if (currentValue < 0f) currentValue = 0f;
-        }
-
         // convert float 0–7 range into enum
         UpdateAlarmLevel();
     }
@@ -37,9 +31,6 @@ public class GlobalAlarm : MonoBehaviour {
             lastIncreaseTime = Time.time;
             instance.UpdateAlarmLevel();
 
-            Debug.Log($"[GlobalAlarm] Alarm increased by {amount}, new value: {currentValue}, Level: {Level}");
-        } else {
-            Debug.Log($"[GlobalAlarm] Increase denied due to cooldown.");
         }
     }
 

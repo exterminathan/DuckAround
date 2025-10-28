@@ -10,8 +10,8 @@ public class AlarmConfig : ScriptableObject
 {
     [System.Serializable]
     public struct AlarmLevelData {
-        public int Level;
-        public float playerChaseSpeed;
+        public AlarmLevel Level;
+
 
         [Header("WorkerDetectionZone")]
         public float playerDetectionAngle;
@@ -20,6 +20,7 @@ public class AlarmConfig : ScriptableObject
 
         [Header("Chase Settings")]
         public float chaseTimer;
+        public float playerChaseSpeed;
 
     }
 

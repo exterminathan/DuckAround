@@ -12,13 +12,12 @@ public class DetectionChecks
             return false;
         }
 
-        //Debug.Log("[DetectionChecks] DetectPlayer called.");
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         var range = GlobalAlarm.GetCurrentLevelData().playerDetectionDistance;
         var angle = GlobalAlarm.GetCurrentLevelData().playerDetectionAngle;
 
         var hits = Physics.OverlapSphere(ctrl.transform.position, range, ctrl.PlayerDetectionLayerMask);
-        //check if hit is in front 90 degrees of AI
+        //check if hit is in detection range
         bool seen = hits.Length > 0 && Vector3.Angle(ctrl.transform.forward, (hits[0].transform.position - ctrl.transform.position).normalized) <= angle * 0.5f;
         Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (ctrl.transform.forward * range), seen ? Color.red : Color.green, 0.1f);
 
@@ -41,7 +40,6 @@ public class DetectionChecks
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         float last = (float)state["LastDetectionTime"];
         float chaseDuration = GlobalAlarm.GetCurrentLevelData().chaseTimer;
-        // Debug.Log("Time left: " + (Time.time - last) + " / " + chaseDuration);
 
         bool endCond = Time.time - last > chaseDuration;
         if (endCond) {

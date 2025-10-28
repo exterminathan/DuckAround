@@ -374,10 +374,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5940562651500516562, guid: 6ce2c0dbdf63f2443bf4eddb0f1ca086, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1765497290}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6ce2c0dbdf63f2443bf4eddb0f1ca086, type: 3}
 --- !u!1001 &497647794
 PrefabInstance:
@@ -1749,10 +1746,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   innerCircle: {fileID: 1420375994}
   outerCircle: {fileID: 1318512360}
-  lerpSpeed: 2
+  paramLerpSpeed: 2
   innerOpacity: 0.098
-  outerOpacity: 1
-  colorlerpSpeed: 100
+  outerOpacity: 2
+  colorLerpSpeed: 2
   colorStates:
   - StateName: 0
     StateColor: {r: 0, g: 0.7203593, b: 1, a: 1}
@@ -2123,24 +2120,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3778586752457779842, guid: e5b7b534c57a00f41ac2909dc2266a1e, type: 3}
   m_PrefabInstance: {fileID: 1684027294}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1765497287 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5940562651500516562, guid: 6ce2c0dbdf63f2443bf4eddb0f1ca086, type: 3}
-  m_PrefabInstance: {fileID: 452424801}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1765497290
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1765497287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c486f4090248b04d809ceadd89a4934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  alarmText: {fileID: 794630093}
 --- !u!4 &1826927747 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8733522854710064862, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
@@ -2866,7 +2845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.76
+      value: 0.64
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -2878,19 +2857,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.6088089
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0.79331696
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2898,7 +2877,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -104.993
       objectReference: {fileID: 0}
     - target: {fileID: 2239538318727550795, guid: a9579590bb80d4d489776e5c78e60de5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -3021,6 +3000,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2075884586}
   - component: {fileID: 2075884585}
+  - component: {fileID: 2075884587}
   m_Layer: 0
   m_Name: GlobalAlarm Manager
   m_TagString: Untagged
@@ -3040,7 +3020,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 399356ebc6a5c874d90cea9dd91775c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decayRate: 0.01
+  decayRate: 0.05
   cooldownDuration: 5
   alarmConfig: {fileID: 11400000, guid: fbd16de6fc459174282f344a468f9f1a, type: 2}
 --- !u!4 &2075884586
@@ -3058,6 +3038,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2075884587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2075884584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c486f4090248b04d809ceadd89a4934, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alarmText: {fileID: 794630093}
 --- !u!1 &2094436207
 GameObject:
   m_ObjectHideFlags: 0

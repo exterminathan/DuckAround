@@ -1,13 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 public static class DetectionActions {
     private static float chaseReAcquireCooldown = .5f;
     public static bool BeginChase(Dictionary<string, object> state) {
-        Debug.Log("[DetectionActions] BeginChase called.");
         //check if ragdoll or can't move
         var ctrl = (WorkerAIController)state["WorkerAIController"];
 
+        //make sure worker isn't ragdolled
         var isRagdoll = state.ContainsKey("IsRagdollActive") && (bool)state["IsRagdollActive"];
         var canMove = state.ContainsKey("IsAllowedToMove") && (bool)state["IsAllowedToMove"];
 
@@ -16,16 +17,20 @@ public static class DetectionActions {
             return false;
         }
 
-        float lastSeen = state.ContainsKey("LastDetectionTime") ? (float)state["LastDetectionTime"] : 0f;
-
-        Debug.Log("Time since last seen: " + (Time.time - lastSeen));
-
+        //increase global alarm
         GlobalAlarm.RequestIncrease(1f);
+
         //alert animation when beginning chase
         ctrl.SetAlertAnimationActive(true);
+
+        //workervisual color and parameter updates
         ctrl.WorkerVisController.SetVisualColor(StateName.CHASING);
 
+        var range = GlobalAlarm.GetCurrentLevelData().playerDetectionDistance;
+        var angle = GlobalAlarm.GetCurrentLevelData().playerDetectionAngle;
+        ctrl.WorkerVisController.SetVisualParameters(angle, range);
 
+        //set chasing state and remove waypoint path
         state["IsChasing"] = true;
         state.Remove("FullPath");
 
@@ -33,7 +38,6 @@ public static class DetectionActions {
     }
 
     public static bool ChasePlayerTick(Dictionary<string, object> state) {
-        //Debug.Log("[DetectionActions] ChasePlayerTick called.");
         var isRagdoll = state.ContainsKey("IsRagdollActive") && (bool)state["IsRagdollActive"];
         var canMove = state.ContainsKey("IsAllowedToMove") && (bool)state["IsAllowedToMove"];
         if (isRagdoll || !canMove) {
@@ -48,7 +52,7 @@ public static class DetectionActions {
 
         var animator = (Animator)state["WorkerAnimator"];
 
-        if (player == null) return false;
+            if (player == null) return false;
 
         Vector3 dir = player.position - self.position;
             dir.y = 0f;
@@ -65,7 +69,6 @@ public static class DetectionActions {
     }
 
     public static bool EndChase(Dictionary<string, object> state) {
-        Debug.Log("[DetectionActions] EndChase called.");
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         state["IsChasing"] = false;
 
@@ -76,20 +79,26 @@ public static class DetectionActions {
         //hide alert animation when chase is over
         ctrl.SetAlertAnimationActive(false);
 
+        //workervisual color and parameter updates
+        ctrl.WorkerVisController.SetVisualColor(StateName.PATROL);
+
+        ctrl.WorkerVisController.SetVisualParametersToDefault();
+
         return true;
     }
     
     public static bool ResetPlayerUponRagdoll(Dictionary<string, object> state) {
-        Debug.Log("[DetectionActions] ResetPlayerUponRagdoll called.");
         var ctrl = (WorkerAIController)state["WorkerAIController"];
         state["IsChasing"] = false;
         state["LastDetectionTime"] = 0f;
         state["PlayerTransform"] = null;
 
-        ctrl.WorkerVisController.SetVisualColor(StateName.PATROL, true);
-
         state["IsAllowedToMove"] = false;
         state.Remove("FullPath");
+
+        ctrl.WorkerVisController.SetVisualColor(StateName.PATROL, true);
+        ctrl.WorkerVisController.SetVisualParametersToDefault();
+
 
         return true;
     }

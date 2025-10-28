@@ -27,6 +27,11 @@ public static class WaypointChecks {
         
         if (isAt) {
             ctrl.WorkerVisController.SetVisualColor(StateName.IDLE);
+            ctrl.WorkerVisController.SetVisualParameters(20f, 1f);
+
+            //temp
+            //rotate towards player
+            self.LookAt(new Vector3(ctrl.PlayerTransform.position.x, self.position.y, ctrl.PlayerTransform.position.z));
         }
         
         return isAt;

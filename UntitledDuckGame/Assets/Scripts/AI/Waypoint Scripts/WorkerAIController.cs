@@ -13,7 +13,6 @@ public class WorkerAIController : MonoBehaviour {
     public Waypoint StartWaypoint;
     public Waypoint TargetWaypoint;
     public float MoveSpeed = 3f;
-    public float ChaseSpeed = 5f;
     public float ArriveThreshold = 0.1f;
 
     [Header("State Control Flags")]
@@ -26,8 +25,7 @@ public class WorkerAIController : MonoBehaviour {
     [SerializeField] public Animator WorkerAlertAnimator;
 
     [Header("Player Detection")]
-    [SerializeField] public float PlayerDetectionRange = 5f;
-    [SerializeField] public float PlayerDetectionAngle = 45f;
+
     [SerializeField] public LayerMask PlayerDetectionLayerMask;
     [SerializeField] public Transform PlayerTransform;
     [SerializeField] public WorkerVisualController WorkerVisController;
@@ -37,7 +35,6 @@ public class WorkerAIController : MonoBehaviour {
 
     [Header("Editor Debug")]
     public bool ragdollRBEnabled = false;
-    private bool rgFlag = false;
     private Rigidbody[] rigidbodies;
     //colliders separated by type
     //because.. wait actually there is no reason
@@ -50,7 +47,7 @@ public class WorkerAIController : MonoBehaviour {
     [Header("Audio")]
     private EventInstance ragdollSound;
 
-    
+
 
     [Header("Self")]
     [SerializeField] private Collider workerPrimaryCollider;
@@ -115,9 +112,9 @@ public class WorkerAIController : MonoBehaviour {
             _blackboard["AlertAnimator"] = alertAnim;
 
         ApplyRagdoll(false);
-        rgFlag = false;
         _blackboard["IsRagdollActive"] = false;
     }
+
 
     void Update() {
         _tree.Root?.Execute(_blackboard);
@@ -130,7 +127,7 @@ public class WorkerAIController : MonoBehaviour {
         }
         if (_blackboard.TryGetValue("AlertAnimator", out var aa) && aa is Animator alertAnimator) {
             alertAnimator.ResetTrigger("Activate");
-            alertAnimator.SetTrigger("Deactivate"); 
+            alertAnimator.SetTrigger("Deactivate");
         }
 
         // rigidbodies: non-kinematic when ragdoll==on
@@ -153,7 +150,6 @@ public class WorkerAIController : MonoBehaviour {
         if (!on) {
             if (originalFBX != null) {
                 originalFBX.transform.localPosition = Vector3.zero;
-                Debug.Log(originalFBX.name + $" position reset to {originalFBX.transform.localPosition}");
             }
 
             //turn on detection visual
@@ -175,9 +171,6 @@ public class WorkerAIController : MonoBehaviour {
             _lastCollisionPoint = hitPoint;
             _hasCollisionPoint = true;
             Debug.DrawRay(hitPoint, Vector3.up * 0.25f, Color.red, 2f);
-        }
-        else {
-            Debug.Log($"worker collided with {other.gameObject.name} (no contacts reported)");
         }
 
         if ((workerCollisionLayerMask & (1 << other.gameObject.layer)) != 0) {
@@ -223,7 +216,7 @@ public class WorkerAIController : MonoBehaviour {
     }
 
     //local helper to find closest waypoint
-    private Waypoint FindClosestWaypoint(Vector3 pos) {
+    public Waypoint FindClosestWaypoint(Vector3 pos) {
         Waypoint[] all = FindObjectsByType<Waypoint>(FindObjectsSortMode.None);
         Waypoint closest = null;
         float minDist = float.MaxValue;
@@ -246,16 +239,4 @@ public class WorkerAIController : MonoBehaviour {
         }
     }
 
-    private void OnValidate() {
-#if UNITY_EDITOR
-        if (Application.isPlaying && gameObject.scene.isLoaded) {
-            if (TargetWaypoint != null) {
-                Debug.Log("TargetWaypoint changed in editor: " + TargetWaypoint.name);
-                UnityEditor.EditorApplication.delayCall += () => {
-                    if (this != null) SetNewDestination(TargetWaypoint);
-                };
-            }
-        }
-#endif
-    }
 }

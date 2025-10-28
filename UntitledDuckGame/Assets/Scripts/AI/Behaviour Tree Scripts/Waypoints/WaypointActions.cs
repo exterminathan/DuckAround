@@ -4,7 +4,8 @@ using UnityEngine;
 
 public static class WaypointActions {
     public static bool FindPathAction(Dictionary<string, object> state) {
-        var start = state.GetValueOrDefault("StartWaypoint") as Waypoint;
+        var ctrl = state.GetValueOrDefault("WorkerAIController") as WorkerAIController;
+        var start = ctrl.FindClosestWaypoint(ctrl.transform.position);
         var target = state.GetValueOrDefault("TargetWaypoint") as Waypoint;
         if (start == null || target == null) return false;
 
@@ -25,6 +26,8 @@ public static class WaypointActions {
         var selfTrans = state.GetValueOrDefault("SelfTransform") as Transform;
         float speed = state.GetValueOrDefault("Speed") is float s ? s : 0f;
         float thresh = state.GetValueOrDefault("ArriveThreshold") is float t ? t : 0.1f;
+        var ctrl = state.GetValueOrDefault("WorkerAIController") as WorkerAIController;
+        var self = state.GetValueOrDefault("SelfTransform") as Transform;
         Animator anim = state.GetValueOrDefault("WorkerAnimator") as Animator;
 
         if (path == null || selfTrans == null)
@@ -42,6 +45,13 @@ public static class WaypointActions {
             Debug.Log("Animator isWalking set to false upon finishing path");
 
             //Debug.Log("Reset path details upon finishing path");
+
+            ctrl.WorkerVisController.SetVisualColor(StateName.IDLE);
+            ctrl.WorkerVisController.SetVisualParameters(20f, 1f);
+
+            //temp
+            //rotate towards player
+            self.LookAt(new Vector3(ctrl.PlayerTransform.position.x, self.position.y, ctrl.PlayerTransform.position.z));
 
             return true;
         }

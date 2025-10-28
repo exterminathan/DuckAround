@@ -16,8 +16,10 @@ public static class DetectionBTBuilder {
 
                     new Sequence(new List<Node> {
                         new ActionNode(DetectionActions.ChasePlayerTick, "ChaseTick"),
-                        new ActionNode(AnimationActions.SetWalking, "SetWalking"),
-                        new CheckNode(AnimationChecks.IsInWalkingState, "IsWalking")
+                        new Selector(new List<Node> {
+                            new CheckNode(AnimationChecks.IsInWalkingState, "IsWalking"),
+                            new ActionNode(AnimationActions.SetWalking, "SetWalking")
+                        }, "EnsureWalking")
                     }, "KeepChasing")
                 })
             }, "ChaseBranch"),

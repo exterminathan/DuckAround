@@ -165,7 +165,7 @@ public class PlayerDuckController : MonoBehaviour {
             //impulse: μ * vNorm * normal * dampFactor
             Vector3 impulse = normal * vNorm * μ * bodyImpulseDampFactor;
 
-            Debug.Log($"{name} → {hit.gameObject.name}: impulse {impulse.magnitude} at {normal}");
+            //Debug.Log($"{name} → {hit.gameObject.name}: impulse {impulse.magnitude} at {normal}");
             //apply at contact point
             otherRb.AddForceAtPosition(impulse, hit.point, ForceMode.Impulse);
         }

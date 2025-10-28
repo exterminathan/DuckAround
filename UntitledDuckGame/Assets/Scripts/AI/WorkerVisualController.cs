@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using UnityEngine;
 
 public enum StateName {
@@ -18,13 +19,15 @@ public struct ColorState {
 public class WorkerVisualController : MonoBehaviour {
     [Header("Visual Components")]
     [SerializeField] private Renderer innerCircle;
+    // used for scaling vis for distance
+    private RectTransform innerRectTransform;
     [SerializeField] private Renderer outerCircle;
-    [SerializeField] private float lerpSpeed = 2f;
+    [SerializeField] private float paramLerpSpeed = 2f;
 
     [Header("Opacity")]
     [SerializeField] private float innerOpacity = 0.098f;
     [SerializeField] private float outerOpacity = 1f;
-    [SerializeField] private float colorlerpSpeed = 4f;
+    [SerializeField] private float colorLerpSpeed = 4f;
 
     [Header("Color States")]
     [SerializeField] private ColorState[] colorStates;
@@ -35,14 +38,19 @@ public class WorkerVisualController : MonoBehaviour {
 
     private float currentAngle;
     private float currentDistance;
+    private float currentScale;
     private Color currentInnerColor;
     private Color currentOuterColor;
 
 
     private float targetAngle;
     private float targetDistance;
+    private float targetScale;
     private Color targetInnerColor;
     private Color targetOuterColor;
+
+    private float colorLerpStartTime;
+    private float paramLerpStartTime;
 
     private bool isParamLerping = false;
     private bool isColorLerping = false;
@@ -52,24 +60,31 @@ public class WorkerVisualController : MonoBehaviour {
         innerMat = innerCircle.material;
         outerMat = outerCircle.material;
 
+        innerRectTransform = innerCircle.GetComponent<RectTransform>();
+
         currentInnerColor = innerMat.GetColor("_Color");
         currentOuterColor = outerMat.GetColor("_Color");
-        Debug.Log($"[WorkerVisualController] Awake called. Initial colors: Inner: {currentInnerColor}, Outer: {currentOuterColor}");
 
+        currentAngle = 40f;
+        currentDistance = 5f;
+
+        currentScale = innerRectTransform.localScale.x;
+
+        SetVisualParameters(15f, 1.5f);
+        
     }
 
-    public void SetVisualParameters(float angle, float distance) {
-        Debug.Log($"[WorkerVisualController] SetVisualParameters called with angle: {angle}, distance: {distance}");
-        targetAngle = angle;
-        targetDistance = distance;
-        isParamLerping = true;
-    }
+    //getters for current visual parameters
+    public float GetCurrentAngle() => currentAngle;
+    public float GetCurrentDistance() => currentDistance;
 
     public void SetVisualColor(StateName state, bool opacityOff = false) {
-        Debug.Log($"[WorkerVisualController] SetVisualColor called with state: {state}");
 
         Color newColor = GetColorFromState(state);
-        
+
+        currentInnerColor = innerMat.GetColor("_Color");
+        currentOuterColor = outerMat.GetColor("_Color");
+
         if (opacityOff) {
             targetInnerColor = new Color(newColor.r, newColor.g, newColor.b, 0f);
             targetOuterColor = new Color(newColor.r, newColor.g, newColor.b, 0f);
@@ -80,37 +95,62 @@ public class WorkerVisualController : MonoBehaviour {
         targetInnerColor = new Color(newColor.r, newColor.g, newColor.b, innerOpacity);
         targetOuterColor = new Color(newColor.r, newColor.g, newColor.b, outerOpacity);
         isColorLerping = true;
+        colorLerpStartTime = Time.time;
+    }
+
+    public void SetVisualParameters(float angle, float distance) {
+        targetAngle = angle;
+        targetDistance = distance;
+        targetScale = ScaleFromUnits(distance);
+        Debug.Log($"[WorkerVisualController] SetVisualParameters called with angle: {angle}, distance: {distance}, scale: {targetScale}");
+        isParamLerping = true;
+    }
+
+    //helper to set visual parameters back to default
+    public void SetVisualParametersToDefault() {
+        var defaultData = GlobalAlarm.GetDefaultLevelData();
+        SetVisualParameters(defaultData.playerDetectionAngle, defaultData.playerDetectionDistance);
     }
 
     void Update() {
         if (isColorLerping) {
+            float tc = (Time.time - colorLerpStartTime) / colorLerpSpeed;
+            tc = Mathf.Clamp01(tc);
             //color lerp
-            currentInnerColor = Color.Lerp(currentInnerColor, targetInnerColor, Time.deltaTime * colorlerpSpeed);
-            currentOuterColor = Color.Lerp(currentOuterColor, targetOuterColor, Time.deltaTime * colorlerpSpeed);
+            currentInnerColor = Color.Lerp(currentInnerColor, targetInnerColor, tc);
+            currentOuterColor = Color.Lerp(currentOuterColor, targetOuterColor, tc);
             innerMat.SetColor("_Color", currentInnerColor);
             outerMat.SetColor("_Color", currentOuterColor);
-
+            if (tc >= 1f) {
+                isColorLerping = false;
+            }
         }
 
         if (isParamLerping) {
-            //param lerp
-            currentAngle = Mathf.Lerp(currentAngle, targetAngle, Time.deltaTime * lerpSpeed);
-            currentDistance = Mathf.Lerp(currentDistance, targetDistance, Time.deltaTime * lerpSpeed);
+            float tp = (Time.time - paramLerpStartTime) / paramLerpSpeed;
+            tp = Mathf.Clamp01(tp);
 
-            if (Mathf.Abs(currentAngle - targetAngle) < 0.01f && Mathf.Abs(currentDistance - targetDistance) < 0.01f) {
+            //angle lerp
+            currentAngle = Mathf.Lerp(currentAngle, targetAngle, tp);
+            
+            //distance -> scale lerp
+            currentScale = Mathf.Lerp(currentScale, targetScale, tp);
+
+
+            if (Mathf.Abs(currentAngle - targetAngle) < 0.01f && Mathf.Abs(currentScale - targetScale) < 0.01f) {
                 isParamLerping = false;
             }
 
-            var arc1 = 180 - currentAngle / 2f;
-            var arc2 = 180 + currentAngle / 2f;
+            var arc = 180 - currentAngle / 2f;
 
-            innerMat.SetFloat("_Angle", currentAngle);
-            innerMat.SetFloat("_Arc1", arc1);
-            innerMat.SetFloat("_Arc2", arc2);
+            innerMat.SetFloat("_Arc1", arc);
+            innerMat.SetFloat("_Arc2", arc);
 
-            outerMat.SetFloat("_Angle", currentAngle);
-            outerMat.SetFloat("_Arc1", arc1);
-            outerMat.SetFloat("_Arc2", arc2);
+            outerMat.SetFloat("_Arc1", arc);
+            outerMat.SetFloat("_Arc2", arc);
+
+            innerRectTransform.localScale = Vector3.one * currentScale;
+
         }
     }
 
@@ -122,6 +162,11 @@ public class WorkerVisualController : MonoBehaviour {
             }
         }
         return Color.white;
+    }
+
+    //private hlper to get vis scale from units
+    private float ScaleFromUnits(float units) {
+        return 0.201f * units + 0.024f;
     }
 
 }
