@@ -85,7 +85,7 @@ public class ConveyorObjectMover : MonoBehaviour
         }
 
         if (pickupInteractable == null) pickupInteractable = GetComponent<PickupInteractable>();
-        Debug.Log($"{pickupInteractable} on enable");
+        //Debug.Log($"{pickupInteractable} on enable");
         wasPickupActive = false;
 
         interactionCollider = GetComponentInChildren<BoxCollider>();

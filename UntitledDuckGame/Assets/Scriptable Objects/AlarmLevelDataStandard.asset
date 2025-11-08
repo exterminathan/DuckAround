@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   alarmLevels:
   - Level: 0
-    playerDetectionAngle: 25
-    playerDetectionDistance: 2
+    playerDetectionAngle: 30
+    playerDetectionDistance: 4
     chaseTimer: 5
     playerChaseSpeed: 3.5
   - Level: 1

@@ -10,6 +10,7 @@ public class ArmHitForwarder : MonoBehaviour {
 
     void OnCollisionEnter(Collision other) {
         //Collisions with npc
+        Debug.Log($"[ArmHitForwarder] OnCollisionEnter with {other.gameObject.name}");
         var npc = other.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
 

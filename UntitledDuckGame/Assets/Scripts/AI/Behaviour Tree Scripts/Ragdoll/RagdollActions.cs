@@ -8,7 +8,7 @@ public static class RagdollActions {
         var ctrl = state["WorkerAIController"] as WorkerAIController;
         ctrl.ApplyRagdoll(true);
 
-        AudioManager.instance.PlayOneShot(FMODEvents.instance.ragdollSound, ctrl.transform.position);
+        // play ragdoll sound
         return true;
     }
 

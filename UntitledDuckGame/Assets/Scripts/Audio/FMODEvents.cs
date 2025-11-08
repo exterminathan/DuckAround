@@ -6,6 +6,9 @@ public class FMODEvents : MonoBehaviour {
     [field: Header("Ragdoll SFX")]
     [field: SerializeField] public EventReference ragdollSound { get; private set; }
 
+    [field: Header("Collision SFX")]
+    [field: SerializeField] public EventReference collisionSound { get; private set; }
+
 
     public static FMODEvents instance { get; private set; }
 

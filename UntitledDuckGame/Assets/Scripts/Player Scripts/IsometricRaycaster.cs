@@ -29,6 +29,7 @@ public class IsometricRaycaster : MonoBehaviour {
     public float minPivotAngle = -90f;
     public float maxPivotAngle = 90f;
     public float rotationSmoothSpeed = 5f;
+    private float rotationAngleY;
 
     [Header("Horizontal IK Parameters")]
     public float minIKX = 0f;
@@ -83,6 +84,9 @@ public class IsometricRaycaster : MonoBehaviour {
         if (mainCamera == null) mainCamera = Camera.main;
         if (uiCanvas == null) uiCanvas = FindFirstObjectByType<Canvas>();
 
+        //assign default rotationAngleY
+        rotationAngleY = rotate_pivot.transform.localEulerAngles.y;
+
         //populate arm colliders and pushers
         armColliders = armObjects
             .SelectMany(o => o.GetComponentsInChildren<Collider>())
@@ -122,25 +126,24 @@ public class IsometricRaycaster : MonoBehaviour {
         float centerX = Screen.width * 0.5f;
         float minX = centerX - innerZoneRangeX;
         float maxX = centerX + innerZoneRangeX;
+        
         float t = Mathf.Clamp01((Input.mousePosition.x - minX) / (maxX - minX));
-
         float targetAngle = Mathf.Lerp(maxPivotAngle, minPivotAngle, t);
+
+        float delta = Mathf.DeltaAngle(rotationAngleY, targetAngle);
+        rotationAngleY += delta * Time.deltaTime * rotationSmoothSpeed;
+
         var pivot = rotate_pivot.transform;
-        float currY = pivot.localEulerAngles.y;
-        float smoothedY = Mathf.LerpAngle(currY, targetAngle, Time.deltaTime * rotationSmoothSpeed);
-        float rawDelta = Mathf.DeltaAngle(currY, smoothedY);
+        float currY = rotationAngleY;
+        float rawDelta = delta;
+
         float allowedDelta = rawDelta;
-
-        // apply the clamped rotation
-        var eul = pivot.localEulerAngles;
-        eul.y = currY + allowedDelta;
-
 
         // sweep checks for arm colliders position after rotation about pivot
         foreach (var c in armColliders) {
             if (!(c is BoxCollider box)) continue;
 
-            Vector3 halfExtents = Vector3.Scale(box.size * 0.05f, box.transform.lossyScale);
+            Vector3 halfExtents = Vector3.Scale(box.size * 0.1f, box.transform.lossyScale);
             // box center after pivot rotation
             Vector3 worldOffset = box.transform.position - pivot.position;
             Vector3 rotatedCenter = pivot.position

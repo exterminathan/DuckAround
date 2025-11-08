@@ -56,6 +56,11 @@ public class PlayerDuckController : MonoBehaviour {
     private RaycastHit[] hitBuffer = new RaycastHit[1];
     #endregion
 
+    #region Audio Settings
+    [Header("Audio Settings")]
+    public AudioAgent audioAgent;
+    #endregion
+
 
 
     void Start() {
@@ -140,10 +145,17 @@ public class PlayerDuckController : MonoBehaviour {
         }
     }
 
+    //only for collisions with base of quackbot
+    // collisions for arms are handled by whatever is being hit (ref back to PlayerDuckController.audioAgent)
     void OnControllerColliderHit(ControllerColliderHit hit) {
+
+
+
         //if worker?
         var npc = hit.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
+
+        Vector3 impulse = new Vector3(0, 0, 0);
 
         //if some object
         Rigidbody otherRb = hit.rigidbody;
@@ -163,7 +175,7 @@ public class PlayerDuckController : MonoBehaviour {
 
 
             //impulse: μ * vNorm * normal * dampFactor
-            Vector3 impulse = normal * vNorm * μ * bodyImpulseDampFactor;
+            impulse = normal * vNorm * μ * bodyImpulseDampFactor;
 
             //Debug.Log($"{name} → {hit.gameObject.name}: impulse {impulse.magnitude} at {normal}");
             //apply at contact point

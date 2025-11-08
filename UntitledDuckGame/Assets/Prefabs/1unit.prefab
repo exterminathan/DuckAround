@@ -55,8 +55,9 @@ MonoBehaviour:
   startOffset: 0
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
-  exitForce: 2.75
+  exitForce: 5
   rb: {fileID: 2560228193846316941}
+  snapDistance: 0.1
 --- !u!54 &2560228193846316941
 Rigidbody:
   m_ObjectHideFlags: 0

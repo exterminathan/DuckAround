@@ -19,7 +19,12 @@ public class DetectionChecks
         var hits = Physics.OverlapSphere(ctrl.transform.position, range, ctrl.PlayerDetectionLayerMask);
         //check if hit is in detection range
         bool seen = hits.Length > 0 && Vector3.Angle(ctrl.transform.forward, (hits[0].transform.position - ctrl.transform.position).normalized) <= angle * 0.5f;
-        Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (ctrl.transform.forward * range), seen ? Color.red : Color.green, 0.1f);
+        //draw debug lines on edges of angle of detection range
+        Vector3 rightDir = Quaternion.Euler(0, angle * 0.5f, 0) * ctrl.transform.forward;
+        Vector3 leftDir = Quaternion.Euler(0, -angle * 0.5f, 0) * ctrl.transform.forward;
+        Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (rightDir * range), Color.blue, 0.01f);
+        Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (leftDir * range), Color.blue, 0.01f);
+        Debug.DrawLine(ctrl.transform.position, ctrl.transform.position + (ctrl.transform.forward * range), Color.red, 0.01f);
 
         state["PlayerTransform"] = seen ? hits[0].transform : null;
 

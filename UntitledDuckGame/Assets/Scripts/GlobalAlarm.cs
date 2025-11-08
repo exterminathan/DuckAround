@@ -42,7 +42,6 @@ public class GlobalAlarm : MonoBehaviour {
 
     public static AlarmConfig.AlarmLevelData GetCurrentLevelData() {
         if (instance == null || instance.alarmConfig == null) {
-            Debug.LogError("GlobalAlarm: No instance or AlarmConfig assigned!");
             return default;
         }
 
@@ -51,7 +50,6 @@ public class GlobalAlarm : MonoBehaviour {
 
     public static AlarmConfig.AlarmLevelData GetDefaultLevelData() {
         if (instance == null || instance.alarmConfig == null) {
-            Debug.LogError("GlobalAlarm: No instance or AlarmConfig assigned!");
             return default;
         }
 
@@ -60,5 +58,13 @@ public class GlobalAlarm : MonoBehaviour {
 
     public static string LevelToString() {
         return Level.ToString().Substring(1);
+    }
+
+    public static AlarmConfig.AlarmLevelData GetMaxAlarmLevelData() {
+        if (instance == null || instance.alarmConfig == null) {
+            return default;
+        }
+
+        return instance.alarmConfig.GetLevelData(AlarmLevel.L7);
     }
 }

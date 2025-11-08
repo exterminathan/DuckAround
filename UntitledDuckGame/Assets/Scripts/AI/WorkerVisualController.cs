@@ -32,6 +32,8 @@ public class WorkerVisualController : MonoBehaviour {
     [Header("Color States")]
     [SerializeField] private ColorState[] colorStates;
 
+    [SerializeField] private OuterCircleSpriteManager outerCircleSpriteManager;
+
     #region Private Fields
     private Material innerMat;
     private Material outerMat;
@@ -65,12 +67,12 @@ public class WorkerVisualController : MonoBehaviour {
         currentInnerColor = innerMat.GetColor("_Color");
         currentOuterColor = outerMat.GetColor("_Color");
 
-        currentAngle = 40f;
-        currentDistance = 5f;
-
         currentScale = innerRectTransform.localScale.x;
 
-        SetVisualParameters(15f, 1.5f);
+        currentAngle = 30f;
+        currentDistance = 4f;
+
+        SetVisualParameters(currentAngle, currentDistance);
         
     }
 
@@ -79,6 +81,10 @@ public class WorkerVisualController : MonoBehaviour {
     public float GetCurrentDistance() => currentDistance;
 
     public void SetVisualColor(StateName state, bool opacityOff = false) {
+        if (innerMat == null || outerMat == null) {
+            innerMat = innerCircle.material;
+            outerMat = outerCircle.material;
+        }
 
         Color newColor = GetColorFromState(state);
 
@@ -103,6 +109,7 @@ public class WorkerVisualController : MonoBehaviour {
         targetDistance = distance;
         targetScale = ScaleFromUnits(distance);
         Debug.Log($"[WorkerVisualController] SetVisualParameters called with angle: {angle}, distance: {distance}, scale: {targetScale}");
+        if (outerCircleSpriteManager != null ) outerCircleSpriteManager.SetCircleThickness(distance);
         isParamLerping = true;
     }
 

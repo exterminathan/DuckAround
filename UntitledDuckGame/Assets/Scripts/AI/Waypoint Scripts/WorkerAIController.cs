@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using FMOD.Studio;
 
 
 
@@ -24,6 +23,9 @@ public class WorkerAIController : MonoBehaviour {
     [SerializeField] public Animator WorkerAnimator;
     [SerializeField] public Animator WorkerAlertAnimator;
 
+    [Header("Audio")]
+    public AudioAgent audioAgent;
+
     [Header("Player Detection")]
 
     [SerializeField] public LayerMask PlayerDetectionLayerMask;
@@ -44,11 +46,6 @@ public class WorkerAIController : MonoBehaviour {
     private GameObject originalFBX;
     public LayerMask workerCollisionLayerMask;
 
-    [Header("Audio")]
-    private EventInstance ragdollSound;
-
-
-
     [Header("Self")]
     [SerializeField] private Collider workerPrimaryCollider;
 
@@ -58,6 +55,7 @@ public class WorkerAIController : MonoBehaviour {
 
 
     void Awake() {
+
         // ragdoll section
         //assumes there are no children objects with colliders/rbs
         //EXCEEPT those that are on the rig
@@ -103,6 +101,7 @@ public class WorkerAIController : MonoBehaviour {
 
         };
 
+
         var workerAnim = WorkerAnimator;
         if (workerAnim != null)
             _blackboard["WorkerAnimator"] = workerAnim;
@@ -130,6 +129,7 @@ public class WorkerAIController : MonoBehaviour {
             alertAnimator.SetTrigger("Deactivate");
         }
 
+
         // rigidbodies: non-kinematic when ragdoll==on
         foreach (var rb in rigidbodies) {
             rb.isKinematic = !on;
@@ -143,6 +143,9 @@ public class WorkerAIController : MonoBehaviour {
             }
         }
 
+        // play ragdoll audio
+        if (on) { audioAgent.Play("ragdoll"); }
+
         if (workerPrimaryCollider != null) {
             workerPrimaryCollider.enabled = !on;
         }
@@ -153,7 +156,9 @@ public class WorkerAIController : MonoBehaviour {
             }
 
             //turn on detection visual
-            WorkerVisController.SetVisualColor(StateName.PATROL);
+            if (WorkerVisController != null) {
+                WorkerVisController.SetVisualColor(StateName.PATROL);
+            }   
         }
 
     }
@@ -162,8 +167,19 @@ public class WorkerAIController : MonoBehaviour {
     void OnCollisionEnter(Collision other) {
         if (other.contactCount > 0) {
             var hitPoint = other.contacts[0].point;
-            Debug.Log($"worker collided with {other.gameObject.name} at {hitPoint}");
-            Debug.DrawLine(hitPoint, hitPoint + new Vector3(0, 5, 0), Color.red, 20f);
+
+            
+            //for some reason, armhitforwarder collisions arent logged
+            //so call armhits sounds and etc from here
+
+            //if hitpoint has armhitfowarder
+            if (other.collider.GetComponent<ArmHitForwarder>() != null) {
+                Debug.Log($"WorkerAIController collided with ArmHitForwarder on {other.gameObject.name}");
+            }
+
+            Debug.Log($"worker collided with {other.gameObject.name} at {hitPoint} with force {other.impulse.magnitude} in direction {other.impulse}");
+            Debug.DrawLine(hitPoint, hitPoint + other.impulse, Color.yellow, 5f);
+
             foreach (var c in other.contacts) {
                 Debug.DrawRay(c.point, c.normal * 0.5f, Color.green, 20f);
             }
