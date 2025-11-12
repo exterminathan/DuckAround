@@ -14,15 +14,15 @@ TagManager:
   - Water
   - UI
   - Waypoint
-  - Floor IK
-  - Vertical IK
-  - Block IK
-  - CursorIntersect IK
+  - Prop
+  - 
+  - 
+  - 
   - Arm
   - 'Interactable '
   - Ground
   - AICollision
-  - 
+  - Wall
   - Worker
   - Ragdoll
   - 

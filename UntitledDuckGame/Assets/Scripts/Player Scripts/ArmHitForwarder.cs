@@ -4,17 +4,69 @@ public class ArmHitForwarder : MonoBehaviour {
     public Vector3 lastPos;
     public Vector3 velocity;
 
-    void Start() {
+    private Rigidbody Mrb;
+
+	void Awake() {
+        Mrb = GetComponent<Rigidbody>();
+        if (Mrb == null) {
+            Mrb = GetComponentInParent<Rigidbody>();
+        }
+    }
+
+	void Start() {
         lastPos = transform.position;
     }
 
     void OnCollisionEnter(Collision other) {
+        // audio/ vfx for hit
+        // change to be based on what is being hit
+        //CURRENTLY being used for debugging what arms are hitting
+        switch (other.gameObject.layer) {
+            case 0: // Default
+                Debug.Log("[AHF] OnCollisionEnter Default hit");
+                break;
+
+            case 3: // Player
+                Debug.LogWarning("[AHF] [WARNING] OnCollisionEnter Player Hit (shouldn't be possible)");
+                break;
+            case 7: // Prop
+                Debug.Log("[AHF] OnCollisionEnter Prop hit");
+                break;
+            case 12: // Interactable
+                Debug.Log("[AHF] OnCollisionEnter Interactable hit");
+                break;
+            case 15: // Wall
+                Debug.Log("[AHF] OnCollisionEnter Wall hit");
+                break;
+            case 16: // Worker
+                Debug.Log("[AHF] OnCollisionEnter Worker hit");
+                other.collider.GetComponent<WorkerAIController>()?.audioAgent.Play("playerHitWorker");
+                break;
+            case 17: // Ragdoll
+                Debug.Log("[AHF] OnCollisionEnter Ragdoll hit");
+                break;
+
+
+            default:
+                Debug.Log("[AHF] OnCollisionEnter hit unidentified layer");
+                break;
+        }
+
+
+        var rb = other.collider.attachedRigidbody;
+        Debug.Log(
+            $"[ArmHitForwarder] HIT {other.gameObject.name} " +
+            $"layer={LayerMask.LayerToName(other.gameObject.layer)} " +
+            $"tag={other.gameObject.tag} " +
+            $"hasRB={rb != null} isKinematic={(rb ? rb.isKinematic : false)}"
+        );
+        
         //Collisions with npc
-        Debug.Log($"[ArmHitForwarder] OnCollisionEnter with {other.gameObject.name}");
         var npc = other.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
 
-        var rb = other.collider.attachedRigidbody;
+        // if regular prop rigidibody
+        
         if (rb != null && !rb.isKinematic) {
 
             Vector3 v = velocity;
@@ -42,7 +94,7 @@ public class ArmHitForwarder : MonoBehaviour {
             Vector3 point = other.contacts[0].point;
             rb.AddForceAtPosition(impulse, point, ForceMode.Impulse);
         }
-
+        
     }
 }
 

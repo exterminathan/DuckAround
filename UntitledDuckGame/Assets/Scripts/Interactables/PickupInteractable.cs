@@ -40,10 +40,11 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         //open mouth
         StartCoroutine(playerDuckController.ToggleMouth(true, 0.25f));
         //rb kinematic
-        rb.isKinematic = true;
-        rb.useGravity = false;
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        rb.useGravity = false;
+        rb.isKinematic = true;
 
         //set parent
         transform.SetParent(isometricRaycaster.playerHoldSlot);
@@ -68,10 +69,12 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         StartCoroutine(playerDuckController.ToggleMouth(false, 0.25f));
 
         //rb non kinematic
-        rb.isKinematic = false;
-        rb.useGravity = true;
+
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        rb.useGravity = true;
+        rb.isKinematic = false;
 
         //clear parent
         transform.SetParent(null);

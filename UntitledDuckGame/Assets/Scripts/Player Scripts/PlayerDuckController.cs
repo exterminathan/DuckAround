@@ -54,14 +54,13 @@ public class PlayerDuckController : MonoBehaviour {
     private CharacterController characterController;
     public Collider[] armColliders;
     private RaycastHit[] hitBuffer = new RaycastHit[1];
+
     #endregion
 
     #region Audio Settings
     [Header("Audio Settings")]
     public AudioAgent audioAgent;
     #endregion
-
-
 
     void Start() {
         if (isoCamera == null && Camera.main != null) isoCamera = Camera.main.transform;
@@ -73,7 +72,7 @@ public class PlayerDuckController : MonoBehaviour {
 
         // gather controller + arm colliders
         characterController = GetComponent<CharacterController>();
-        characterController.skinWidth = 0.01f;
+        characterController.skinWidth = 0.039f;
 
         // prevent self‑collision
         foreach (var c in armColliders) Physics.IgnoreCollision(characterController, c, true);
@@ -124,7 +123,7 @@ public class PlayerDuckController : MonoBehaviour {
                 foreach (var col in armColliders) {
                     if (!(col is BoxCollider box)) continue;
 
-                    Vector3 halfExtents = Vector3.Scale(box.size * 0.05f, box.transform.lossyScale);
+                    Vector3 halfExtents = Vector3.Scale(box.size, box.transform.lossyScale);
                     Quaternion orientation = box.transform.rotation;
                     Vector3 center = box.transform.TransformPoint(box.center);
 
@@ -145,19 +144,24 @@ public class PlayerDuckController : MonoBehaviour {
         }
     }
 
+    //Helper function for movement sweep for arms
+    // to ensure they don't clip through player blocking layers / objects
+    private void HandleMovementSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+        }
+    }
+
     //only for collisions with base of quackbot
     // collisions for arms are handled by whatever is being hit (ref back to PlayerDuckController.audioAgent)
     void OnControllerColliderHit(ControllerColliderHit hit) {
-
-
-
-        //if worker?
+        //if worker, set collided state for ragdoll
         var npc = hit.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
 
         Vector3 impulse = new Vector3(0, 0, 0);
 
-        //if some object
+        //if object has rigidbody, apply impulse
         Rigidbody otherRb = hit.rigidbody;
         if (otherRb != null && !otherRb.isKinematic) {
             Vector3 velocity = lastMoveDelta / Time.deltaTime;
@@ -217,6 +221,5 @@ public class PlayerDuckController : MonoBehaviour {
         mouth.localRotation = target;
 
     }
-
 
 }

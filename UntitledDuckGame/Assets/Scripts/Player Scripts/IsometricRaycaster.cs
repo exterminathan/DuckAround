@@ -18,6 +18,7 @@ public class IsometricRaycaster : MonoBehaviour {
     #region Public Variables
     [Header("Setup")]
     public Camera mainCamera;
+    public PlayerDuckController playerDuckController;
 
     [Header("IK Target")]
     [SerializeField] private Transform ik_target;
@@ -31,16 +32,17 @@ public class IsometricRaycaster : MonoBehaviour {
     public float rotationSmoothSpeed = 5f;
     private float rotationAngleY;
 
-    [Header("Horizontal IK Parameters")]
+    [Header("Horizontal IK Parameters (Scroll Tip)")]
     public float minIKX = 0f;
     public float maxIKX = 0f;
     // how much scrolling moves the ik target 
     public float scrollIncrement = 0.1f;
 
-    [Header("Vertical IK Parameters")]
+    [Header("Vertical IK Parameters (Mouse Y Vertical)")]
     public float innerZoneRangeY = 200f;
     public float minIKY = 0.05f;
     public float maxIKY = 2.562f;
+    public float ikVerticalSmoothSpeed = 5f;
 
     [Header("Boundary Visuals")]
     public Canvas uiCanvas;
@@ -53,6 +55,8 @@ public class IsometricRaycaster : MonoBehaviour {
     [Header("Collision Settings")]
     [Tooltip("Layers that block arm rotation")]
     public LayerMask rotationBlockingLayerMask;
+    public LayerMask horizontalIKBlockingLayerMask;
+    public LayerMask verticalIKBlockingLayerMask;
     public GameObject[] armObjects;
     public ArmHitForwarder[] armPushers { get; private set; }
     public bool isHolding { set; get; } = false;
@@ -90,11 +94,15 @@ public class IsometricRaycaster : MonoBehaviour {
         //populate arm colliders and pushers
         armColliders = armObjects
             .SelectMany(o => o.GetComponentsInChildren<Collider>())
+            .Distinct()
             .ToArray();
 
         armPushers = armObjects
             .SelectMany(o => o.GetComponentsInChildren<ArmHitForwarder>())
+            .Distinct()
             .ToArray();
+
+        Debug.Log($"Armcolliders found: {(string.Join(", ", armColliders.Select(c => c.name)))}");
     }
 
     void Update() {
@@ -118,22 +126,27 @@ public class IsometricRaycaster : MonoBehaviour {
             p.velocity = delta / Time.deltaTime;
             p.lastPos = currentPos;
         }
+
     }
     #endregion
 
     #region Movement
     private void HandleRotation() {
+        if (rotate_pivot == null) return;
+        var pivot = rotate_pivot.transform;
+
+        //HANDLE ROTATION SWEEP
+        //REPLACE FROM HERE
         float centerX = Screen.width * 0.5f;
         float minX = centerX - innerZoneRangeX;
         float maxX = centerX + innerZoneRangeX;
-        
+
         float t = Mathf.Clamp01((Input.mousePosition.x - minX) / (maxX - minX));
         float targetAngle = Mathf.Lerp(maxPivotAngle, minPivotAngle, t);
 
         float delta = Mathf.DeltaAngle(rotationAngleY, targetAngle);
         rotationAngleY += delta * Time.deltaTime * rotationSmoothSpeed;
 
-        var pivot = rotate_pivot.transform;
         float currY = rotationAngleY;
         float rawDelta = delta;
 
@@ -143,7 +156,7 @@ public class IsometricRaycaster : MonoBehaviour {
         foreach (var c in armColliders) {
             if (!(c is BoxCollider box)) continue;
 
-            Vector3 halfExtents = Vector3.Scale(box.size * 0.1f, box.transform.lossyScale);
+            Vector3 halfExtents = Vector3.Scale(box.size, box.transform.lossyScale);
             // box center after pivot rotation
             Vector3 worldOffset = box.transform.position - pivot.position;
             Vector3 rotatedCenter = pivot.position
@@ -162,34 +175,52 @@ public class IsometricRaycaster : MonoBehaviour {
                 QueryTriggerInteraction.Ignore
             );
             if (hits.Length > 0) {
-                // figure out safe rotation angle
-                float low = 0f, high = rawDelta;
-                for (int i = 0; i < 4; i++) {
-                    float mid = (low + high) * 0.5f;
-                    Vector3 midCenter = pivot.position
-                                      + Quaternion.Euler(0f, mid, 0f)
-                                        * worldOffset;
-                    Quaternion midOri = box.transform.rotation
-                                      * Quaternion.Euler(0f, mid, 0f);
-
-                    if (Physics.OverlapBox(midCenter, halfExtents, midOri,
-                            rotationBlockingLayerMask,
-                            QueryTriggerInteraction.Ignore).Length == 0) {
-                        low = mid;
-                    }
-                    else {
-                        high = mid;
-                    }
-                }
-                allowedDelta = Mathf.Min(allowedDelta, low);
+                // stop rotation entirely if any overlap found
+                allowedDelta = 0f;
+                if (showDev) Debug.Log($"[RotationBlocked] Arm collider {c.name} blocked by wall(s).");
+                break;
             }
+
         }
+        //TO HERE
 
         // finalized rotation
         var e = pivot.localEulerAngles;
         e.y = currY + allowedDelta;
-        pivot.localEulerAngles = e;
+        if (playerDuckController != null) pivot.localEulerAngles = e;
     }
+
+
+    //Helper function for arm collider sweeps to ensure no collision with rotation blocking layer mask (walls, etc)
+    private void HandleRotationSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+        }
+    }
+
+    //these two might need their own layer mask
+    // so that it includes walls and also props, so tip/mouth cant clip thru those
+
+    // Helper function for vertical IK sweep on IK Target to make 
+    // sure its not going through rotation blocking layers/ objects
+    private void HandleVerticalIKSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+        }
+    }
+
+    // Helper function for horizontal IK sweep on IK Target to make 
+    // sure its not going through rotation blocking layers / objects
+    private void HandleHorizontalIKSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+        }
+    }
+
+
 
     private void HandleVerticalIK() {
         float centerY = Screen.height * 0.5f;
@@ -199,7 +230,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
         float targetY = Mathf.Lerp(minIKY, maxIKY, t);
         Vector3 pos = ik_target.position;
-        pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed);
+        pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
         ik_target.position = pos;
     }
 
