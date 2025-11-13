@@ -1,6 +1,7 @@
 // IsometricRaycaster.cs
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Animations.Rigging;
 using UnityEngine.UI;
 
 
@@ -24,6 +25,7 @@ public class IsometricRaycaster : MonoBehaviour {
     [SerializeField] private Transform ik_target;
     public GameObject bone_point;
     public GameObject rotate_pivot;
+    public TwoBoneIKConstraint tbikc;
 
     [Header("Rotation Parameters")]
     public float innerZoneRangeX = 225f;
@@ -49,15 +51,14 @@ public class IsometricRaycaster : MonoBehaviour {
     public Color boundaryColor = Color.white;
     public float fadeDistance = 50f;
 
-    [Header("Debug Options")]
-    public bool showDev = false;
-
     [Header("Collision Settings")]
     [Tooltip("Layers that block arm rotation")]
     public LayerMask rotationBlockingLayerMask;
     public LayerMask horizontalIKBlockingLayerMask;
     public LayerMask verticalIKBlockingLayerMask;
     public GameObject[] armObjects;
+
+    // used to figure out per-arm velocity for collision impulse calculation
     public ArmHitForwarder[] armPushers { get; private set; }
     public bool isHolding { set; get; } = false;
     public bool isInteracting { set; get; } = false;
@@ -69,7 +70,7 @@ public class IsometricRaycaster : MonoBehaviour {
     private Image topBoundaryImage;
     private Image bottomBoundaryImage;
 
-    private Collider[] armColliders;
+    private BoxCollider[] armColliders;
 
     [Header("Holding Settings")]
     private HoldMode _holdMode = HoldMode.None;
@@ -93,7 +94,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
         //populate arm colliders and pushers
         armColliders = armObjects
-            .SelectMany(o => o.GetComponentsInChildren<Collider>())
+            .SelectMany(o => o.GetComponentsInChildren<BoxCollider>())
             .Distinct()
             .ToArray();
 
@@ -103,12 +104,14 @@ public class IsometricRaycaster : MonoBehaviour {
             .ToArray();
 
         Debug.Log($"Armcolliders found: {(string.Join(", ", armColliders.Select(c => c.name)))}");
+
+
     }
 
     void Update() {
 
         if (_holdMode != HoldMode.Interact) {
-            HandleRotation();
+            //HandleRotation();
             HandleVerticalIK();
             HandleHorizontalIK();
         }
@@ -177,7 +180,7 @@ public class IsometricRaycaster : MonoBehaviour {
             if (hits.Length > 0) {
                 // stop rotation entirely if any overlap found
                 allowedDelta = 0f;
-                if (showDev) Debug.Log($"[RotationBlocked] Arm collider {c.name} blocked by wall(s).");
+                Debug.Log($"[RotationBlocked] Arm collider {c.name} blocked by wall(s).");
                 break;
             }
 
@@ -189,61 +192,6 @@ public class IsometricRaycaster : MonoBehaviour {
         e.y = currY + allowedDelta;
         if (playerDuckController != null) pivot.localEulerAngles = e;
     }
-
-
-    //Helper function for arm collider sweeps to ensure no collision with rotation blocking layer mask (walls, etc)
-    private void HandleRotationSweep() {
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-
-        }
-    }
-
-    //these two might need their own layer mask
-    // so that it includes walls and also props, so tip/mouth cant clip thru those
-
-    // Helper function for vertical IK sweep on IK Target to make 
-    // sure its not going through rotation blocking layers/ objects
-    private void HandleVerticalIKSweep() {
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-
-        }
-    }
-
-    // Helper function for horizontal IK sweep on IK Target to make 
-    // sure its not going through rotation blocking layers / objects
-    private void HandleHorizontalIKSweep() {
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-
-        }
-    }
-
-
-
-    private void HandleVerticalIK() {
-        float centerY = Screen.height * 0.5f;
-        float minY = centerY - innerZoneRangeY;
-        float maxY = centerY + innerZoneRangeY;
-        float t = Mathf.Clamp01((Input.mousePosition.y - minY) / (maxY - minY));
-
-        float targetY = Mathf.Lerp(minIKY, maxIKY, t);
-        Vector3 pos = ik_target.position;
-        pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
-        ik_target.position = pos;
-    }
-
-    private void HandleHorizontalIK() {
-        float scroll = Input.mouseScrollDelta.y;
-        if (scroll != 0f) {
-            Vector3 local = ik_target.localPosition;
-            float targetX = Mathf.Clamp(local.x - scroll * scrollIncrement, minIKX, maxIKX);
-            local.x = Mathf.Lerp(local.x, targetX, 1f / 7f);
-            ik_target.localPosition = local;
-        }
-    }
-
     public void RotateToTarget(Transform target) {
         if (target == null) return;
 
@@ -259,6 +207,183 @@ public class IsometricRaycaster : MonoBehaviour {
     }
     public void ResetRotation() {
         rotate_pivot.transform.localEulerAngles = preHoldRotation;
+    }
+    #endregion
+
+    #region Handle IK
+    private void HandleVerticalIK() {
+        float centerY = Screen.height * 0.5f;
+        float minY = centerY - innerZoneRangeY;
+        float maxY = centerY + innerZoneRangeY;
+        float t = Mathf.Clamp01((Input.mousePosition.y - minY) / (maxY - minY));
+
+        float targetY = Mathf.Lerp(minIKY, maxIKY, t);
+
+        Vector3 calculatedTargetPos = new Vector3(ik_target.position.x, targetY, ik_target.position.z);
+        // check here before applying lerp to pos.y with handlerverticaliksweep
+        // whether the new position would cause a collision
+        HandleVerticalIKSweep(calculatedTargetPos);
+        // if there is collision, adjust targetY accordingly
+        // if no collision, can use targetY as is
+
+        Vector3 pos = ik_target.position;
+        pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
+        ik_target.position = pos;
+    }
+
+    private void HandleHorizontalIK() {
+        float scroll = Input.mouseScrollDelta.y;
+        if (scroll != 0f) {
+            Vector3 local = ik_target.localPosition;
+            float targetX = Mathf.Clamp(local.x - scroll * scrollIncrement, minIKX, maxIKX);
+            local.x = Mathf.Lerp(local.x, targetX, 1f / 7f);
+            ik_target.localPosition = local;
+        }
+    }
+    #endregion
+
+    #region Handle Sweep
+    //Helper function for arm collider sweeps to ensure no collision with rotation blocking layer mask (walls, etc)
+    private void HandleRotationSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+        }
+    }
+
+    // if there are collisions, adjust ik target position to prevent clipping
+    // necessary parameters: currentIKPos
+    private void HandleVerticalIKSweep(Vector3 calculatedTargetPos) {
+        BoneTransforms predictedValues = TwoBoneIKPreCalc(tbikc.data, calculatedTargetPos);
+
+        
+
+
+    }
+
+    // Helper function for horizontal IK sweep on IK Target to make 
+    // sure its not going through rotation blocking layers / objects
+    private void HandleHorizontalIKSweep() {
+        foreach (var c in armColliders) {
+            if (!(c is BoxCollider box)) continue;
+
+        }
+    }
+
+    #endregion
+
+
+    private struct BoneTransforms {
+        public Vector3 rootPos;
+        public Quaternion rootRot;
+        public Vector3 midPos;
+        public Quaternion midRot;
+        public Vector3 tipPos;
+        public Quaternion tipRot;
+    }
+
+
+    #region Helpers
+    // calculates new positions of bones/colliders after vertical ik changes
+    private BoneTransforms TwoBoneIKPreCalc(in TwoBoneIKConstraintData ikData, Vector3 calculatedTargetPos) {
+        Transform root = ikData.root;
+        Transform mid = ikData.mid;
+        Transform tip = ikData.tip;
+
+        Vector3 rootPos = root.position;
+        Vector3 midPos = mid.position;
+        Vector3 tipPos = tip.position;
+
+        Vector3 tbikTargetPos = ikData.target.position;
+        Vector3 hintPos = ikData.hint.position;
+
+        // if ((tbikTargetPos - calculatedTargetPos).magnitude > 0.001f) {
+        //     Debug.Log("\nCurrent target pos thru two bone ik:" + tbikTargetPos);
+        //     Debug.Log("Current ik target position from calc:" + calculatedTargetPos);
+        // }
+
+        float lenA = Vector3.Distance(rootPos, midPos);
+        float lenB = Vector3.Distance(midPos, tipPos);
+
+        // solve 2 bone IK same way unity does with law of cosines
+
+        //clamp target if unreachable
+        float totalLen = lenA + lenB;
+
+        Vector3 dir = calculatedTargetPos - rootPos;
+        float dist = dir.magnitude;
+
+        if (dist > totalLen) {
+            dir = dir.normalized * totalLen;
+            calculatedTargetPos = rootPos + dir;
+            dist = totalLen;
+        }
+
+        // law of cosines to solve elbow angle
+        //angle at root joint
+        float angleA = Mathf.Acos(Mathf.Clamp(
+            (lenA * lenA + dist * dist - lenB * lenB) / (2f * lenA * dist), -1, 1
+        ));
+
+        //angle at mid joint
+        float angleB = Mathf.Acos(Mathf.Clamp(
+            (lenA * lenA + lenB * lenB - dist * dist) / (2f * lenA * lenB), -1, 1
+        ));
+
+        //compute new mid position
+        //project from root to target
+        Vector3 rootToTargetDir = (calculatedTargetPos - rootPos).normalized;
+        Vector3 midStraight = rootPos + rootToTargetDir * lenA;
+
+        // bend using hint vector
+        Vector3 bendNormal;
+        if (hintPos != null) {
+            bendNormal = Vector3.Cross(rootToTargetDir, (rootPos - hintPos)).normalized;
+        }
+        else {
+            bendNormal = Vector3.Cross(rootToTargetDir, Vector3.up).normalized;
+        }
+
+        //rotate straight line outwards by angleA around that plane
+        Quaternion bendRotation = Quaternion.AngleAxis(-Mathf.Rad2Deg * angleA, bendNormal);
+        Vector3 newMidPos = rootPos + (bendRotation * rootToTargetDir) * lenA;
+
+
+        Vector3 newTipPos = newMidPos + (calculatedTargetPos - newMidPos).normalized * lenB;
+
+        //compute world rotation for both bones
+        Quaternion newRootRot = Quaternion.LookRotation(newMidPos - rootPos, bendNormal);
+        Quaternion newMidRot = Quaternion.LookRotation(newTipPos - newMidPos, bendNormal);
+
+        Debug.DrawLine(rootPos, newMidPos, Color.yellow, 0.001f);
+        Debug.DrawLine(newMidPos, newTipPos, Color.cyan, 0.001f);
+        ShowDebugSphere((rootPos+newMidPos)/2, Color.magenta);
+        ShowDebugSphere((newTipPos+newMidPos)/2, Color.magenta);
+
+
+        // Debug.Log(
+        //     $"newRootPos: {rootPos} " +
+        //     $"newMidPos: {newMidPos} " +
+        //     $"newTipPos: {newTipPos} " +
+        //     $"newRootRot: {newRootRot.eulerAngles} " +
+        //     $"newMidRot: {newMidRot.eulerAngles} "
+        // );
+
+        return new BoneTransforms {
+            rootPos = rootPos,
+            rootRot = newRootRot,
+            midPos = newMidPos,
+            midRot = newMidRot,
+            tipPos = newTipPos,
+            tipRot = Quaternion.LookRotation(newTipPos - newMidPos, bendNormal)
+        };
+
+        //now that we have all this info
+        //we can do a capsule cast check for the root-mid and mid-tip segments with some thickness
+        //i get thru experimentation
+        
+
+
     }
     #endregion
 
@@ -345,63 +470,15 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
     #region Debug
-    void CreateBoundaryLines() {
-        System.Func<string, Image> makeLine = name => {
-            var go = new GameObject(name, typeof(RectTransform));
-            go.transform.SetParent(uiCanvas.transform, false);
-            var img = go.AddComponent<Image>();
-            img.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, 0f);
-            var rt = img.rectTransform;
-            rt.anchorMin = rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            return img;
-        };
-        leftBoundaryImage = makeLine("LeftInnerZoneLine");
-        rightBoundaryImage = makeLine("RightInnerZoneLine");
-        topBoundaryImage = makeLine("TopInnerZoneLine");
-        bottomBoundaryImage = makeLine("BottomInnerZoneLine");
-    }
-
-    void UpdateBoundaryFade() {
-        if (leftBoundaryImage == null) return;
-        float cX = Screen.width * 0.5f, cY = Screen.height * 0.5f;
-        float minX = cX - innerZoneRangeX, maxX = cX + innerZoneRangeX;
-        float minY = cY - innerZoneRangeY, maxY = cY + innerZoneRangeY;
-        float mX = Input.mousePosition.x, mY = Input.mousePosition.y;
-
-        var leftRT = leftBoundaryImage.rectTransform;
-        var rightRT = rightBoundaryImage.rectTransform;
-        var topRT = topBoundaryImage.rectTransform;
-        var bottomRT = bottomBoundaryImage.rectTransform;
-
-        leftRT.anchoredPosition = new Vector2(minX - cX, 0f);
-        rightRT.anchoredPosition = new Vector2(maxX - cX, 0f);
-        topRT.anchoredPosition = new Vector2(0f, maxY - cY);
-        bottomRT.anchoredPosition = new Vector2(0f, minY - cY);
-
-        leftRT.sizeDelta = new Vector2(2f, Screen.height);
-        rightRT.sizeDelta = new Vector2(2f, Screen.height);
-        topRT.sizeDelta = new Vector2(Screen.width, 2f);
-        bottomRT.sizeDelta = new Vector2(Screen.width, 2f);
-
-        float alphaL = (mX <= minX + fadeDistance) ? Mathf.Clamp01(1f - ((mX - minX) / fadeDistance)) : 0f;
-        float alphaR = (mX >= maxX - fadeDistance) ? Mathf.Clamp01(1f - ((maxX - mX) / fadeDistance)) : 0f;
-        float alphaT = (mY >= maxY - fadeDistance) ? Mathf.Clamp01(1f - ((maxY - mY) / fadeDistance)) : 0f;
-        float alphaB = (mY <= minY + fadeDistance) ? Mathf.Clamp01(1f - ((mY - minY) / fadeDistance)) : 0f;
-
-        leftBoundaryImage.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, alphaL);
-        rightBoundaryImage.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, alphaR);
-        topBoundaryImage.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, alphaT);
-        bottomBoundaryImage.color = new Color(boundaryColor.r, boundaryColor.g, boundaryColor.b, alphaB);
-    }
-
-    void ShowDebugSphere(Vector3 position, Color debugColor) {
+    public static void ShowDebugSphere(Vector3 position, Color debugColor) {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        Destroy(sphere.GetComponent<SphereCollider>());
+        sphere.layer = LayerMask.NameToLayer("Debug");
         sphere.name = "TMP_DEBUG_SPHERE";
         sphere.transform.position = position;
         sphere.transform.localScale = Vector3.one * .1f;
         sphere.GetComponent<Renderer>().material.color = debugColor;
-        Destroy(sphere, 1f);
+        Destroy(sphere, .01f);
     }
     #endregion
 }

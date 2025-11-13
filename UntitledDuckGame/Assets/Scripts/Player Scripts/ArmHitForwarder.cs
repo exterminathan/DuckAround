@@ -1,3 +1,4 @@
+using UnityEditor;
 using UnityEngine;
 public class ArmHitForwarder : MonoBehaviour {
     [SerializeField] private PlayerDuckController player;
@@ -27,28 +28,28 @@ public class ArmHitForwarder : MonoBehaviour {
                 break;
 
             case 3: // Player
-                Debug.LogWarning("[AHF] [WARNING] OnCollisionEnter Player Hit (shouldn't be possible)");
+                Debug.LogWarning($"[AHF] from: {this.transform.name} [WARNING] OnCollisionEnter Player Hit (shouldn't be possible)");
                 break;
             case 7: // Prop
-                Debug.Log("[AHF] OnCollisionEnter Prop hit");
+                Debug.Log($"[AHF] from: {this.transform.name}  OnCollisionEnter Prop hit");
                 break;
             case 12: // Interactable
-                Debug.Log("[AHF] OnCollisionEnter Interactable hit");
+                Debug.Log($"[AHF] from: {this.transform.name}  OnCollisionEnter Interactable hit");
                 break;
             case 15: // Wall
-                Debug.Log("[AHF] OnCollisionEnter Wall hit");
+                Debug.Log($"[AHF] from: {this.transform.name}  OnCollisionEnter Wall hit");
                 break;
             case 16: // Worker
-                Debug.Log("[AHF] OnCollisionEnter Worker hit");
+                Debug.Log($"[AHF] from: {this.transform.name}  OnCollisionEnter Worker hit");
                 other.collider.GetComponent<WorkerAIController>()?.audioAgent.Play("playerHitWorker");
                 break;
             case 17: // Ragdoll
-                Debug.Log("[AHF] OnCollisionEnter Ragdoll hit");
+                Debug.Log($"[AHF] from: {this.transform.name}  OnCollisionEnter Ragdoll hit");
                 break;
 
 
             default:
-                Debug.Log("[AHF] OnCollisionEnter hit unidentified layer");
+                Debug.Log($"[AHF] OnCollisionEnter hit unidentified layer");
                 break;
         }
 
@@ -60,6 +61,8 @@ public class ArmHitForwarder : MonoBehaviour {
             $"tag={other.gameObject.tag} " +
             $"hasRB={rb != null} isKinematic={(rb ? rb.isKinematic : false)}"
         );
+
+        IsometricRaycaster.ShowDebugSphere(other.contacts[0].point, Color.red);
         
         //Collisions with npc
         var npc = other.collider.GetComponent<WorkerAIController>();

@@ -120,22 +120,10 @@ public class PlayerDuckController : MonoBehaviour {
                 // sweep each arm collider
                 float maxDist = desiredMove.magnitude;
                 Vector3 moveDir = desiredMove.normalized;
-                foreach (var col in armColliders) {
-                    if (!(col is BoxCollider box)) continue;
-
-                    Vector3 halfExtents = Vector3.Scale(box.size, box.transform.lossyScale);
-                    Quaternion orientation = box.transform.rotation;
-                    Vector3 center = box.transform.TransformPoint(box.center);
-
-                    if (Physics.BoxCast(center, halfExtents, moveDir, out RaycastHit hit, orientation, maxDist, playerBlockingLayerMask)) {
-                        maxDist = Mathf.Min(maxDist, hit.distance);
-                    }
-                }
-
+                
                 // actually move
                 lastMoveDelta = moveDir * maxDist;
                 characterController.Move(lastMoveDelta);
-
 
                 //drop down if not grounded
                 vertVelocity = characterController.isGrounded ? -2f : vertVelocity - 9.81f * Time.deltaTime;
