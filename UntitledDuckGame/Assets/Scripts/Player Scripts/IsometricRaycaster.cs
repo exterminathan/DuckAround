@@ -256,6 +256,23 @@ public class IsometricRaycaster : MonoBehaviour {
     private void HandleVerticalIKSweep(Vector3 calculatedTargetPos) {
         BoneTransforms predictedValues = TwoBoneIKPreCalc(tbikc.data, calculatedTargetPos);
 
+        //now that we have all this info
+        //we can do a capsule cast check for the root-mid and mid-tip segments with some thickness
+        //i get thru experimentation
+
+        //get half way point between root and mid
+        
+        //cast capsule stretching from root to mid centered on midpoint
+        // with radius of whatever we found
+
+        //check for collisions with layer horizontalIKBlockingLayerMask
+
+        //if none found, return
+
+        //if found, find closest point along line from calculatedTargetPos to current tip pos that is on surface of object hit
+        //and set calculatedTargetPos to that point minus some small offset in direction away from hit normal
+        
+        //ref unity vector3 math: https://chatgpt.com/c/69162ab2-cd58-832e-b3cd-12a381668390
         
 
 
@@ -377,13 +394,6 @@ public class IsometricRaycaster : MonoBehaviour {
             tipPos = newTipPos,
             tipRot = Quaternion.LookRotation(newTipPos - newMidPos, bendNormal)
         };
-
-        //now that we have all this info
-        //we can do a capsule cast check for the root-mid and mid-tip segments with some thickness
-        //i get thru experimentation
-        
-
-
     }
     #endregion
 
