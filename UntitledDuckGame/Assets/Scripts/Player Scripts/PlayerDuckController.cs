@@ -84,8 +84,7 @@ public class PlayerDuckController : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
 
         // TODO: 
-        // spam keys to break out 
-        // really only for tutorial so need to separate
+        // make spam keys only for tutorial
         if (!isBrokenFree) {
             // break‑out key spam 
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||

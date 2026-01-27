@@ -244,10 +244,10 @@ MonoBehaviour:
   switchSettingsMigration: 1
   HasSourceProject: 1
   HasPlatforms: 1
-  sourceProjectPath: G:/My Drive/Shared Between Computers/Local Projects/_untitled
-    duck game/Audio/FMOD Project/DuckAroundFMOD/DuckAroundFMOD.fspro
-  sourceBankPath: G:/My Drive/Shared Between Computers/Local Projects/_untitled duck
-    game/Audio/FMOD Project/DuckAroundFMOD/Build
+  sourceProjectPath: G:/My Drive/Personal Storage/Project Contents/Duck Around/Audio/FMOD
+    Project/DuckAroundFMOD/DuckAroundFMOD.fspro
+  sourceBankPath: G:/My Drive/Personal Storage/Project Contents/Duck Around/Audio/FMOD
+    Project/DuckAroundFMOD/Build
   sourceBankPathUnformatted: 
   BankRefreshCooldown: 1
   ShowBankRefreshWindow: 0

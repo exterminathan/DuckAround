@@ -56,7 +56,7 @@ public class ArmHitForwarder : MonoBehaviour {
 
         var rb = other.collider.attachedRigidbody;
         Debug.Log(
-            $"[ArmHitForwarder] HIT {other.gameObject.name} " +
+            $"[AHF] HIT {other.gameObject.name} " +
             $"layer={LayerMask.LayerToName(other.gameObject.layer)} " +
             $"tag={other.gameObject.tag} " +
             $"hasRB={rb != null} isKinematic={(rb ? rb.isKinematic : false)}"
