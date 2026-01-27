@@ -3,20 +3,22 @@ using UnityEngine;
 public class BTInputManager : MonoBehaviour {
     public WorkerAIController[] workers;
     public Waypoint[] waypoints;
-
     private int lastIndex;
 
-    void Update() {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) {
-            foreach (var worker in workers) {
-                var destination = Random.Range(0, waypoints.Length);
-                while (destination == lastIndex)
-                    destination = Random.Range(0, waypoints.Length);
-                Debug.Log($"Picked waypoint: {waypoints[destination].GetComponent<WaypointID>().waypointID}");
-                lastIndex = destination;
-                worker.SetNewDestination(waypoints[destination]);
-            }
-        }
+    public void SetNewDestinations(WorkerAIController[] targets = null) 
+    {
+        WorkerAIController[] workersToCommand = (targets == null) ? workers : targets;
 
+        foreach (var worker in workersToCommand) 
+        {
+            if (waypoints.Length == 0) return;
+
+            var destination = Random.Range(0, waypoints.Length);
+            while (destination == lastIndex && waypoints.Length > 1)
+                destination = Random.Range(0, waypoints.Length);
+            
+            lastIndex = destination;
+            worker.SetNewDestination(waypoints[destination]);
+        }
     }
 }
