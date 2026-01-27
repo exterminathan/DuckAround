@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5980098194182749974}
   - component: {fileID: 2322683756179871863}
   - component: {fileID: 8925677003190480633}
-  m_Layer: 14
+  m_Layer: 7
   m_Name: Drop Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

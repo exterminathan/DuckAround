@@ -1951,7 +1951,7 @@ GameObject:
   - component: {fileID: 1156633758}
   - component: {fileID: 1156633757}
   - component: {fileID: 1156633756}
-  - component: {fileID: 1156633755}
+  - component: {fileID: 1156633759}
   m_Layer: 0
   m_Name: TriggerVolume
   m_TagString: Untagged
@@ -1959,19 +1959,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1156633755
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1156633754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13d31a51104d49a40981efe4ee2bf244, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loopStart: {fileID: 1835324378}
 --- !u!65 &1156633756
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2016,6 +2003,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1156633759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1156633754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ca6b6251e8bf54aae6f3aa83ad6a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetWaypoint: {fileID: 1835324378}
 --- !u!1001 &1166500750
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3338,7 +3338,7 @@ GameObject:
   - component: {fileID: 1898882070}
   - component: {fileID: 1898882069}
   - component: {fileID: 1898882068}
-  - component: {fileID: 1898882067}
+  - component: {fileID: 1898882071}
   m_Layer: 0
   m_Name: TriggerVolume (1)
   m_TagString: Untagged
@@ -3346,19 +3346,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1898882067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1898882066}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13d31a51104d49a40981efe4ee2bf244, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  loopStart: {fileID: 1893690824}
 --- !u!65 &1898882068
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3403,6 +3390,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1898882071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898882066}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55ca6b6251e8bf54aae6f3aa83ad6a35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetWaypoint: {fileID: 1893690824}
 --- !u!1001 &1907060294
 PrefabInstance:
   m_ObjectHideFlags: 0

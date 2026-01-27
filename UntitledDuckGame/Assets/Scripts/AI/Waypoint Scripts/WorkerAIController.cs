@@ -158,7 +158,7 @@ public class WorkerAIController : MonoBehaviour {
             //turn on detection visual
             if (WorkerVisController != null) {
                 WorkerVisController.SetVisualColor(StateName.PATROL);
-            }   
+            }
         }
 
     }
@@ -168,7 +168,7 @@ public class WorkerAIController : MonoBehaviour {
         if (other.contactCount > 0) {
             var hitPoint = other.contacts[0].point;
 
-            
+
             //for some reason, armhitforwarder collisions arent logged
             //so call armhits sounds and etc from here
 
@@ -187,11 +187,28 @@ public class WorkerAIController : MonoBehaviour {
             _lastCollisionPoint = hitPoint;
             _hasCollisionPoint = true;
             Debug.DrawRay(hitPoint, Vector3.up * 0.25f, Color.red, 2f);
+
+            audioAgent.Play("ragdoll");
+
         }
 
         if ((workerCollisionLayerMask & (1 << other.gameObject.layer)) != 0) {
             _blackboard["IsCollided"] = true;
         }
+    }
+
+    public string GetData() {
+        string outString = "";
+        string targetName = (TargetWaypoint != null) ? TargetWaypoint.gameObject.name : "None";
+        string modTargetName = $"{targetName[0]}{targetName[^1]}";
+        outString += "WP: " + modTargetName + "\n";
+
+        bool isChasing = _blackboard.ContainsKey("IsChasing") && (bool)_blackboard["IsChasing"];
+        string alarmLevel = isChasing ? "A2" : "A1";
+        outString += "AL: " + alarmLevel;
+
+        return outString;
+
     }
 
     public void SetStateAtValue(string key, object newVal) {

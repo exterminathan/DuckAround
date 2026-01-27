@@ -119,7 +119,7 @@ public class PlayerDuckController : MonoBehaviour {
                 // sweep each arm collider
                 float maxDist = desiredMove.magnitude;
                 Vector3 moveDir = desiredMove.normalized;
-                
+
                 // actually move
                 lastMoveDelta = moveDir * maxDist;
                 characterController.Move(lastMoveDelta);

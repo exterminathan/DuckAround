@@ -111,7 +111,7 @@ public class IsometricRaycaster : MonoBehaviour {
     void Update() {
 
         if (_holdMode != HoldMode.Interact) {
-            //HandleRotation();
+            HandleRotation();
             HandleVerticalIK();
             HandleHorizontalIK();
         }
@@ -261,7 +261,7 @@ public class IsometricRaycaster : MonoBehaviour {
         //i get thru experimentation
 
         //get half way point between root and mid
-        
+
         //cast capsule stretching from root to mid centered on midpoint
         // with radius of whatever we found
 
@@ -271,9 +271,9 @@ public class IsometricRaycaster : MonoBehaviour {
 
         //if found, find closest point along line from calculatedTargetPos to current tip pos that is on surface of object hit
         //and set calculatedTargetPos to that point minus some small offset in direction away from hit normal
-        
+
         //ref unity vector3 math: https://chatgpt.com/c/69162ab2-cd58-832e-b3cd-12a381668390
-        
+
 
 
     }
@@ -374,8 +374,8 @@ public class IsometricRaycaster : MonoBehaviour {
 
         Debug.DrawLine(rootPos, newMidPos, Color.yellow, 0.001f);
         Debug.DrawLine(newMidPos, newTipPos, Color.cyan, 0.001f);
-        ShowDebugSphere((rootPos+newMidPos)/2, Color.magenta);
-        ShowDebugSphere((newTipPos+newMidPos)/2, Color.magenta);
+        //ShowDebugSphere((rootPos + newMidPos) / 2, Color.magenta);
+        //ShowDebugSphere((newTipPos + newMidPos) / 2, Color.magenta);
 
 
         // Debug.Log(
