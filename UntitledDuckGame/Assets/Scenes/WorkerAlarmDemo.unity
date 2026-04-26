@@ -2012,7 +2012,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1156633754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55ca6b6251e8bf54aae6f3aa83ad6a35, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d432b4a04f5f3c49b2d0fdad60e67db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetWaypoint: {fileID: 1835324378}
@@ -3399,7 +3399,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1898882066}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55ca6b6251e8bf54aae6f3aa83ad6a35, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d432b4a04f5f3c49b2d0fdad60e67db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   targetWaypoint: {fileID: 1893690824}

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.EventSystems;
 
 public class DebugCanvasManager : MonoBehaviour {
     public BTInputManager btInput;
@@ -20,9 +21,11 @@ public class DebugCanvasManager : MonoBehaviour {
 
     void Update() {
         if (Input.GetMouseButtonDown(1)) {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
             HandleSelection();
         }
         if (Input.GetMouseButtonDown(0)) {
+            if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
             SpawnCube();
         }
 

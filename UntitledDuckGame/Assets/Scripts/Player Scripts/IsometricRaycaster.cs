@@ -15,7 +15,18 @@ public interface IInteractable {
     void OnHoldEnd();
 }
 
+
+
 public class IsometricRaycaster : MonoBehaviour {
+    private struct BoneTransforms {
+        public Vector3 rootPos;
+        public Quaternion rootRot;
+        public Vector3 midPos;
+        public Quaternion midRot;
+        public Vector3 tipPos;
+        public Quaternion tipRot;
+    }
+
     #region Public Variables
     [Header("Setup")]
     public Camera mainCamera;
@@ -65,11 +76,6 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
     #region Private Variables
-    private Image leftBoundaryImage;
-    private Image rightBoundaryImage;
-    private Image topBoundaryImage;
-    private Image bottomBoundaryImage;
-
     private BoxCollider[] armColliders;
 
     [Header("Holding Settings")]
@@ -110,6 +116,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
     void Update() {
 
+        // if not interacting, handle rotation as normal
         if (_holdMode != HoldMode.Interact) {
             HandleRotation();
             HandleVerticalIK();
@@ -126,6 +133,8 @@ public class IsometricRaycaster : MonoBehaviour {
             Vector3 currentPos = p.transform.position;
             Vector3 delta = currentPos - p.lastPos;
 
+            // figure out velocity for all ArmHitForwarders
+            // for use in collision impulse calculation
             p.velocity = delta / Time.deltaTime;
             p.lastPos = currentPos;
         }
@@ -290,15 +299,6 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
 
-    private struct BoneTransforms {
-        public Vector3 rootPos;
-        public Quaternion rootRot;
-        public Vector3 midPos;
-        public Quaternion midRot;
-        public Vector3 tipPos;
-        public Quaternion tipRot;
-    }
-
 
     #region Helpers
     // calculates new positions of bones/colliders after vertical ik changes
@@ -374,8 +374,8 @@ public class IsometricRaycaster : MonoBehaviour {
 
         Debug.DrawLine(rootPos, newMidPos, Color.yellow, 0.001f);
         Debug.DrawLine(newMidPos, newTipPos, Color.cyan, 0.001f);
-        //ShowDebugSphere((rootPos + newMidPos) / 2, Color.magenta);
-        //ShowDebugSphere((newTipPos + newMidPos) / 2, Color.magenta);
+        ShowDebugSphere((rootPos + newMidPos) / 2, Color.magenta);
+        ShowDebugSphere((newTipPos + newMidPos) / 2, Color.magenta);
 
 
         // Debug.Log(
@@ -480,6 +480,34 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
     #region Debug
+    public static void ShowDebugBox(Vector3 center, Vector3 size, Color color, float duration = 0.001f) {
+        Vector3 e = size * 0.5f;
+        Vector3 p000 = center + new Vector3(-e.x, -e.y, -e.z);
+        Vector3 p100 = center + new Vector3(+e.x, -e.y, -e.z);
+        Vector3 p001 = center + new Vector3(-e.x, -e.y, +e.z);
+        Vector3 p101 = center + new Vector3(+e.x, -e.y, +e.z);
+        Vector3 p010 = center + new Vector3(-e.x, +e.y, -e.z);
+        Vector3 p110 = center + new Vector3(+e.x, +e.y, -e.z);
+        Vector3 p011 = center + new Vector3(-e.x, +e.y, +e.z);
+        Vector3 p111 = center + new Vector3(+e.x, +e.y, +e.z);
+
+        // bottom face
+        Debug.DrawLine(p000, p100, color, duration);
+        Debug.DrawLine(p100, p101, color, duration);
+        Debug.DrawLine(p101, p001, color, duration);
+        Debug.DrawLine(p001, p000, color, duration);
+        // top face
+        Debug.DrawLine(p010, p110, color, duration);
+        Debug.DrawLine(p110, p111, color, duration);
+        Debug.DrawLine(p111, p011, color, duration);
+        Debug.DrawLine(p011, p010, color, duration);
+        // verticals
+        Debug.DrawLine(p000, p010, color, duration);
+        Debug.DrawLine(p100, p110, color, duration);
+        Debug.DrawLine(p101, p111, color, duration);
+        Debug.DrawLine(p001, p011, color, duration);
+    }
+
     public static void ShowDebugSphere(Vector3 position, Color debugColor) {
         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         Destroy(sphere.GetComponent<SphereCollider>());
