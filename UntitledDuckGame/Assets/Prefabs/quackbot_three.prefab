@@ -69,7 +69,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 4.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -223,6 +223,7 @@ MonoBehaviour:
   ik_target: {fileID: 5078006049067672149}
   bone_point: {fileID: 1756908641562294945}
   rotate_pivot: {fileID: 805218722284967859}
+  tbikc: {fileID: 8161334330559082658}
   innerZoneRangeX: 225
   minPivotAngle: -90
   maxPivotAngle: 90
@@ -237,7 +238,6 @@ MonoBehaviour:
   uiCanvas: {fileID: 0}
   boundaryColor: {r: 0.6333313, g: 1, b: 0.4575472, a: 1}
   fadeDistance: 50
-  showDev: 0
   rotationBlockingLayerMask:
     serializedVersion: 2
     m_Bits: 32768
@@ -250,6 +250,17 @@ MonoBehaviour:
   armObjects:
   - {fileID: 4018670378370066525}
   - {fileID: 5206752691043838313}
+  upperArmBoxWidth: 0.41
+  upperArmBoxHeight: 0.32
+  upperArmBoxRotationOffset: {x: 0, y: 0, z: 0}
+  upperArmBoxCenterOffset: {x: 0, y: 0.24, z: 0.12}
+  foreArmBoxWidth: 0.21
+  foreArmBoxHeight: 0.23
+  foreArmBoxRotationOffset: {x: 0, y: 0, z: 0}
+  foreArmBoxCenterOffset: {x: 0, y: 0, z: 0}
+  sweepIterations: 16
+  drawSweepDebug: 1
+  debugLockKey: 93
   playerHoldSlot: {fileID: 1459010141602872897}
 --- !u!1 &6122409478122950566
 GameObject:
@@ -465,15 +476,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.44
+      value: 1.68
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.01499939
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.47
+      value: -6.12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -748,9 +759,6 @@ PrefabInstance:
       addedObject: {fileID: 3829901257233334611}
     - targetCorrespondingSourceObject: {fileID: 2507108235590353893, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8746190836841981401}
-    - targetCorrespondingSourceObject: {fileID: 2507108235590353893, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 7151940902560249194}
     - targetCorrespondingSourceObject: {fileID: 6722817881442747089, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       insertIndex: -1
@@ -758,9 +766,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6722817881442747089, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1206103436497690508}
-    - targetCorrespondingSourceObject: {fileID: 6722817881442747089, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1666006801582840347}
     - targetCorrespondingSourceObject: {fileID: 6722817881442747089, guid: 58617b2becf20774db9029aabc836c0a, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4863275160801570765}
@@ -1049,21 +1054,6 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &1666006801582840347
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4018670378370066525}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e21b49efe8bbbeb42bb60f45af34dc60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ikTarget: {fileID: 5078006049067672149}
-  rotationSmoothTime: 0.05
-  extraSecondsPerDegree: 0.0003
 --- !u!114 &4863275160801570765
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1226,21 +1216,6 @@ ConfigurableJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &8746190836841981401
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5206752691043838313}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e21b49efe8bbbeb42bb60f45af34dc60, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ikTarget: {fileID: 5078006049067672149}
-  rotationSmoothTime: 0.05
-  extraSecondsPerDegree: 0.0003
 --- !u!114 &7151940902560249194
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1055,17 +1055,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb7dccd5216c5a042ac86ef261cf1b1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &140650080 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8161334330559082658, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
-  m_PrefabInstance: {fileID: 1513513973}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeda7bfbf984f2a4da5ab4b8967b115d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &156378117
 GameObject:
   m_ObjectHideFlags: 0
@@ -9049,17 +9038,21 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 695300767009659761, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
-      propertyPath: orthographic size
-      value: 4.5
+    - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: foreArmBoxRotationOffset.x
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
-      propertyPath: tbikc
-      value: 
-      objectReference: {fileID: 140650080}
-    - target: {fileID: 7141773792570162778, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
-      propertyPath: m_SkinWidth
-      value: 0.039
+      propertyPath: foreArmBoxRotationOffset.z
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: upperArmBoxRotationOffset.x
+      value: 90
+      objectReference: {fileID: 0}
+    - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: upperArmBoxRotationOffset.z
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 7370274405301540829, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_Name
@@ -9105,8 +9098,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8746190836841981401, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
@@ -13007,9 +12999,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1508480166926522225, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5322143925497055906, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6169333539869305098, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 7830358897009688308, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
+      objectReference: {fileID: 0}
     - target: {fileID: 8248453146407332964, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
       propertyPath: m_Name
       value: strut_base
+      objectReference: {fileID: 0}
+    - target: {fileID: 8248453146407332964, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 8733522854710064862, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -13050,6 +13062,10 @@ PrefabInstance:
     - target: {fileID: 8733522854710064862, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8764408433107079285, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

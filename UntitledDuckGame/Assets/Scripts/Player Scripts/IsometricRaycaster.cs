@@ -69,6 +69,35 @@ public class IsometricRaycaster : MonoBehaviour {
     public LayerMask verticalIKBlockingLayerMask;
     public GameObject[] armObjects;
 
+    [Header("Upper Arm Box Sweep")]
+    [Tooltip("Upper arm box width")]
+    public float upperArmBoxWidth = 0.1f;
+    [Tooltip("Upper arm box height")]
+    public float upperArmBoxHeight = 0.1f;
+    [Tooltip("Upper arm box rotation offset")]
+    public Vector3 upperArmBoxRotationOffset = Vector3.zero;
+    [Tooltip("Upper arm box center offset")]
+    public Vector3 upperArmBoxCenterOffset = Vector3.zero;
+
+    [Header("Bottom Arm Box Sweep")]
+    [Tooltip("Bottom arm box width")]
+    public float foreArmBoxWidth = 0.1f;
+    [Tooltip("Bottom arm box height")]
+    public float foreArmBoxHeight = 0.1f;
+    [Tooltip("Bottom arm box rotation offset")]
+    public Vector3 foreArmBoxRotationOffset = Vector3.zero;
+    [Tooltip("Bottom arm box center offset.")]
+    public Vector3 foreArmBoxCenterOffset = Vector3.zero;
+
+    [Header("Arm Box Sweep - Shared")]
+    public int sweepIterations = 8;
+    public bool drawSweepDebug = true;
+
+    [Header("Debug")]
+    [Tooltip("Toggle key to lock ALL arm rotation + mouse/IK input")]
+    public KeyCode debugLockKey = KeyCode.RightBracket;
+    private bool debugInputLocked = false;
+
     // used to figure out per-arm velocity for collision impulse calculation
     public ArmHitForwarder[] armPushers { get; private set; }
     public bool isHolding { set; get; } = false;
@@ -88,6 +117,7 @@ public class IsometricRaycaster : MonoBehaviour {
     private Collider holdCollider;
     public Transform playerHoldSlot;
     #endregion
+
 
     #region Unity Functions
     void Start() {
@@ -115,6 +145,17 @@ public class IsometricRaycaster : MonoBehaviour {
     }
 
     void Update() {
+        //
+        // drawing the sweep boxes, so box width/height/offset/center can be tuned live during play.
+        if (Input.GetKeyDown(debugLockKey)) {
+            debugInputLocked = !debugInputLocked;
+            Debug.Log($"[IsometricRaycaster] Debug input lock {(debugInputLocked ? "ON" : "OFF")}");
+        }
+
+        if (debugInputLocked) {
+            DrawArmSweepDebug();
+            return;
+        }
 
         // if not interacting, handle rotation as normal
         if (_holdMode != HoldMode.Interact) {
@@ -125,6 +166,13 @@ public class IsometricRaycaster : MonoBehaviour {
         else {
             HandleHoldInteraction();
         }
+    }
+
+    // While the debug input lock is on, redraw the arm sweep boxes at the current (frozen) IK pose
+    // every frame so inspector tweaks (width/height/offset/center) refresh live without pausing.
+    private void DrawArmSweepDebug() {
+        if (tbikc == null || ik_target == null) return;
+        ArmBoxesCollideAt(ik_target.position, true);
     }
 
     void LateUpdate() {
@@ -148,7 +196,6 @@ public class IsometricRaycaster : MonoBehaviour {
         var pivot = rotate_pivot.transform;
 
         //HANDLE ROTATION SWEEP
-        //REPLACE FROM HERE
         float centerX = Screen.width * 0.5f;
         float minX = centerX - innerZoneRangeX;
         float maxX = centerX + innerZoneRangeX;
@@ -162,39 +209,9 @@ public class IsometricRaycaster : MonoBehaviour {
         float currY = rotationAngleY;
         float rawDelta = delta;
 
-        float allowedDelta = rawDelta;
-
-        // sweep checks for arm colliders position after rotation about pivot
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-
-            Vector3 halfExtents = Vector3.Scale(box.size, box.transform.lossyScale);
-            // box center after pivot rotation
-            Vector3 worldOffset = box.transform.position - pivot.position;
-            Vector3 rotatedCenter = pivot.position
-                                  + Quaternion.Euler(0f, rawDelta, 0f)
-                                    * worldOffset;
-            // final orientation
-            Quaternion rotatedOri = box.transform.rotation
-                                  * Quaternion.Euler(0f, rawDelta, 0f);
-
-            // clamp if overlapped
-            Collider[] hits = Physics.OverlapBox(
-                rotatedCenter,
-                halfExtents,
-                rotatedOri,
-                rotationBlockingLayerMask,
-                QueryTriggerInteraction.Ignore
-            );
-            if (hits.Length > 0) {
-                // stop rotation entirely if any overlap found
-                allowedDelta = 0f;
-                Debug.Log($"[RotationBlocked] Arm collider {c.name} blocked by wall(s).");
-                break;
-            }
-
-        }
-        //TO HERE
+        // Sweep the arm colliders through this frame's yaw and clamp to the
+        // furthest collision-free angle (partial clamp, not all-or-nothing).
+        float allowedDelta = HandleHorizontalIKSweep(rawDelta);
 
         // finalized rotation
         var e = pivot.localEulerAngles;
@@ -228,15 +245,13 @@ public class IsometricRaycaster : MonoBehaviour {
 
         float targetY = Mathf.Lerp(minIKY, maxIKY, t);
 
-        Vector3 calculatedTargetPos = new Vector3(ik_target.position.x, targetY, ik_target.position.z);
-        // check here before applying lerp to pos.y with handlerverticaliksweep
-        // whether the new position would cause a collision
-        HandleVerticalIKSweep(calculatedTargetPos);
-        // if there is collision, adjust targetY accordingly
-        // if no collision, can use targetY as is
+        Vector3 desiredTargetPos = new Vector3(ik_target.position.x, targetY, ik_target.position.z);
+        // Limit the desired height to the furthest point along the move that keeps
+        // the arm meshes clear of verticalIKBlockingLayerMask geometry this frame.
+        Vector3 safeTargetPos = HandleVerticalIKSweep(desiredTargetPos);
 
         Vector3 pos = ik_target.position;
-        pos.y = Mathf.Lerp(pos.y, targetY, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
+        pos.y = Mathf.Lerp(pos.y, safeTargetPos.y, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
         ik_target.position = pos;
     }
 
@@ -252,57 +267,126 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
     #region Handle Sweep
-    //Helper function for arm collider sweeps to ensure no collision with rotation blocking layer mask (walls, etc)
-    private void HandleRotationSweep() {
+    // ---- Vertical IK sweep (mouse Y) ---------------------------------------
+    // Prevents the arm meshes from clipping through verticalIKBlockingLayerMask
+    // geometry when the IK target moves up/down. Returns the furthest position
+    // along current->desired that keeps both arm segment boxes collision-free.
+    // The arm pose for any candidate target is predicted with TwoBoneIKPreCalc.
+    private Vector3 HandleVerticalIKSweep(Vector3 desiredTargetPos) {
+        Vector3 currentTargetPos = ik_target.position;
+
+        // Desired height is already clear -> allow the full move (draw final pose).
+        if (!ArmBoxesCollideAt(desiredTargetPos, drawSweepDebug)) {
+            return desiredTargetPos;
+        }
+
+        // Already overlapping at the current height -> don't push further in.
+        if (ArmBoxesCollideAt(currentTargetPos, false)) {
+            if (drawSweepDebug) ArmBoxesCollideAt(currentTargetPos, true);
+            return currentTargetPos;
+        }
+
+        // Binary search the boundary between current (safe) and desired (blocked).
+        float lo = 0f; // safe fraction
+        float hi = 1f; // blocked fraction
+        for (int i = 0; i < Mathf.Max(1, sweepIterations); i++) {
+            float mid = (lo + hi) * 0.5f;
+            Vector3 probe = Vector3.Lerp(currentTargetPos, desiredTargetPos, mid);
+            if (ArmBoxesCollideAt(probe, false)) hi = mid;
+            else lo = mid;
+        }
+
+        Vector3 safe = Vector3.Lerp(currentTargetPos, desiredTargetPos, lo);
+        if (drawSweepDebug) ArmBoxesCollideAt(safe, true); // draw the chosen pose
+        return safe;
+    }
+
+    // Predicts the arm pose for a target position and box-checks both segments.
+    private bool ArmBoxesCollideAt(Vector3 targetPos, bool draw) {
+        BoneTransforms b = TwoBoneIKPreCalc(tbikc.data, targetPos, draw);
+        // Evaluate both so debug boxes draw for both; OR the results.
+        bool upperHit = SegmentBoxCheck(b.rootPos, b.midPos, b.rootRot,
+                                        upperArmBoxWidth, upperArmBoxHeight, upperArmBoxRotationOffset, upperArmBoxCenterOffset, draw);
+        bool foreHit = SegmentBoxCheck(b.midPos, b.tipPos, b.midRot,
+                                       foreArmBoxWidth, foreArmBoxHeight, foreArmBoxRotationOffset, foreArmBoxCenterOffset, draw);
+        return upperHit || foreHit;
+    }
+
+    // Box-checks a single arm segment (a->b). The segment rotation's +Z already
+    // runs along the bone (LookRotation from TwoBoneIKPreCalc); the per-arm rotationOffset
+    // rolls/aligns the box to the real mesh. Width/Height are the box cross-section.
+    private bool SegmentBoxCheck(Vector3 a, Vector3 b, Quaternion segmentRot, float width, float height, Vector3 rotationOffset, Vector3 centerOffset, bool draw) {
+        float length = Vector3.Distance(a, b);
+        Quaternion oriented = segmentRot * Quaternion.Euler(rotationOffset);
+        // Start at the bone midpoint, then shift by centerOffset in the box's local axes.
+        Vector3 center = (a + b) * 0.5f + oriented * centerOffset;
+        Vector3 halfExtents = new Vector3(width * 0.5f, height * 0.5f, length * 0.5f);
+
+        bool hit = Physics.CheckBox(center, halfExtents, oriented, verticalIKBlockingLayerMask, QueryTriggerInteraction.Ignore);
+
+        if (draw) {
+            ShowDebugBox(center, halfExtents * 2f, oriented, hit ? Color.red : Color.green);
+        }
+        return hit;
+    }
+
+    // ---- Horizontal / rotation sweep (mouse X) -----------------------------
+    // Replaces the old all-or-nothing block in HandleRotation. Returns the
+    // furthest yaw delta (about rotate_pivot) that keeps the arm colliders clear
+    // of rotationBlockingLayerMask geometry this frame. TwoBoneIKPreCalc is not
+    // used here: this is whole-bot rotation, not IK-target movement.
+    private float HandleHorizontalIKSweep(float rawDelta) {
+        if (Mathf.Abs(rawDelta) < 1e-4f) return rawDelta;
+
+        // Full rotation is clear -> allow it.
+        if (!RotationCollidesAt(rawDelta)) return rawDelta;
+
+        // Binary search the boundary between 0 (safe) and rawDelta (blocked).
+        float lo = 0f;       // safe delta
+        float hi = rawDelta; // blocked delta
+        for (int i = 0; i < Mathf.Max(1, sweepIterations); i++) {
+            float mid = (lo + hi) * 0.5f;
+            if (RotationCollidesAt(mid)) hi = mid;
+            else lo = mid;
+        }
+        return lo;
+    }
+
+    // Rotates each arm collider about rotate_pivot by 'delta' (world yaw) and
+    // tests overlap against rotationBlockingLayerMask.
+    private bool RotationCollidesAt(float delta, bool draw = false) {
+        if (armColliders == null || rotate_pivot == null) return false;
+        Vector3 pivotPos = rotate_pivot.transform.position;
+        Quaternion yaw = Quaternion.Euler(0f, delta, 0f);
+
         foreach (var c in armColliders) {
             if (!(c is BoxCollider box)) continue;
 
+            // World-space center (respects box.center) and half extents.
+            Vector3 worldCenter = box.transform.TransformPoint(box.center);
+            Vector3 scale = box.transform.lossyScale;
+            Vector3 halfExtents = new Vector3(
+                Mathf.Abs(box.size.x * scale.x),
+                Mathf.Abs(box.size.y * scale.y),
+                Mathf.Abs(box.size.z * scale.z)) * 0.5f;
+
+            Vector3 rotatedCenter = pivotPos + yaw * (worldCenter - pivotPos);
+            Quaternion rotatedOri = yaw * box.transform.rotation;
+
+            if (draw) ShowDebugBox(rotatedCenter, halfExtents * 2f, rotatedOri, Color.cyan);
+
+            if (Physics.CheckBox(rotatedCenter, halfExtents, rotatedOri, rotationBlockingLayerMask, QueryTriggerInteraction.Ignore)) {
+                return true;
+            }
         }
+        return false;
     }
-
-    // if there are collisions, adjust ik target position to prevent clipping
-    // necessary parameters: currentIKPos
-    private void HandleVerticalIKSweep(Vector3 calculatedTargetPos) {
-        BoneTransforms predictedValues = TwoBoneIKPreCalc(tbikc.data, calculatedTargetPos);
-
-        //now that we have all this info
-        //we can do a capsule cast check for the root-mid and mid-tip segments with some thickness
-        //i get thru experimentation
-
-        //get half way point between root and mid
-
-        //cast capsule stretching from root to mid centered on midpoint
-        // with radius of whatever we found
-
-        //check for collisions with layer horizontalIKBlockingLayerMask
-
-        //if none found, return
-
-        //if found, find closest point along line from calculatedTargetPos to current tip pos that is on surface of object hit
-        //and set calculatedTargetPos to that point minus some small offset in direction away from hit normal
-
-        //ref unity vector3 math: https://chatgpt.com/c/69162ab2-cd58-832e-b3cd-12a381668390
-
-
-
-    }
-
-    // Helper function for horizontal IK sweep on IK Target to make 
-    // sure its not going through rotation blocking layers / objects
-    private void HandleHorizontalIKSweep() {
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-
-        }
-    }
-
     #endregion
-
 
 
     #region Helpers
     // calculates new positions of bones/colliders after vertical ik changes
-    private BoneTransforms TwoBoneIKPreCalc(in TwoBoneIKConstraintData ikData, Vector3 calculatedTargetPos) {
+    private BoneTransforms TwoBoneIKPreCalc(in TwoBoneIKConstraintData ikData, Vector3 calculatedTargetPos, bool debugDraw = false) {
         Transform root = ikData.root;
         Transform mid = ikData.mid;
         Transform tip = ikData.tip;
@@ -372,10 +456,12 @@ public class IsometricRaycaster : MonoBehaviour {
         Quaternion newRootRot = Quaternion.LookRotation(newMidPos - rootPos, bendNormal);
         Quaternion newMidRot = Quaternion.LookRotation(newTipPos - newMidPos, bendNormal);
 
-        Debug.DrawLine(rootPos, newMidPos, Color.yellow, 0.001f);
-        Debug.DrawLine(newMidPos, newTipPos, Color.cyan, 0.001f);
-        ShowDebugSphere((rootPos + newMidPos) / 2, Color.magenta);
-        ShowDebugSphere((newTipPos + newMidPos) / 2, Color.magenta);
+        if (debugDraw) {
+            Debug.DrawLine(rootPos, newMidPos, Color.yellow, 0.001f);
+            Debug.DrawLine(newMidPos, newTipPos, Color.cyan, 0.001f);
+            ShowDebugSphere((rootPos + newMidPos) / 2, Color.magenta);
+            ShowDebugSphere((newTipPos + newMidPos) / 2, Color.magenta);
+        }
 
 
         // Debug.Log(
@@ -490,6 +576,36 @@ public class IsometricRaycaster : MonoBehaviour {
         Vector3 p110 = center + new Vector3(+e.x, +e.y, -e.z);
         Vector3 p011 = center + new Vector3(-e.x, +e.y, +e.z);
         Vector3 p111 = center + new Vector3(+e.x, +e.y, +e.z);
+
+        // bottom face
+        Debug.DrawLine(p000, p100, color, duration);
+        Debug.DrawLine(p100, p101, color, duration);
+        Debug.DrawLine(p101, p001, color, duration);
+        Debug.DrawLine(p001, p000, color, duration);
+        // top face
+        Debug.DrawLine(p010, p110, color, duration);
+        Debug.DrawLine(p110, p111, color, duration);
+        Debug.DrawLine(p111, p011, color, duration);
+        Debug.DrawLine(p011, p010, color, duration);
+        // verticals
+        Debug.DrawLine(p000, p010, color, duration);
+        Debug.DrawLine(p100, p110, color, duration);
+        Debug.DrawLine(p101, p111, color, duration);
+        Debug.DrawLine(p001, p011, color, duration);
+    }
+
+    // Rotated wireframe box: corners are built in local space then rotated about 'center'.
+    // Used to visualize the arm sweep boxes so their orientation can be tuned.
+    public static void ShowDebugBox(Vector3 center, Vector3 size, Quaternion rotation, Color color, float duration = 0.001f) {
+        Vector3 e = size * 0.5f;
+        Vector3 p000 = center + rotation * new Vector3(-e.x, -e.y, -e.z);
+        Vector3 p100 = center + rotation * new Vector3(+e.x, -e.y, -e.z);
+        Vector3 p001 = center + rotation * new Vector3(-e.x, -e.y, +e.z);
+        Vector3 p101 = center + rotation * new Vector3(+e.x, -e.y, +e.z);
+        Vector3 p010 = center + rotation * new Vector3(-e.x, +e.y, -e.z);
+        Vector3 p110 = center + rotation * new Vector3(+e.x, +e.y, -e.z);
+        Vector3 p011 = center + rotation * new Vector3(-e.x, +e.y, +e.z);
+        Vector3 p111 = center + rotation * new Vector3(+e.x, +e.y, +e.z);
 
         // bottom face
         Debug.DrawLine(p000, p100, color, duration);
