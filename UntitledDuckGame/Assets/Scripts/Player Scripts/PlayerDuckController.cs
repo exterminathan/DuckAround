@@ -119,7 +119,7 @@ public class PlayerDuckController : MonoBehaviour {
                 // sweep each arm collider
                 float maxDist = desiredMove.magnitude;
                 Vector3 moveDir = desiredMove.normalized;
-                
+
                 // actually move
                 lastMoveDelta = moveDir * maxDist;
                 characterController.Move(lastMoveDelta);
@@ -131,13 +131,6 @@ public class PlayerDuckController : MonoBehaviour {
         }
     }
 
-    //Helper function for movement sweep for arms
-    // to ensure they don't clip through player blocking layers / objects
-    private void HandleMovementSweep() {
-        foreach (var c in armColliders) {
-            if (!(c is BoxCollider box)) continue;
-        }
-    }
 
     //only for collisions with base of quackbot
     // collisions for arms are handled by whatever is being hit (ref back to PlayerDuckController.audioAgent)
