@@ -9,6 +9,8 @@ public class PlayerDuckController : MonoBehaviour {
     [SerializeField] private Transform rigTarget;
     [SerializeField] private Transform root;
     [SerializeField] private Transform mouth;
+    private Quaternion mouthClosed;
+    private Coroutine mouthRoutine;
     [SerializeField] private Transform meshBase;
     [SerializeField] private IsometricRaycaster isometricRaycaster;
     [SerializeField] private float quackRotation = 30f;
@@ -63,6 +65,8 @@ public class PlayerDuckController : MonoBehaviour {
     #endregion
 
     void Start() {
+        if (mouth != null) mouthClosed = mouth.localRotation;
+
         if (isoCamera == null && Camera.main != null) isoCamera = Camera.main.transform;
         var f = isoCamera.forward; f.y = 0; isoForward = f.normalized;
 
@@ -81,7 +85,7 @@ public class PlayerDuckController : MonoBehaviour {
     void Update() {
         // TODO:
         //quack - NEED TO ISOLATE
-        if (Input.GetKeyDown(KeyCode.Space)) StartCoroutine(Quack());
+        if (Input.GetKeyDown(KeyCode.Space)) Quack();
 
         // TODO: 
         // make spam keys only for tutorial
@@ -168,38 +172,69 @@ public class PlayerDuckController : MonoBehaviour {
 
     }
 
-    private IEnumerator Quack() {
-        float half = quackDuration * 0.5f;
+    // Rotates the mouth to `degrees` of opening (Y axis) relative to its closed rest pose.
+    // If duration > 0, lerps there over that many seconds; otherwise snaps instantly.
+    private IEnumerator SetMouthOpen(float degrees, float duration) {
+        // Lazily capture the closed rest pose. Guards against Hot Reload / domain
+        // reloads where Start didn't run and mouthClosed is the zero quaternion.
+        if (mouthClosed.x == 0f && mouthClosed.y == 0f && mouthClosed.z == 0f && mouthClosed.w == 0f)
+            mouthClosed = mouth.localRotation;
+
         Quaternion start = mouth.localRotation;
-        Quaternion open = start * Quaternion.Euler(0f, quackRotation, 0f);
+        Quaternion target = mouthClosed * Quaternion.Euler(0f, -degrees, 0f);
 
-        for (float t = 0f; t < half; t += Time.deltaTime) {
-            mouth.localRotation = Quaternion.Lerp(start, open, t / half);
-            yield return null;
+        if (duration > 0f) {
+            for (float t = 0f; t < duration; t += Time.deltaTime) {
+                mouth.localRotation = Quaternion.Lerp(start, target, t / duration);
+                yield return null;
+            }
         }
-        mouth.localRotation = open;
+        mouth.localRotation = target;
+    }
 
-        for (float t = 0f; t < half; t += Time.deltaTime) {
-            mouth.localRotation = Quaternion.Lerp(open, start, t / half);
-            yield return null;
+    // Centralized mouth control: animates the mouth to `degrees` open over `duration`
+    // (0 = snap), cancelling any in-progress mouth animation so callers (pickup
+    // open/close, quack, etc.) never fight over mouth.localRotation.
+    public void OpenMouthTo(float degrees, float duration) {
+        if (mouthRoutine != null) StopCoroutine(mouthRoutine);
+        mouthRoutine = StartCoroutine(SetMouthOpen(degrees, duration));
+    }
+
+    private void Quack() {
+        float half = quackDuration * 0.5f;
+
+        if (isometricRaycaster != null && isometricRaycaster.isHolding) {
+            // Quacking while holding: drop the object. The held item may have opened
+            // the mouth wider than the usual quack angle (scaled to its size), so we
+            // skip the open "bump" and just close from the current rotation back to
+            // the closed pose. Cancelling any active routine here supersedes the
+            // close that EndHold -> OnHoldEnd kicks off, so they don't fight.
+            isometricRaycaster.EndHold(this);
+
+            // AUDIO: play the "quack while holding an object" clip here.
+
+            if (mouthRoutine != null) StopCoroutine(mouthRoutine);
+            mouthRoutine = StartCoroutine(SetMouthOpen(0f, half));
         }
-        mouth.localRotation = start;
+        else {
+            // Normal quack: open to the quack angle, then close.
+
+            // AUDIO: play the "quack (empty mouth)" clip here.
+
+            if (mouthRoutine != null) StopCoroutine(mouthRoutine);
+            mouthRoutine = StartCoroutine(QuackRoutine(half));
+        }
 
         Debug.Log("Quack!");
     }
 
-    public IEnumerator ToggleMouth(bool openMouth, float duration) {
-        Quaternion start = mouth.localRotation;
-        Quaternion target = openMouth
-            ? start * Quaternion.Euler(0f, quackRotation / 2, 0f)
-            : start * Quaternion.identity;
+    private IEnumerator QuackRoutine(float half) {
+        yield return SetMouthOpen(quackRotation, half);
+        yield return SetMouthOpen(0f, half);
+    }
 
-        for (float t = 0f; t < duration; t += Time.deltaTime) {
-            mouth.localRotation = Quaternion.Lerp(start, target, t / duration);
-            yield return null;
-        }
-        mouth.localRotation = target;
-
+    public void ToggleMouth(bool openMouth, float duration) {
+        OpenMouthTo(openMouth ? quackRotation / 2f : 0f, duration);
     }
 
 }

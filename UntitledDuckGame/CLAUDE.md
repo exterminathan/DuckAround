@@ -37,6 +37,9 @@ detailed docs under [.claude/docs/](.claude/docs/).
 5. **Match the existing C# style** — governed by [.editorconfig](.editorconfig): **tabs**
    (width 4), `csharp_new_line_before_open_brace = none` (opening brace on the same line),
    `using` directives sorted system-first, UTF-8, LF line endings, final newline.
+6. **Commit messages**: short title line, then a few SHORT bullet points (a couple words
+   each, terse phrases — NOT sentences or paragraphs). Match the existing `git log` style.
+   Never a title-only commit, never a verbose paragraph body.
 
 ---
 

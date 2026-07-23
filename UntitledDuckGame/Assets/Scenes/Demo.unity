@@ -7348,6 +7348,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3778586752457779842, guid: e5b7b534c57a00f41ac2909dc2266a1e, type: 3}
   m_PrefabInstance: {fileID: 1199453766}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1203561221 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7167940439996818053, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+  m_PrefabInstance: {fileID: 1513513973}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1213789122 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5443823946348787863, guid: 969d37810ee22f4488e2e9720d991321, type: 3}
@@ -9038,21 +9043,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 318518283601257330, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: mouth
+      value: 
+      objectReference: {fileID: 1203561221}
+    - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
+      propertyPath: rotationSmoothSpeed
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: foreArmBoxRotationOffset.x
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: foreArmBoxRotationOffset.z
-      value: 30
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: upperArmBoxRotationOffset.x
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 752357334695128801, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: upperArmBoxRotationOffset.z
-      value: 30
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7370274405301540829, guid: 461fa2cfff867d54d99d77cab50afda3, type: 3}
       propertyPath: m_Name
@@ -13006,6 +13019,18 @@ PrefabInstance:
     - target: {fileID: 5322143925497055906, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
       propertyPath: m_Layer
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 5743732504699966107, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: customRangePixels
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 5743732504699966107, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: distanceFromLever
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5743732504699966107, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
+      propertyPath: useTrueLeverExtent
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6169333539869305098, guid: 1937cf6ed3d8ab9408f7ce7122c1074a, type: 3}
       propertyPath: m_Layer

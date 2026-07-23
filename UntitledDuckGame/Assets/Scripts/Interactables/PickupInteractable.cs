@@ -38,7 +38,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         pickupActive = true;
 
         //open mouth
-        StartCoroutine(playerDuckController.ToggleMouth(true, 0.25f));
+        playerDuckController.ToggleMouth(true, 0.25f);
         //rb kinematic
 
         rb.linearVelocity = Vector3.zero;
@@ -66,7 +66,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         pickupActive = false;
 
         //close mouth
-        StartCoroutine(playerDuckController.ToggleMouth(false, 0.25f));
+        playerDuckController.ToggleMouth(false, 0.25f);
 
         //rb non kinematic
 

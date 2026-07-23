@@ -18,6 +18,8 @@ public interface IInteractable {
 
 
 public class IsometricRaycaster : MonoBehaviour {
+    private enum FaceState { Idle, FacingTarget, Restoring }
+
     private struct BoneTransforms {
         public Vector3 rootPos;
         public Quaternion rootRot;
@@ -44,6 +46,10 @@ public class IsometricRaycaster : MonoBehaviour {
     public float maxPivotAngle = 90f;
     public float rotationSmoothSpeed = 5f;
     private float rotationAngleY;
+
+    [Header("Interaction Facing")]
+    [Tooltip("Degrees/second the duck body turns to face an Operate interactable, and turns back on release.")]
+    public float bodyTurnSpeed = 360f;
 
     [Header("Horizontal IK Parameters (Scroll Tip)")]
     public float minIKX = 0f;
@@ -107,10 +113,22 @@ public class IsometricRaycaster : MonoBehaviour {
     #region Private Variables
     private BoxCollider[] armColliders;
 
+    // Canonical local-space arm state (in ik_target's parent frame): reach from scroll,
+    // fixed z captured at Start. Height comes from mouse Y each frame. The target's full
+    // localPosition is recomposed from these every frame, so any perturbation (lever
+    // tip-follow, collisions, restores) decays back onto the arm's axis instead of persisting.
+    private Transform ikParent;
+    private float reachX;
+    private float defaultLocalZ;
+
     [Header("Holding Settings")]
     private HoldMode _holdMode = HoldMode.None;
     private Vector3 preHoldRotation;
-    private Vector3 preHoldIKPos;
+    private Vector3 preHoldIKLocalPos;
+    private float _neutralArmYaw;
+    private float preHoldBodyYaw;
+    private float bodyTargetYaw;
+    private FaceState _faceState = FaceState.Idle;
     private Vector3 lastMousePos;
     private IInteractable activeInteractable;
     private RaycastHit holdHit;
@@ -127,6 +145,14 @@ public class IsometricRaycaster : MonoBehaviour {
 
         //assign default rotationAngleY
         rotationAngleY = rotate_pivot.transform.localEulerAngles.y;
+        // neutral arm-pivot yaw = arm pointing straight ahead relative to the body
+        _neutralArmYaw = rotate_pivot.transform.localEulerAngles.y;
+
+        // seed the canonical local arm state from the authored rest pose
+        ikParent = ik_target.parent;
+        Vector3 initLocal = ik_target.localPosition;
+        reachX = Mathf.Clamp(initLocal.x, minIKX, maxIKX);
+        defaultLocalZ = initLocal.z;
 
         //populate arm colliders and pushers
         armColliders = armObjects
@@ -157,11 +183,15 @@ public class IsometricRaycaster : MonoBehaviour {
             return;
         }
 
+        // Ease the duck body toward / back from an Operate target (keeps the arm in line
+        // with the body instead of twisting it). No-op during normal play.
+        UpdateBodyFacing();
+
         // if not interacting, handle rotation as normal
         if (_holdMode != HoldMode.Interact) {
             HandleRotation();
-            HandleVerticalIK();
             HandleHorizontalIK();
+            HandleVerticalIK();
         }
         else {
             HandleHoldInteraction();
@@ -193,7 +223,6 @@ public class IsometricRaycaster : MonoBehaviour {
     #region Movement
     private void HandleRotation() {
         if (rotate_pivot == null) return;
-        var pivot = rotate_pivot.transform;
 
         //HANDLE ROTATION SWEEP
         float centerX = Screen.width * 0.5f;
@@ -203,20 +232,27 @@ public class IsometricRaycaster : MonoBehaviour {
         float t = Mathf.Clamp01((Input.mousePosition.x - minX) / (maxX - minX));
         float targetAngle = Mathf.Lerp(maxPivotAngle, minPivotAngle, t);
 
-        float delta = Mathf.DeltaAngle(rotationAngleY, targetAngle);
-        rotationAngleY += delta * Time.deltaTime * rotationSmoothSpeed;
-
-        float currY = rotationAngleY;
-        float rawDelta = delta;
+        // Frame-rate-independent ease toward the target. Only this frame's step is swept,
+        // and the accumulator advances only by what was actually applied, so rotationAngleY
+        // always matches the pivot's real yaw (no snap when a blocked arm frees up).
+        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * Time.deltaTime);
+        float step = Mathf.DeltaAngle(rotationAngleY, targetAngle) * k;
 
         // Sweep the arm colliders through this frame's yaw and clamp to the
         // furthest collision-free angle (partial clamp, not all-or-nothing).
-        float allowedDelta = HandleHorizontalIKSweep(rawDelta);
+        float allowedStep = HandleHorizontalIKSweep(step);
 
-        // finalized rotation
-        var e = pivot.localEulerAngles;
-        e.y = currY + allowedDelta;
-        if (playerDuckController != null) pivot.localEulerAngles = e;
+        if (playerDuckController != null) SetPivotYaw(rotationAngleY + allowedStep);
+    }
+
+    // Single write-path for the arm pivot's local yaw: keeps the rotationAngleY accumulator
+    // in lockstep with the transform, so external writes (interact facing, restores) never
+    // leave HandleRotation working from a stale angle.
+    private void SetPivotYaw(float yaw) {
+        var e = rotate_pivot.transform.localEulerAngles;
+        e.y = yaw;
+        rotate_pivot.transform.localEulerAngles = e;
+        rotationAngleY = yaw;
     }
     public void RotateToTarget(Transform target) {
         if (target == null) return;
@@ -227,12 +263,58 @@ public class IsometricRaycaster : MonoBehaviour {
         dir.y = 0f;
 
         float targetY = Quaternion.LookRotation(dir).eulerAngles.y;
-        Vector3 e = rotate_pivot.transform.localEulerAngles;
-        e.y = targetY;
-        rotate_pivot.transform.localEulerAngles = e;
+        SetPivotYaw(targetY);
     }
     public void ResetRotation() {
         rotate_pivot.transform.localEulerAngles = preHoldRotation;
+        rotationAngleY = preHoldRotation.y;
+    }
+
+    // Set up a body-facing turn for an Operate interaction: park the arm pivot straight ahead
+    // (so the arm stays in line with the body), remember the body's current facing for restore,
+    // and seed the target yaw toward the interactable. The actual turn is eased in UpdateBodyFacing.
+    private void BeginInteractFacing(RaycastHit hit) {
+        if (playerDuckController == null) return;
+
+        SetPivotYaw(_neutralArmYaw);
+
+        preHoldBodyYaw = playerDuckController.transform.eulerAngles.y;
+
+        Vector3 dir = hit.transform.position - playerDuckController.transform.position;
+        dir.y = 0f;
+        bodyTargetYaw = (dir.sqrMagnitude > 1e-6f)
+            ? Quaternion.LookRotation(dir).eulerAngles.y
+            : preHoldBodyYaw;
+
+        _faceState = FaceState.FacingTarget;
+    }
+
+    // Eases the duck body to face the active Operate target, then back to its original facing on
+    // release. While facing, it re-aims at the live target each frame (the duck may still be
+    // rolling into position). Runs every frame but is a no-op when idle. This is the general guard
+    // that keeps any Operate interactable from snapping the arm/bones off their yaw axis.
+    private void UpdateBodyFacing() {
+        if (_faceState == FaceState.Idle || playerDuckController == null) return;
+
+        Transform body = playerDuckController.transform;
+
+        if (_faceState == FaceState.FacingTarget && holdCollider != null) {
+            Vector3 dir = holdCollider.transform.position - body.position;
+            dir.y = 0f;
+            if (dir.sqrMagnitude > 1e-6f) bodyTargetYaw = Quaternion.LookRotation(dir).eulerAngles.y;
+        }
+
+        float goal = (_faceState == FaceState.FacingTarget) ? bodyTargetYaw : preHoldBodyYaw;
+        float current = body.eulerAngles.y;
+        float next = Mathf.MoveTowardsAngle(current, goal, bodyTurnSpeed * Time.deltaTime);
+
+        Vector3 e = body.eulerAngles;
+        e.y = next;
+        body.eulerAngles = e;
+
+        if (_faceState == FaceState.Restoring && Mathf.Abs(Mathf.DeltaAngle(next, goal)) < 0.05f) {
+            _faceState = FaceState.Idle;
+        }
     }
     #endregion
 
@@ -245,23 +327,26 @@ public class IsometricRaycaster : MonoBehaviour {
 
         float targetY = Mathf.Lerp(minIKY, maxIKY, t);
 
-        Vector3 desiredTargetPos = new Vector3(ik_target.position.x, targetY, ik_target.position.z);
-        // Limit the desired height to the furthest point along the move that keeps
+        // Compose the FULL desired pose in the body-local frame (reach from scroll, height
+        // from mouse Y, fixed z) so drift picked up during interactions decays back onto
+        // the arm's axis instead of persisting. Height is body-relative, not world.
+        Vector3 desiredLocal = new Vector3(reachX, targetY, defaultLocalZ);
+        Vector3 desiredTargetPos = ikParent.TransformPoint(desiredLocal);
+
+        // Limit the desired pose to the furthest point along the move that keeps
         // the arm meshes clear of verticalIKBlockingLayerMask geometry this frame.
         Vector3 safeTargetPos = HandleVerticalIKSweep(desiredTargetPos);
 
-        Vector3 pos = ik_target.position;
-        pos.y = Mathf.Lerp(pos.y, safeTargetPos.y, Time.deltaTime * rotationSmoothSpeed * ikVerticalSmoothSpeed);
-        ik_target.position = pos;
+        // Frame-rate-independent smoothing toward the safe pose, applied in local space.
+        Vector3 safeLocal = ikParent.InverseTransformPoint(safeTargetPos);
+        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * ikVerticalSmoothSpeed * Time.deltaTime);
+        ik_target.localPosition = Vector3.Lerp(ik_target.localPosition, safeLocal, k);
     }
 
     private void HandleHorizontalIK() {
         float scroll = Input.mouseScrollDelta.y;
         if (scroll != 0f) {
-            Vector3 local = ik_target.localPosition;
-            float targetX = Mathf.Clamp(local.x - scroll * scrollIncrement, minIKX, maxIKX);
-            local.x = Mathf.Lerp(local.x, targetX, 1f / 7f);
-            ik_target.localPosition = local;
+            reachX = Mathf.Clamp(reachX - scroll * scrollIncrement, minIKX, maxIKX);
         }
     }
     #endregion
@@ -503,7 +588,8 @@ public class IsometricRaycaster : MonoBehaviour {
         holdHit = hit;
         lastMousePos = Input.mousePosition;
         preHoldRotation = rotate_pivot.transform.localEulerAngles;
-        preHoldIKPos = ik_target.position;
+        // Captured in local space: invariant to wherever the body rolls/turns during the interaction.
+        preHoldIKLocalPos = ik_target.localPosition;
 
         activeInteractable = hit.collider.GetComponent<IInteractable>();
         Debug.Log($"activeInteractable: {activeInteractable}");
@@ -528,7 +614,7 @@ public class IsometricRaycaster : MonoBehaviour {
         holdCollider = hit.collider;
 
         if (_holdMode == HoldMode.Interact) {
-            RotateToTarget(hit.transform);
+            BeginInteractFacing(hit);
             ik_target.position = hit.point;
             activeInteractable?.OnHoldStart(hit, ik_target);
         }
@@ -544,7 +630,9 @@ public class IsometricRaycaster : MonoBehaviour {
         if (_holdMode == HoldMode.Interact) {
             activeInteractable?.OnHoldEnd();
             ResetRotation();
-            ik_target.position = preHoldIKPos;
+            ik_target.localPosition = preHoldIKLocalPos;
+            // Ease the body back to its pre-interaction facing (UpdateBodyFacing handles it).
+            _faceState = FaceState.Restoring;
         }
         if (_holdMode == HoldMode.Pickup) {
             activeInteractable?.OnHoldEnd();
