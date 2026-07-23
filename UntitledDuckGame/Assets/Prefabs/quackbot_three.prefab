@@ -184,6 +184,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5078006049067672149}
   - component: {fileID: 752357334695128801}
+  - component: {fileID: 4675312988771230451}
   m_Layer: 0
   m_Name: Rig_target
   m_TagString: Untagged
@@ -263,6 +264,24 @@ MonoBehaviour:
   drawSweepDebug: 1
   debugLockKey: 93
   playerHoldSlot: {fileID: 1459010141602872897}
+--- !u!114 &4675312988771230451
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2032566197908581790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33cc454e4f1e425458b4907edfa0ebd6, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  transitDuration: 0.15
+  billLength: 0.35
+  minGapeDegrees: 12
+  maxGapeDegrees: 60
+  mouthAnimDuration: 0.25
+  armIgnoreSeconds: 0.3
 --- !u!1 &6122409478122950566
 GameObject:
   m_ObjectHideFlags: 0

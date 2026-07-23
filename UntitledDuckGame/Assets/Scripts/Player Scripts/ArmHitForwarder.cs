@@ -5,16 +5,56 @@ public class ArmHitForwarder : MonoBehaviour {
     public Vector3 velocity;
 
     private Rigidbody Mrb;
+    private BoxCollider box;
+    private readonly Collider[] beltOverlapHits = new Collider[8];
 
 	void Awake() {
         Mrb = GetComponent<Rigidbody>();
         if (Mrb == null) {
             Mrb = GetComponentInParent<Rigidbody>();
         }
+        box = GetComponent<BoxCollider>();
     }
 
 	void Start() {
         lastPos = transform.position;
+    }
+
+    // On-belt conveyor items are kinematic, and the arm rigidbodies are kinematic too —
+    // kinematic-kinematic pairs never produce OnCollisionEnter, so belt knock-off is
+    // detected with an explicit overlap query instead of collision callbacks.
+    void Update() {
+        CheckBeltKnockOff();
+    }
+
+    private void CheckBeltKnockOff() {
+        if (box == null || player == null) return;
+
+        float speed = velocity.magnitude;
+        if (speed < player.pushThreshold) return;
+
+        Vector3 center = transform.TransformPoint(box.center);
+        Vector3 scale = transform.lossyScale;
+        Vector3 halfExtents = new Vector3(
+            Mathf.Abs(box.size.x * scale.x),
+            Mathf.Abs(box.size.y * scale.y),
+            Mathf.Abs(box.size.z * scale.z)) * 0.5f;
+
+        int n = Physics.OverlapBoxNonAlloc(center, halfExtents, beltOverlapHits, transform.rotation, ~0, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < n; i++) {
+            var mover = beltOverlapHits[i].GetComponentInParent<ConveyorObjectMover>();
+            if (mover == null || !mover.IsOnBelt) continue;
+
+            Rigidbody itemRb = mover.Body;
+            if (itemRb == null) continue;
+
+            // reduced mass: μ = m1*m2/(m1+m2)
+            float μ = player.robotMass * itemRb.mass / (player.robotMass + itemRb.mass);
+            Vector3 impulse = velocity.normalized * speed * μ * player.armImpulseDampFactor;
+
+            Debug.Log($"[AHF] {name} knocked {mover.name} off the belt (impulse {impulse.magnitude:F3})");
+            mover.KnockOff(impulse, beltOverlapHits[i].ClosestPoint(center));
+        }
     }
 
     void OnCollisionEnter(Collision other) {
@@ -62,4 +102,3 @@ public class ArmHitForwarder : MonoBehaviour {
 
     }
 }
-

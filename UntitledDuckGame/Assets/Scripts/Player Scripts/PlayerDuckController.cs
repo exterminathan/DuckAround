@@ -87,10 +87,10 @@ public class PlayerDuckController : MonoBehaviour {
         //quack - NEED TO ISOLATE
         if (Input.GetKeyDown(KeyCode.Space)) Quack();
 
-        // TODO: 
+        // TODO:
         // make spam keys only for tutorial
         if (!isBrokenFree) {
-            // break‑out key spam 
+            // break‑out key spam
             if (Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.A) ||
                 Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.D)) {
                 keysPressed++;
@@ -142,6 +142,19 @@ public class PlayerDuckController : MonoBehaviour {
         //if worker, set collided state for ragdoll
         var npc = hit.collider.GetComponent<WorkerAIController>();
         if (npc != null) npc.SetStateAtValue("IsCollided", true);
+
+        // on-belt conveyor items are kinematic (no rigidbody impulse path) — a solid
+        // body bump knocks them off the belt instead
+        var mover = hit.collider.GetComponentInParent<ConveyorObjectMover>();
+        if (mover != null && mover.IsOnBelt && mover.Body != null) {
+            Vector3 beltHitVelocity = lastMoveDelta / Time.deltaTime;
+            float beltVNorm = Vector3.Dot(beltHitVelocity, hit.normal);
+            if (Mathf.Abs(beltVNorm) >= pushThreshold) {
+                float beltMu = robotMass * mover.Body.mass / (robotMass + mover.Body.mass);
+                mover.KnockOff(hit.normal * beltVNorm * beltMu * bodyImpulseDampFactor, hit.point);
+            }
+            return;
+        }
 
         Vector3 impulse = new Vector3(0, 0, 0);
 

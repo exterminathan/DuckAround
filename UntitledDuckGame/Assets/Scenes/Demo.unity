@@ -527,6 +527,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &101798217
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1503,6 +1505,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &240298187
 GameObject:
   m_ObjectHideFlags: 0
@@ -3172,6 +3176,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &566322489
 GameObject:
   m_ObjectHideFlags: 0
@@ -3737,6 +3743,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &639131726
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4041,6 +4049,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &653878144 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 22aa516e95aee494eb6ddb23540af9c1, type: 3}
@@ -4376,6 +4386,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!134 &728380139
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -4906,6 +4918,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &844967223
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5013,6 +5027,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &846381435
 GameObject:
   m_ObjectHideFlags: 0
@@ -5291,6 +5307,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1 &921604418
 GameObject:
   m_ObjectHideFlags: 0
@@ -5997,6 +6015,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &991866435
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6131,6 +6151,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1091739248
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6906,8 +6928,11 @@ MonoBehaviour:
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
   exitForce: 3
-  rb: {fileID: 1122785333}
   snapDistance: 0.1
+  restSpeed: 0.35
+  resnapCooldown: 0.5
+  resnapCheckInterval: 0.2
+  rb: {fileID: 1122785333}
 --- !u!54 &1122785333
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -6970,6 +6995,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1123854698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7371,6 +7398,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1244186347
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8603,6 +8632,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1423808445
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9012,6 +9043,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &1499120671 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5563082400113918286, guid: 7a93c6b689a7eb948abead331a783775, type: 3}
@@ -9035,6 +9068,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1513513973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9753,6 +9788,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1691881035
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9896,6 +9933,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1696617742
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10003,6 +10042,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!224 &1713100665 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1598288454372672637, guid: ca66882c5ff62f64eb8b74a5620333d7, type: 3}
@@ -10351,6 +10392,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!1001 &1780424054
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11633,6 +11676,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!64 &1920873112
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -11702,8 +11747,11 @@ MonoBehaviour:
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
   exitForce: 3
-  rb: {fileID: 1920873113}
   snapDistance: 0.1
+  restSpeed: 0.35
+  resnapCooldown: 0.5
+  resnapCheckInterval: 0.2
+  rb: {fileID: 1920873113}
 --- !u!65 &1920873115
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11971,6 +12019,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!134 &1969043411
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -12374,6 +12424,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
 --- !u!4 &2133153672 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5563082400113918286, guid: 7a93c6b689a7eb948abead331a783775, type: 3}
@@ -12854,6 +12906,10 @@ PrefabInstance:
       propertyPath: isometricRaycaster
       value: 
       objectReference: {fileID: 536996160}
+    - target: {fileID: 1577910165214545925, guid: 6ce2c0dbdf63f2443bf4eddb0f1ca086, type: 3}
+      propertyPath: stickyCarryPickups
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1577910165214545925, guid: 6ce2c0dbdf63f2443bf4eddb0f1ca086, type: 3}
       propertyPath: playerDuckController
       value: 

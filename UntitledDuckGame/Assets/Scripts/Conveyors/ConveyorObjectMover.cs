@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class ConveyorObjectMover : MonoBehaviour
 {
+    public enum MoverState { OnBelt, Free }
 
     [Header("Object Mover Settings")]
     public ConveyorPath path;
@@ -16,6 +17,14 @@ public class ConveyorObjectMover : MonoBehaviour
     public float maxTurnRateDegPerSec = 720f;
     public float exitForce = 3f;
 
+    [Header("Re-Snap Settings")]
+    [SerializeField] private float snapDistance = 0.1f;
+    [Tooltip("Item must be at/below this speed to be captured back onto the belt.")]
+    [SerializeField] private float restSpeed = 0.35f;
+    [Tooltip("Seconds after a fling/knock-off before the belt may recapture the item.")]
+    [SerializeField] private float resnapCooldown = 0.5f;
+    [SerializeField] private float resnapCheckInterval = 0.2f;
+
     private float s;
     private float nonLoopDistance;
     private bool wasLooping;
@@ -25,14 +34,16 @@ public class ConveyorObjectMover : MonoBehaviour
 
     private (Vector3 pos, Vector3 tan) posTan;
     private PickupInteractable pickupInteractable;
-    private bool wasPickupActive;
     private Collider interactionCollider;
     private Collider collCollider;
 
-    [SerializeField] private float snapDistance = 0.1f;
+    private MoverState state = MoverState.OnBelt;
+    private float resnapBlockedUntil;
+    private float nextResnapCheck;
 
-    // NEW: track that we re-enabled from a world drop
-    private bool isReactivatingFromDrop;
+    public MoverState State => state;
+    public bool IsOnBelt => state == MoverState.OnBelt && enabled;
+    public Rigidbody Body => rb;
 
     #region Unity Functions
     private void Start()
@@ -49,53 +60,36 @@ public class ConveyorObjectMover : MonoBehaviour
         wasLooping = loop;
         nonLoopDistance = 0f;
         s = 0f;
+        state = MoverState.OnBelt;
 
         pickupInteractable = GetComponentInChildren<PickupInteractable>();
-        Debug.Log($"{pickupInteractable} on start");
-        wasPickupActive = false;
 
+        // the box/mesh swap is only valid for items that have BOTH (box = on-belt
+        // interaction proxy, mesh = free physics). Single-collider items (e.g. drum:
+        // mesh only) must keep their collider live in every state — disabling their
+        // only collider makes them unhoverable and lets the arm phase through.
         interactionCollider = GetComponentInChildren<BoxCollider>();
-        if (interactionCollider != null)
+        collCollider = GetComponentInChildren<MeshCollider>();
+
+        // a degenerate proxy box (e.g. an accidental 0.0001-size collider) would leave
+        // the item effectively colliderless on the belt — treat it as absent instead
+        if (interactionCollider is BoxCollider proxyBox)
+        {
+            Vector3 worldSize = Vector3.Scale(proxyBox.size, proxyBox.transform.lossyScale);
+            if (Mathf.Abs(worldSize.x) < 0.02f || Mathf.Abs(worldSize.y) < 0.02f || Mathf.Abs(worldSize.z) < 0.02f)
+            {
+                interactionCollider = null;
+            }
+        }
+
+        if (interactionCollider == null || collCollider == null)
+        {
+            interactionCollider = null;
+            collCollider = null;
+        }
+        else
         {
             interactionCollider.enabled = true;
-        }
-        collCollider = GetComponentInChildren<MeshCollider>();
-        if (collCollider != null)
-        {
-            collCollider.enabled = false;
-        }
-    }
-
-    private void OnEnable()
-    {
-        if (rb == null) rb = GetComponentInChildren<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-            rb.useGravity = false;
-        }
-
-        // Only reset when this is a "fresh" enable, NOT a world-drop reactivation
-        if (!isReactivatingFromDrop)
-        {
-            transform.localRotation = initRotation;
-            s = 0f;
-            nonLoopDistance = 0f;
-            wasLooping = loop;
-        }
-
-        if (pickupInteractable == null) pickupInteractable = GetComponent<PickupInteractable>();
-        //Debug.Log($"{pickupInteractable} on enable");
-        wasPickupActive = false;
-
-        interactionCollider = GetComponentInChildren<BoxCollider>();
-        if (interactionCollider != null)
-        {
-            interactionCollider.enabled = true;
-        }
-        collCollider = GetComponentInChildren<MeshCollider>();
-        if (collCollider != null)
-        {
             collCollider.enabled = false;
         }
     }
@@ -104,93 +98,13 @@ public class ConveyorObjectMover : MonoBehaviour
     {
         if (path == null || path.TotalLength <= 1e-4f) return;
 
-        // If we were reactivated from a drop, snap to nearest point ONLY if close enough
-        if (isReactivatingFromDrop)
+        // while held, the hold owns the item entirely — never move or recapture it
+        if (pickupInteractable != null && pickupInteractable.pickupActive) return;
+
+        if (state == MoverState.Free)
         {
-            isReactivatingFromDrop = false;
-
-            if (rb != null)
-            {
-                rb.isKinematic = true;
-                rb.useGravity = false;
-            }
-
-            float sClosest = FindClosestSAlongPath(transform.position);
-            float Lsnap = path.TotalLength;
-
-            Vector3 conveyorPos = path.PositionAtDistance(sClosest);
-            float distToConveyor = Vector3.Distance(transform.position, conveyorPos);
-
-            if (distToConveyor <= snapDistance)
-            {
-                if (loop)
-                {
-                    s = Mathf.Repeat(sClosest - startOffset, Lsnap);
-                    nonLoopDistance = Mathf.Repeat(s + startOffset, Lsnap);
-                    // deltaTime = 0f keeps current rotation this frame
-                    SampleAt(nonLoopDistance, 0f);
-                }
-                else
-                {
-                    nonLoopDistance = Mathf.Clamp(sClosest, 0f, Lsnap);
-                    SampleAt(nonLoopDistance, 0f);
-                }
-            }
-            else
-            {
-                // Too far—detach again
-                ReleaseFromConveyor();
-            }
-            // Do not advance in the same frame
+            TryResnap();
             return;
-        }
-
-        // determine if object is currently picked up
-        bool isPicked = pickupInteractable != null && pickupInteractable.pickupActive;
-        if (isPicked)
-        {
-            wasPickupActive = true;
-            if (rb != null)
-            {
-                rb.isKinematic = true;
-            }
-            return;
-        }
-
-        if (wasPickupActive)
-        {
-            wasPickupActive = false;
-            if (rb != null)
-            {
-                rb.isKinematic = true;
-                rb.useGravity = false;
-            }
-
-            float sClosest = FindClosestSAlongPath(transform.position);
-            float Lsnap = path.TotalLength;
-
-            Vector3 conveyorPos = path.PositionAtDistance(sClosest);
-            float distToConveyor = Vector3.Distance(transform.position, conveyorPos);
-
-            if (distToConveyor <= snapDistance)
-            {
-                if (loop)
-                {
-                    s = Mathf.Repeat(sClosest - startOffset, Lsnap);
-                    nonLoopDistance = Mathf.Repeat(s + startOffset, Lsnap);
-                    SampleAt(nonLoopDistance, 0f);
-                }
-                else
-                {
-                    nonLoopDistance = Mathf.Clamp(sClosest, 0f, Lsnap);
-                    SampleAt(nonLoopDistance, 0f);
-                }
-            }
-            else
-            {
-                ReleaseFromConveyor();
-            }
-            return; // avoid advancing in the same frame we snapped
         }
 
         float L = path.TotalLength;
@@ -293,6 +207,48 @@ public class ConveyorObjectMover : MonoBehaviour
         return bestS;
     }
 
+    // Free-state recapture: only when the item is settled (near-rest) on/next to the
+    // path and outside the post-fling cooldown, so knocked-off items stay knocked off.
+    private void TryResnap()
+    {
+        if (Time.time < resnapBlockedUntil || Time.time < nextResnapCheck) return;
+        nextResnapCheck = Time.time + resnapCheckInterval;
+
+        if (rb == null || rb.isKinematic) return;
+        if (rb.linearVelocity.sqrMagnitude > restSpeed * restSpeed) return;
+
+        float sClosest = FindClosestSAlongPath(transform.position);
+        if (Vector3.Distance(transform.position, path.PositionAtDistance(sClosest)) > snapDistance) return;
+
+        Capture(sClosest);
+    }
+
+    private void Capture(float sClosest)
+    {
+        rb.isKinematic = true;
+        rb.useGravity = false;
+
+        if (interactionCollider != null) interactionCollider.enabled = true;
+        if (collCollider != null) collCollider.enabled = false;
+
+        float L = path.TotalLength;
+        if (loop)
+        {
+            s = Mathf.Repeat(sClosest - startOffset, L);
+            nonLoopDistance = Mathf.Repeat(s + startOffset, L);
+            // deltaTime = 0f keeps current rotation this frame
+            SampleAt(nonLoopDistance, 0f);
+        }
+        else
+        {
+            nonLoopDistance = Mathf.Clamp(sClosest, 0f, L);
+            SampleAt(nonLoopDistance, 0f);
+        }
+
+        wasLooping = loop;
+        state = MoverState.OnBelt;
+    }
+
     public void ReleaseFromConveyorWithForce()
     {
         if (rb == null) { Debug.Log($"[{name.ToUpper()}] has no rigidbody."); return; }
@@ -314,7 +270,8 @@ public class ConveyorObjectMover : MonoBehaviour
 
         rb.AddForce(tan.normalized * exitForce, ForceMode.VelocityChange);
 
-        enabled = false;
+        resnapBlockedUntil = Time.time + resnapCooldown;
+        state = MoverState.Free;
     }
 
     public void ReleaseFromConveyor()
@@ -327,27 +284,29 @@ public class ConveyorObjectMover : MonoBehaviour
         if (interactionCollider != null) interactionCollider.enabled = false;
         if (collCollider != null) collCollider.enabled = true;
 
-        enabled = false;
+        state = MoverState.Free;
     }
 
-    // NEW: public reactivation entry that does not reset parameters
-    public void ReactivateFromWorldDrop()
+    // Pickup hand-off: swap to the free collider config and stop belt movement, but do
+    // NOT touch the rigidbody — the hold owns rigidbody state for the whole carry.
+    public void DetachForPickup()
     {
-        if (rb == null) rb = GetComponentInChildren<Rigidbody>();
-        if (interactionCollider == null) interactionCollider = GetComponentInChildren<BoxCollider>();
-        if (collCollider == null) collCollider = GetComponentInChildren<MeshCollider>();
+        if (interactionCollider != null) interactionCollider.enabled = false;
+        if (collCollider != null) collCollider.enabled = true;
 
-        if (rb != null)
-        {
-            rb.isKinematic = true;
-            rb.useGravity = false;
+        state = MoverState.Free;
+    }
 
-        }
-        if (interactionCollider != null) interactionCollider.enabled = true;
-        if (collCollider != null) collCollider.enabled = false;
+    // An arm/body hit dislodges an on-belt item: release with physics and apply the
+    // hit impulse. The cooldown stops the belt from instantly recapturing it.
+    public void KnockOff(Vector3 impulse, Vector3 point)
+    {
+        if (state != MoverState.OnBelt) return;
+        if (rb == null) return;
 
-        isReactivatingFromDrop = true;
-        enabled = true;
+        ReleaseFromConveyor();
+        resnapBlockedUntil = Time.time + resnapCooldown;
+        rb.AddForceAtPosition(impulse, point, ForceMode.Impulse);
     }
     #endregion
 }

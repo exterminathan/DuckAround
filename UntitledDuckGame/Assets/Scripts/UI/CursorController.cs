@@ -24,6 +24,10 @@ public class CursorController : MonoBehaviour {
     [SerializeField] private IsometricRaycaster isometricRaycaster;
     public float hoverEngageDistance = 2.75f;
 
+    [Header("Carry Settings")]
+    [Tooltip("Pickups: click grabs, click again (or quack) drops. Off = classic hold-mouse-to-carry. Levers always release on mouse-up.")]
+    public bool stickyCarryPickups = false;
+
     // ** Separate velocities for inner & outer **
     Vector3 innerMoveVelocity;
     Vector3 outerMoveVelocity;
@@ -76,16 +80,30 @@ public class CursorController : MonoBehaviour {
 
 
         if (isometricRaycaster != null) {
-            if (isHovering && Input.GetMouseButtonDown(0) && inRange) {
-                isometricRaycaster.BeginHold(hit, playerDuckController);
-                SetCursorColor(holdColor, 1);
+            bool carryingPickup = isometricRaycaster.isHolding && !isometricRaycaster.isInteracting;
 
-
+            if (Input.GetMouseButtonDown(0)) {
+                if (stickyCarryPickups && carryingPickup) {
+                    // sticky carry: a click while carrying drops the item (no new grab)
+                    isometricRaycaster.EndHold(playerDuckController);
+                }
+                else if (isHovering && inRange && !isometricRaycaster.isHolding) {
+                    isometricRaycaster.BeginHold(hit, playerDuckController);
+                    SetCursorColor(holdColor, 1);
+                }
             }
-            if (isometricRaycaster.isHolding && Input.GetMouseButtonUp(0)) {
-                isometricRaycaster.EndHold(playerDuckController);
-                SetCursorColor(idleColor, 1);
 
+            if (isometricRaycaster.isHolding && Input.GetMouseButtonUp(0)) {
+                // sticky carry keeps pickups through mouse-up; levers always release
+                bool keepCarrying = stickyCarryPickups && !isometricRaycaster.isInteracting;
+                if (!keepCarrying) {
+                    isometricRaycaster.EndHold(playerDuckController);
+                }
+            }
+
+            // covers every release path (mouse, quack, external) in one place
+            if (!isometricRaycaster.isHolding) {
+                SetCursorColor(idleColor, 1);
             }
         }
 
