@@ -45,7 +45,8 @@ public class PlayerDuckController : MonoBehaviour {
     public Vector3 lastMoveDelta { get; private set; }
     public float bodyImpulseDampFactor;
     public float armImpulseDampFactor;
-    public float pushThreshold { get; set; }
+    [Tooltip("Minimum contact speed (m/s) before arm/body/held-item hits apply impulses or knock items off belts.")]
+    public float pushThreshold = 0.5f;
 
     [Header("Movement Compensation")]
     [SerializeField] private float horizontalSpeedFactor = 1f;

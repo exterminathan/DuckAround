@@ -10,6 +10,13 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
     [Tooltip("Local offset from the hold slot while carried.")]
     public Vector3 gripOffset = Vector3.zero;
 
+    [Header("Impact Reporting")]
+    [Tooltip("Minimum collision speed (m/s) that counts as an ItemEvents impact.")]
+    public float minImpactSpeed = 0.5f;
+    [Tooltip("Seconds between reported impacts, so rolling/sliding contact doesn't spam.")]
+    public float minImpactInterval = 0.1f;
+    private float nextImpactTime;
+
     private ConveyorObjectMover conveyorObjectMover;
     private HeldItemController holder;
 
@@ -27,6 +34,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
 
         holder = HeldItemController.GetOrAdd(arm);
         holder.Grab(this);
+        ItemEvents.ReportPickedUp(this);
     }
 
     public void OnHoldDrag(RaycastHit hit, Vector2 mouseDelta) { }
@@ -37,5 +45,18 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
 
         if (holder != null) holder.Release();
         holder = null;
+        ItemEvents.ReportDropped(this);
+    }
+
+    // Free-item impacts (ground, props, belt frames). Held-item hits are handled by
+    // HeldItemHitForwarder on the same GameObject — skip those to avoid double-fire.
+    private void OnCollisionEnter(Collision collision) {
+        if (pickupActive) return;
+
+        float speed = collision.relativeVelocity.magnitude;
+        if (speed < minImpactSpeed || Time.time < nextImpactTime) return;
+        nextImpactTime = Time.time + minImpactInterval;
+
+        ItemEvents.ReportItemImpact(this, collision, speed);
     }
 }

@@ -41,6 +41,8 @@ public class HeldItemController : MonoBehaviour {
     private Transform[] heldTransforms;
     private HeldItemHitForwarder hitForwarder;
     private RigidbodyInterpolation cachedInterpolation;
+    private Coroutine restoreRoutine;
+    private PickupInteractable lastReleasedItem;
 
     private State state = State.None;
     private float transitT;
@@ -68,6 +70,10 @@ public class HeldItemController : MonoBehaviour {
         heldRb = item.Body != null ? item.Body : item.GetComponent<Rigidbody>();
         if (heldRb == null) return;
         heldItem = item;
+
+        // re-grabbing during the release grace window: cancel the pending ignore
+        // restore, or it would fire mid-carry and un-ignore the arm vs the held item
+        if (restoreRoutine != null && item == lastReleasedItem) StopCoroutine(restoreRoutine);
 
         // conveyor hand-off first: it swaps colliders to the free config WITHOUT touching
         // the rigidbody, so everything below sees the carry-time collider set
@@ -135,7 +141,10 @@ public class HeldItemController : MonoBehaviour {
 
         // player-ignores are already on from the carry — keep them through the grace
         // window so the arm/body can't punch the item as it falls, then restore
-        if (heldCols != null) StartCoroutine(RestorePlayerIgnores(heldCols));
+        if (heldCols != null) {
+            lastReleasedItem = heldItem;
+            restoreRoutine = StartCoroutine(RestorePlayerIgnores(heldCols));
+        }
 
         heldItem = null;
         heldRb = null;

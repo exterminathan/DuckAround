@@ -29,6 +29,13 @@ public class ConveyorPath : MonoBehaviour {
     [SerializeField] private List<ConveyorNode> nodes = new();
     [SerializeField] private int lineSubdiv = 8;
     [SerializeField] private int cornerSubdiv = 8;
+    [Tooltip("Items with rigidbody mass above this can't ride this belt. 0 = no limit.")]
+    [SerializeField] private float maxItemMass = 0f;
+
+    // runtime registry of enabled belts, so free items can detect ANY belt they land
+    // on (ConveyorObjectMover.FindCapturePath) without a pre-wired path reference
+    private static readonly List<ConveyorPath> all = new();
+    public static IReadOnlyList<ConveyorPath> All => all;
 
     #region Private Variables
     private List<Vector3> cornerPoints = new();
@@ -39,6 +46,7 @@ public class ConveyorPath : MonoBehaviour {
 
     #region Public Properties
     public float TotalLength => totalLength;
+    public float MaxItemMass => maxItemMass;
     #endregion
 
     #region Path Builder Functions
@@ -202,21 +210,29 @@ public class ConveyorPath : MonoBehaviour {
     }
     #endregion
 
-    // Live Feedback System In-Editor for Nodes & Paths
+    // Registry + rebuild run at runtime too (a build never fires the editor-only
+    // callbacks, and the segment list must exist for movers to sample).
     #region Live Path Feedback
-#if UNITY_EDITOR
     private void OnEnable() {
+        if (!all.Contains(this)) all.Add(this);
+#if UNITY_EDITOR
         ConveyorNode.OnAnyNodeMoved += HandleNodeMovedOrChanged;
         ConveyorNode.OnDebugActivated += HandleNodeMovedOrChanged;
         ConveyorNode.OnDebugDeactivated += HandleNodeMovedOrChanged;
+#endif
         Rebuild();
     }
 
     private void OnDisable() {
+        all.Remove(this);
+#if UNITY_EDITOR
         ConveyorNode.OnAnyNodeMoved -= HandleNodeMovedOrChanged;
         ConveyorNode.OnDebugActivated -= HandleNodeMovedOrChanged;
         ConveyorNode.OnDebugDeactivated -= HandleNodeMovedOrChanged;
+#endif
     }
+
+#if UNITY_EDITOR
 
     private void HandleNodeMovedOrChanged(ConveyorNode n) {
         if (nodes != null && nodes.Contains(n)) {

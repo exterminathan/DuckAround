@@ -605,7 +605,9 @@ public class IsometricRaycaster : MonoBehaviour {
         lastMousePos = Input.mousePosition;
         preHoldRotation = rotate_pivot.transform.localEulerAngles;
 
-        activeInteractable = hit.collider.GetComponent<IInteractable>();
+        // parent search: free items are often hit on a child collider (e.g. the mesh
+        // collider on the model child) while the interactable lives on the root
+        activeInteractable = hit.collider.GetComponentInParent<IInteractable>();
         if (activeInteractable != null) {
             _holdMode = (activeInteractable.Type == InteractionType.Operate) ? HoldMode.Interact : HoldMode.Pickup;
             if (_holdMode == HoldMode.Interact) {

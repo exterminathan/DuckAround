@@ -11,7 +11,9 @@ public class HeldItemHitForwarder : MonoBehaviour {
 
     private PlayerDuckController player;
     private Collider[] ownCols;
-    private readonly Collider[] beltOverlapHits = new Collider[8];
+    // generous size: the everything-mask overlap near a belt also catches floor, belt
+    // geometry, and the player's colliders — a small buffer can truncate the item out
+    private readonly Collider[] beltOverlapHits = new Collider[32];
 
     public void Init(PlayerDuckController player, Collider[] itemCols) {
         this.player = player;
@@ -25,9 +27,6 @@ public class HeldItemHitForwarder : MonoBehaviour {
     private void CheckBeltKnockOff() {
         if (player == null || ownCols == null) return;
 
-        float speed = velocity.magnitude;
-        if (speed < player.pushThreshold) return;
-
         foreach (var c in ownCols) {
             if (c == null || !c.enabled) continue;
 
@@ -37,9 +36,15 @@ public class HeldItemHitForwarder : MonoBehaviour {
                 var mover = beltOverlapHits[i].GetComponentInParent<ConveyorObjectMover>();
                 if (mover == null || !mover.IsOnBelt || mover.Body == null) continue;
 
+                // RELATIVE contact speed: a held item parked across the path still
+                // counts as a hit against an item the belt is carrying into it
+                Vector3 relVel = velocity - mover.BeltVelocity;
+                float relSpeed = relVel.magnitude;
+                if (relSpeed < player.pushThreshold) continue;
+
                 // reduced mass: μ = m1*m2/(m1+m2)
                 float μ = player.robotMass * mover.Body.mass / (player.robotMass + mover.Body.mass);
-                Vector3 impulse = velocity.normalized * speed * μ * player.armImpulseDampFactor;
+                Vector3 impulse = relVel.normalized * relSpeed * μ * player.armImpulseDampFactor;
                 mover.KnockOff(impulse, beltOverlapHits[i].ClosestPoint(b.center));
             }
         }
