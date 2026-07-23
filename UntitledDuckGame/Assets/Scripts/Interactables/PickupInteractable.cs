@@ -7,6 +7,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
     private PlayerDuckController playerDuckController;
     private ConveyorObjectMover conveyorObjectMover;
     private Rigidbody rb;
+    private RigidbodyInterpolation cachedInterpolation;
 
     private void Start() {
         playerDuckController = FindFirstObjectByType<PlayerDuckController>();
@@ -17,6 +18,9 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
 
 
     private void Update() {
+        //while held, the hold owns the item — the conveyor must not reclaim it
+        if (pickupActive) return;
+
         if (transform.hasChanged) {
             transform.hasChanged = false;
 
@@ -37,8 +41,19 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
 
         //open mouth
         playerDuckController.ToggleMouth(true, 0.25f);
-        //rb kinematic
 
+        //release from conveyor BEFORE taking over the rigidbody — it flips the rb
+        //back to dynamic + gravity, which would undo the kinematic hold below
+        if (conveyorObjectMover != null) {
+            conveyorObjectMover.ReleaseFromConveyor();
+        }
+
+        //interpolation must be off while held: it re-stamps the stale physics-body
+        //pose over parent-driven motion every frame, freezing the item in world space
+        cachedInterpolation = rb.interpolation;
+        rb.interpolation = RigidbodyInterpolation.None;
+
+        //rb kinematic
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = false;
@@ -48,11 +63,6 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         transform.SetParent(arm.playerHoldSlot);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-
-        //release from conveyor if on one
-        if (conveyorObjectMover != null) {
-            conveyorObjectMover.ReleaseFromConveyor();
-        }
 
 
     }
@@ -66,13 +76,12 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         //close mouth
         playerDuckController.ToggleMouth(false, 0.25f);
 
-        //rb non kinematic
-
-
+        //rb non kinematic (before zeroing velocity — kinematic bodies reject velocity writes)
+        rb.isKinematic = false;
+        rb.useGravity = true;
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        rb.useGravity = true;
-        rb.isKinematic = false;
+        rb.interpolation = cachedInterpolation;
 
         //clear parent
         transform.SetParent(null);
