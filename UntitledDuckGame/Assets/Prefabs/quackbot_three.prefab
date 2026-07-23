@@ -227,11 +227,11 @@ MonoBehaviour:
   innerZoneRangeX: 225
   minPivotAngle: -90
   maxPivotAngle: 90
-  rotationSmoothSpeed: 1.5
+  rotationSmoothSpeed: 8
   bodyTurnSpeed: 360
   minIKX: -2.65
   maxIKX: -1.4
-  scrollIncrement: 0.5
+  scrollIncrement: 0.15
   innerZoneRangeY: 200
   minIKY: 0.05
   maxIKY: 2.562

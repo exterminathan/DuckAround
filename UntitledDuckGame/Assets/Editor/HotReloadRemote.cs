@@ -104,6 +104,16 @@ public static class HotReloadRemote {
     /// </summary>
     [MenuItem("Tools/Hot Reload Remote/Request Recompile (full)")]
     public static void RequestRecompile() {
+        // Drop any live Inspector targets before the domain reload lands. An externally
+        // triggered recompile can otherwise strand Inspector/Properties windows holding
+        // dead targets (SerializedObjectNotCreatableException / MissingReferenceException
+        // on every play-mode entry until the windows are rebuilt).
+        try {
+            Selection.activeObject = null;
+            ActiveEditorTracker.sharedTracker.ForceRebuild();
+        }
+        catch { /* selection guard is best-effort; never block the recompile */ }
+
         // 1) Preferred: HotReloadRunTab.Recompile() — resets HR's compile suppression, refreshes, requests compile.
         try {
             var runTab = FindType("SingularityGroup.HotReload.Editor.HotReloadRunTab");

@@ -43,7 +43,7 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
     private bool isEngaged; // true once the duck has rolled in and the lever accepts drag
 
     // Per-grab cached state for tip-follow + screen-space mapping.
-    private Transform rigTarget;
+    private IsometricRaycaster arm;
     private Camera cam;
     private Vector3 localGrabPoint;
     private float screenYAtMin;
@@ -70,9 +70,9 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
         resistanceCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
     }
 
-    public void OnHoldStart(RaycastHit hit, Transform rigTarget) {
+    public void OnHoldStart(RaycastHit hit, IsometricRaycaster arm) {
         if (leverPivot == null) leverPivot = transform;
-        this.rigTarget = rigTarget;
+        this.arm = arm;
         cam = Camera.main;
 
         if (playerDuckController == null) playerDuckController = FindFirstObjectByType<PlayerDuckController>();
@@ -120,8 +120,8 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
         currentAngle = Mathf.MoveTowards(currentAngle, targetAngle, maxStep);
         ApplyAngle();
 
-        // Tip rides the grabbed point: not parented, just matched in world space each frame.
-        if (rigTarget != null) rigTarget.position = leverPivot.TransformPoint(localGrabPoint);
+        // Tip rides the grabbed point: not parented, steered through the arm's API each frame.
+        if (arm != null) arm.SetArmTargetWorld(leverPivot.TransformPoint(localGrabPoint));
     }
 
     public void OnHoldEnd() {

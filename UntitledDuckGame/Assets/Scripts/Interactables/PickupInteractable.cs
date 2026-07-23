@@ -4,13 +4,11 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
     public InteractionType Type => InteractionType.Pickup;
     public bool pickupActive;
 
-    private IsometricRaycaster isometricRaycaster;
     private PlayerDuckController playerDuckController;
     private ConveyorObjectMover conveyorObjectMover;
     private Rigidbody rb;
 
     private void Start() {
-        isometricRaycaster = FindFirstObjectByType<IsometricRaycaster>();
         playerDuckController = FindFirstObjectByType<PlayerDuckController>();
         conveyorObjectMover = GetComponentInParent<ConveyorObjectMover>();
         rb = GetComponent<Rigidbody>();
@@ -33,7 +31,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
 
     }
 
-    public void OnHoldStart(RaycastHit hit, Transform rigTarget) {
+    public void OnHoldStart(RaycastHit hit, IsometricRaycaster arm) {
         Debug.Log($"Picked up item {hit.transform.name}");
         pickupActive = true;
 
@@ -47,7 +45,7 @@ public class PickupInteractable : MonoBehaviour, IInteractable {
         rb.isKinematic = true;
 
         //set parent
-        transform.SetParent(isometricRaycaster.playerHoldSlot);
+        transform.SetParent(arm.playerHoldSlot);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
 

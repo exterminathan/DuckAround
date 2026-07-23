@@ -10,7 +10,7 @@ public enum HoldMode { None, Pickup, Interact }
 
 public interface IInteractable {
     InteractionType Type { get; }
-    void OnHoldStart(RaycastHit hit, Transform rigTarget);
+    void OnHoldStart(RaycastHit hit, IsometricRaycaster arm);
     void OnHoldDrag(RaycastHit hit, Vector2 mouseDelta);
     void OnHoldEnd();
 }
@@ -124,7 +124,6 @@ public class IsometricRaycaster : MonoBehaviour {
     [Header("Holding Settings")]
     private HoldMode _holdMode = HoldMode.None;
     private Vector3 preHoldRotation;
-    private Vector3 preHoldIKLocalPos;
     private float _neutralArmYaw;
     private float preHoldBodyYaw;
     private float bodyTargetYaw;
@@ -278,7 +277,10 @@ public class IsometricRaycaster : MonoBehaviour {
 
         SetPivotYaw(_neutralArmYaw);
 
-        preHoldBodyYaw = playerDuckController.transform.eulerAngles.y;
+        // Only capture the rest yaw when fully idle: re-grabbing mid-restore would
+        // otherwise capture a half-restored yaw and drift the body over repeated uses.
+        if (_faceState == FaceState.Idle)
+            preHoldBodyYaw = playerDuckController.transform.eulerAngles.y;
 
         Vector3 dir = hit.transform.position - playerDuckController.transform.position;
         dir.y = 0f;
@@ -569,7 +571,21 @@ public class IsometricRaycaster : MonoBehaviour {
     #endregion
 
     #region Interaction
+    // Interactables steer the arm through this instead of touching the rig target
+    // Transform directly, so the raycaster stays the single owner of arm state.
+    public void SetArmTargetWorld(Vector3 worldPos) {
+        ik_target.position = worldPos;
+    }
+
+    // Interface references bypass Unity's overloaded null check, so a destroyed
+    // interactable would otherwise still receive calls. Clear it explicitly.
+    private void ValidateActiveInteractable() {
+        if (activeInteractable is Object o && o == null) activeInteractable = null;
+    }
+
     private void HandleHoldInteraction() {
+        ValidateActiveInteractable();
+
         Vector2 mouseDelta = (Vector2)(Input.mousePosition - lastMousePos);
         lastMousePos = Input.mousePosition;
 
@@ -588,11 +604,8 @@ public class IsometricRaycaster : MonoBehaviour {
         holdHit = hit;
         lastMousePos = Input.mousePosition;
         preHoldRotation = rotate_pivot.transform.localEulerAngles;
-        // Captured in local space: invariant to wherever the body rolls/turns during the interaction.
-        preHoldIKLocalPos = ik_target.localPosition;
 
         activeInteractable = hit.collider.GetComponent<IInteractable>();
-        Debug.Log($"activeInteractable: {activeInteractable}");
         if (activeInteractable != null) {
             _holdMode = (activeInteractable.Type == InteractionType.Operate) ? HoldMode.Interact : HoldMode.Pickup;
             if (_holdMode == HoldMode.Interact) {
@@ -616,21 +629,23 @@ public class IsometricRaycaster : MonoBehaviour {
         if (_holdMode == HoldMode.Interact) {
             BeginInteractFacing(hit);
             ik_target.position = hit.point;
-            activeInteractable?.OnHoldStart(hit, ik_target);
+            activeInteractable?.OnHoldStart(hit, this);
         }
         if (_holdMode == HoldMode.Pickup) {
-            activeInteractable?.OnHoldStart(hit, ik_target);
+            activeInteractable?.OnHoldStart(hit, this);
 
         }
     }
 
     public void EndHold(PlayerDuckController player) {
         if (!isHolding) return;
+        ValidateActiveInteractable();
 
         if (_holdMode == HoldMode.Interact) {
             activeInteractable?.OnHoldEnd();
             ResetRotation();
-            ik_target.localPosition = preHoldIKLocalPos;
+            // No snap-restore of the IK target: the per-frame local composition in
+            // HandleVerticalIK blends the arm back onto its axis over a few frames.
             // Ease the body back to its pre-interaction facing (UpdateBodyFacing handles it).
             _faceState = FaceState.Restoring;
         }
@@ -712,15 +727,13 @@ public class IsometricRaycaster : MonoBehaviour {
         Debug.DrawLine(p001, p011, color, duration);
     }
 
-    public static void ShowDebugSphere(Vector3 position, Color debugColor) {
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        Destroy(sphere.GetComponent<SphereCollider>());
-        sphere.layer = LayerMask.NameToLayer("Debug");
-        sphere.name = "TMP_DEBUG_SPHERE";
-        sphere.transform.position = position;
-        sphere.transform.localScale = Vector3.one * .1f;
-        sphere.GetComponent<Renderer>().material.color = debugColor;
-        Destroy(sphere, .01f);
+    // Line-drawn marker. (The old version spawned a primitive GameObject and leaked a
+    // material instance per call — too expensive at per-frame/per-collision call rates.)
+    public static void ShowDebugSphere(Vector3 position, Color debugColor, float duration = 0.02f) {
+        const float r = 0.06f;
+        Debug.DrawLine(position + Vector3.left * r, position + Vector3.right * r, debugColor, duration);
+        Debug.DrawLine(position + Vector3.down * r, position + Vector3.up * r, debugColor, duration);
+        Debug.DrawLine(position + Vector3.back * r, position + Vector3.forward * r, debugColor, duration);
     }
     #endregion
 }
