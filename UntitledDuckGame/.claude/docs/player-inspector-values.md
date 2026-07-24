@@ -68,6 +68,32 @@ groups: **Upper Arm Box Sweep**, **Bottom Arm Box Sweep**, **Arm Box Sweep - Sha
 *(A stale `showDev: 0` value is still serialized in the prefab from a removed field — harmless; will
 clear on next prefab re-save.)*
 
+## HeldItemController (same GameObject as IsometricRaycaster)
+**Not yet serialized in the prefab** — the component predates its 2026-07 fields, so everything
+below is the **code default**, which is exactly what runs until values are tuned + saved in the
+inspector. (Once any value is saved on the prefab, the serialized copy wins over code defaults.)
+
+| Field | Default | Meaning |
+| --- | --- | --- |
+| `transitDuration` | 0.15 | grab → mouth tween (s) |
+| `billLength` / `minGapeDegrees` / `maxGapeDegrees` / `mouthAnimDuration` | 0.35 / 12 / 60 / 0.25 | size-adaptive mouth gape |
+| `heldItemLayer` | Interactable (LayerMask — tick exactly one) | held-item layer swap; keep OUT of the arm sweep masks |
+| `armIgnoreSeconds` | 0.3 | post-release arm/body collision-ignore grace (s) |
+| `maxCarryMass` | 250 | **Mass Scale** anchor for BOTH fling falloff and encumbrance |
+| `flingSampleWindow` | 0.12 | hand-velocity averaging window (s) |
+| `flingPowerScale` | 1.2 | flick → launch multiplier |
+| `minFlingSpeed` | 1.5 | below this raw hand speed = gentle place (zero velocity) |
+| `maxFlingSpeed` | 15 | launch speed cap (m/s) |
+| `flingKeepAtMaxMass` | 0.15 | fraction of flick kept at `maxCarryMass` (→ drum 20 ≈ 0.69, shelf 75 ≈ 0.37) |
+| `flingTumbleFactor` | 0.5 | tumble, rad/s per m/s of launch (0 = none) |
+| `enableEncumbrance` | true | master toggle |
+| `encumberLightMass` | 1 | at/below = no mobility penalty |
+| `minCarryMoveMobility` / `minCarryArmMobility` | 0.8 / 0.8 | per-channel mobility floors reached at `maxCarryMass` |
+
+> ⚠️ **Snapshot drift:** the IsometricRaycaster table above is the 2026-05-28 capture; at least
+> `rotationSmoothSpeed` (now **8**) and `scrollIncrement` (now **0.15**) have been retuned since.
+> Re-capture when convenient.
+
 ## ArmHitForwarder (×2 — one per arm collider object)
 | Field | Value | Notes |
 | --- | --- | --- |

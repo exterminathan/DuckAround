@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7246186701884098121}
-  - component: {fileID: 2142903384180695609}
-  - component: {fileID: 2560228193846316941}
-  - component: {fileID: 6466025491892632802}
   - component: {fileID: 6130465966813341507}
+  - component: {fileID: 2560228193846316941}
+  - component: {fileID: 2142903384180695609}
+  - component: {fileID: 6466025491892632802}
   m_Layer: 12
   m_Name: 1unit
   m_TagString: Interactive
@@ -28,86 +28,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8954995204905752174}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 9.967, y: 0.829, z: 4.605}
   m_LocalScale: {x: 100, y: 100.00006, z: 100.00006}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6367015123598182719}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2142903384180695609
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8954995204905752174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5127fa89c802a5f428c17316ab4b3fa8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  path: {fileID: 0}
-  speed: 1
-  loop: 0
-  tangentHalfWindow: 0.25
-  maxTurnRateDegPerSec: 720
-  exitForce: 5
-  snapDistance: 0.3
-  restSpeed: 0.35
-  resnapCooldown: 0.5
-  resnapCheckInterval: 0.2
-  snapHeightTolerance: 0.5
-  jamClearance: 0.005
-  jamBlockingMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  rb: {fileID: 2560228193846316941}
---- !u!54 &2560228193846316941
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8954995204905752174}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0.2
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 0
-  m_CollisionDetection: 1
---- !u!114 &6466025491892632802
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8954995204905752174}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c853d2dff64d698499c169f823b6e85f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pickupActive: 0
-  gripSize: 0
-  gripOffset: {x: 0, y: 0, z: 0}
-  minImpactSpeed: 0.5
-  minImpactInterval: 0.1
+  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!65 &6130465966813341507
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -129,6 +57,74 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.0035250362, y: 0.0031834738, z: 0.00037317423}
   m_Center: {x: 0.00051332073, y: -0.0001342833, z: 7.6124605e-19}
+--- !u!54 &2560228193846316941
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8954995204905752174}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 1
+  m_Constraints: 0
+  m_CollisionDetection: 2
+--- !u!114 &2142903384180695609
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8954995204905752174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5127fa89c802a5f428c17316ab4b3fa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  path: {fileID: 0}
+  tangentHalfWindow: 0.25
+  maxTurnRateDegPerSec: 720
+  snapDistance: 0.3
+  restSpeed: 0.35
+  resnapCooldown: 0.5
+  resnapCheckInterval: 0.2
+  snapHeightTolerance: 0.5
+  restAngularSpeed: 1
+  tiltSettleDegPerSec: 240
+  rideHeightSettleSpeed: 4
+  rb: {fileID: 2560228193846316941}
+--- !u!114 &6466025491892632802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8954995204905752174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c853d2dff64d698499c169f823b6e85f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
+  minImpactSpeed: 0.5
+  minImpactInterval: 0.1
 --- !u!1001 &6905874170549202644
 PrefabInstance:
   m_ObjectHideFlags: 0

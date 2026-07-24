@@ -98,7 +98,7 @@ feature testbeds (alarm tuning, behaviour-tree iteration).
 
 | System | Entry point(s) | Doc |
 | --- | --- | --- |
-| Player movement + IK arm + interaction | `PlayerDuckController`, `IsometricRaycaster`, `CursorController` | [player.md](.claude/docs/player.md) |
+| Player movement + IK arm + interaction + carry/fling | `PlayerDuckController`, `IsometricRaycaster`, `HeldItemController`, `CursorController` | [player.md](.claude/docs/player.md) |
 | Worker AI (BT, patrol, detect, chase, ragdoll) | `WorkerAIController`, `PrimaryBTBuilder`, `Pathfinding` | [worker-ai.md](.claude/docs/worker-ai.md) |
 | Global alarm (alert level L0–L7) | `GlobalAlarm`, `AlarmConfig`, `AlarmManager` | [alarm.md](.claude/docs/alarm.md) |
 | Interactables & items | `IInteractable`, `LeverInteractable`, `PickupInteractable` | [interactables-items-conveyors.md](.claude/docs/interactables-items-conveyors.md) |

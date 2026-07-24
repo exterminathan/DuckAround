@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 0c9210c6177e4754288409add2285dd2, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.981804
+      value: 17.828264
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9210c6177e4754288409add2285dd2, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5908078
+      value: 0.015000343
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9210c6177e4754288409add2285dd2, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.7608223
+      value: -13.977235
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 0c9210c6177e4754288409add2285dd2, type: 3}
       propertyPath: m_LocalRotation.w
@@ -179,7 +179,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5443823946348787863}
   serializedVersion: 4
-  m_Mass: 50
+  m_Mass: 10
   m_Drag: 0
   m_AngularDrag: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -228,15 +228,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 0}
-  speed: 1
-  loop: 1
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
-  exitForce: 3
   snapDistance: 0.1
   restSpeed: 0.35
   resnapCooldown: 0.5
   resnapCheckInterval: 0.2
   snapHeightTolerance: 0.5
   restAngularSpeed: 1
+  tiltSettleDegPerSec: 240
+  rideHeightSettleSpeed: 4
   rb: {fileID: 466455838029051231}

@@ -108,6 +108,10 @@ public class IsometricRaycaster : MonoBehaviour {
     public ArmHitForwarder[] armPushers { get; private set; }
     public bool isHolding { set; get; } = false;
     public bool isInteracting { set; get; } = false;
+
+    // Encumbrance hook: HeldItemController scales this by held-item mass (1 = unencumbered).
+    // Folded into the exp-ease rates so a heavy carry slows body yaw and arm height equally.
+    public float ArmSpeedMultiplier { set; get; } = 1f;
     #endregion
 
     #region Private Variables
@@ -234,7 +238,7 @@ public class IsometricRaycaster : MonoBehaviour {
         // Frame-rate-independent ease toward the target. Only this frame's step is swept,
         // and the accumulator advances only by what was actually applied, so rotationAngleY
         // always matches the pivot's real yaw (no snap when a blocked arm frees up).
-        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * Time.deltaTime);
+        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * ArmSpeedMultiplier * Time.deltaTime);
         float step = Mathf.DeltaAngle(rotationAngleY, targetAngle) * k;
 
         // Sweep the arm colliders through this frame's yaw and clamp to the
@@ -341,7 +345,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
         // Frame-rate-independent smoothing toward the safe pose, applied in local space.
         Vector3 safeLocal = ikParent.InverseTransformPoint(safeTargetPos);
-        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * ikVerticalSmoothSpeed * Time.deltaTime);
+        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * ikVerticalSmoothSpeed * ArmSpeedMultiplier * Time.deltaTime);
         ik_target.localPosition = Vector3.Lerp(ik_target.localPosition, safeLocal, k);
     }
 

@@ -43,6 +43,8 @@ public class PlayerDuckController : MonoBehaviour {
     [Header("Physics Settings")]
     public float robotMass;
     public Vector3 lastMoveDelta { get; private set; }
+    // Encumbrance hook: HeldItemController scales this by held-item mass (1 = unencumbered).
+    public float CarrySpeedMultiplier { set; get; } = 1f;
     public float bodyImpulseDampFactor;
     public float armImpulseDampFactor;
     [Tooltip("Minimum contact speed (m/s) before arm/body/held-item hits apply impulses or knock items off belts.")]
@@ -119,7 +121,7 @@ public class PlayerDuckController : MonoBehaviour {
                 float speedMulti = (Mathf.Abs(input.x) > 0 && Mathf.Abs(input.z) > 0)
                     ? diagonalFactor : 1f;
                 Vector3 dir = isoForward * input.z + isoRight * (input.x * horizontalSpeedFactor);
-                Vector3 desiredMove = dir * moveSpeed * speedMulti * Time.deltaTime;
+                Vector3 desiredMove = dir * moveSpeed * speedMulti * CarrySpeedMultiplier * Time.deltaTime;
 
                 // sweep each arm collider
                 float maxDist = desiredMove.magnitude;

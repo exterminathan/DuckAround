@@ -23,16 +23,48 @@ public class HeldItemController : MonoBehaviour {
     public float mouthAnimDuration = 0.25f;
 
     [Header("Held Physics")]
-    [Tooltip("Layer the item is moved to while held. Must NOT be in the arm sweep masks (Prop is), or the sweeps clamp against the carried item and freeze the arm. Interactable = 12.")]
-    public int heldItemLayer = 12;
+    [Tooltip("Layer the item is moved to while held — tick exactly ONE. Must NOT be in the arm sweep masks (Prop is), or the sweeps clamp against the carried item and freeze the arm.")]
+    public LayerMask heldItemLayer = 1 << 12; // Interactable
 
     [Header("Release")]
     [Tooltip("Seconds after release during which the arm/body cannot collide with the dropped item.")]
     public float armIgnoreSeconds = 0.3f;
 
+    [Header("Mass Scale")]
+    [Tooltip("Heaviest item mass the duck is expected to handle — the top anchor for BOTH the fling falloff and encumbrance mappings. Raise this when heavier props are authored.")]
+    public float maxCarryMass = 250f;
+
+    [Header("Fling")]
+    [Tooltip("Seconds of recent hand motion averaged into the release velocity.")]
+    public float flingSampleWindow = 0.12f;
+    [Tooltip("Sampled hand velocity to launch velocity multiplier (applied before mass scaling).")]
+    public float flingPowerScale = 1.2f;
+    [Tooltip("Raw hand speed (m/s) below which release is a gentle place with zero velocity, so careful belt placement is unaffected.")]
+    public float minFlingSpeed = 1.5f;
+    [Tooltip("Launch speed cap (m/s) after all scaling. Also swallows single-frame spikes.")]
+    public float maxFlingSpeed = 15f;
+    [Range(0.01f, 0.99f)]
+    [Tooltip("Fraction of the flick velocity an item AT Max Carry Mass keeps. Lighter items curve smoothly up toward 1 (momentum-style falloff).")]
+    public float flingKeepAtMaxMass = 0.15f;
+    [Tooltip("End-over-end spin per unit of launch speed (rad/s per m/s). 0 = no tumble.")]
+    public float flingTumbleFactor = 0.5f;
+
+    [Header("Encumbrance")]
+    [Tooltip("Heavier held items slow duck movement, body yaw, and arm ease while carried.")]
+    public bool enableEncumbrance = true;
+    [Tooltip("Item mass at or below which carrying has no mobility penalty.")]
+    public float encumberLightMass = 1f;
+    [Range(0.05f, 1f)]
+    [Tooltip("Move-speed multiplier at the heaviest mass. 1 = carrying never slows walking.")]
+    public float minCarryMoveMobility = 0.8f;
+    [Range(0.05f, 1f)]
+    [Tooltip("Arm/yaw ease multiplier at the heaviest mass. 1 = carrying never slows aiming.")]
+    public float minCarryArmMobility = 0.8f;
+
     private PlayerDuckController player;
     private Transform holdSlot;
     private CharacterController playerCC;
+    private IsometricRaycaster arm;
 
     private PickupInteractable heldItem;
     private Rigidbody heldRb;
@@ -50,6 +82,12 @@ public class HeldItemController : MonoBehaviour {
     private Quaternion transitStartRot;
     private Vector3 prevItemPos;
 
+    private struct HandSample { public Vector3 pos; public float time; }
+    private const int SampleCapacity = 32; // ~0.12 s of Held-state samples even at 240 fps
+    private HandSample[] handSamples = new HandSample[SampleCapacity];
+    private int sampleHead;
+    private int sampleCount;
+
     public bool IsCarrying => state != State.None;
 
     // Found-or-added at runtime so no prefab wiring is required; refs come off the raycaster.
@@ -59,6 +97,7 @@ public class HeldItemController : MonoBehaviour {
         if (c == null) c = arm.gameObject.AddComponent<HeldItemController>();
         c.player = arm.playerDuckController;
         c.holdSlot = arm.playerHoldSlot;
+        c.arm = arm;
         if (c.player != null && c.playerCC == null) c.playerCC = c.player.GetComponent<CharacterController>();
         return c;
     }
@@ -89,9 +128,11 @@ public class HeldItemController : MonoBehaviour {
         // swap to a layer outside the arm sweep masks; original layers restored on release
         heldTransforms = item.GetComponentsInChildren<Transform>();
         heldLayers = new int[heldTransforms.Length];
+        int heldLayer = LayerFromMask(heldItemLayer);
+        if (heldLayer < 0) Debug.LogWarning("[HeldItem] heldItemLayer mask is empty — item keeps its own layer; arm sweeps may clamp against it.");
         for (int i = 0; i < heldTransforms.Length; i++) {
             heldLayers[i] = heldTransforms[i].gameObject.layer;
-            heldTransforms[i].gameObject.layer = heldItemLayer;
+            if (heldLayer >= 0) heldTransforms[i].gameObject.layer = heldLayer;
         }
 
         hitForwarder = item.gameObject.AddComponent<HeldItemHitForwarder>();
@@ -108,8 +149,11 @@ public class HeldItemController : MonoBehaviour {
         transitStartPos = item.transform.position;
         transitStartRot = item.transform.rotation;
         prevItemPos = transitStartPos;
+        sampleHead = 0;
+        sampleCount = 0;
         transitT = 0f;
         state = State.Transit;
+        SetEncumbrance(ComputeEncumbrance(heldRb.mass));
 
         float gape = Mathf.Clamp(
             2f * Mathf.Atan2(gripSize * 0.5f, Mathf.Max(0.01f, billLength)) * Mathf.Rad2Deg,
@@ -134,10 +178,13 @@ public class HeldItemController : MonoBehaviour {
         if (heldRb != null) {
             heldRb.isKinematic = false;
             heldRb.useGravity = true;
-            heldRb.linearVelocity = Vector3.zero;
-            heldRb.angularVelocity = Vector3.zero;
+            Vector3 fling = ComputeFlingVelocity(heldRb.mass);
+            heldRb.linearVelocity = fling;
+            heldRb.angularVelocity = ComputeTumble(fling);
             heldRb.interpolation = cachedInterpolation;
         }
+
+        SetEncumbrance(0f);
 
         // player-ignores are already on from the carry — keep them through the grace
         // window so the arm/body can't punch the item as it falls, then restore
@@ -154,6 +201,64 @@ public class HeldItemController : MonoBehaviour {
         hitForwarder = null;
     }
 
+    private void AddSample(Vector3 pos) {
+        handSamples[sampleHead].pos = pos;
+        handSamples[sampleHead].time = Time.time;
+        sampleHead = (sampleHead + 1) % SampleCapacity;
+        if (sampleCount < SampleCapacity) sampleCount++;
+    }
+
+    // Average hand velocity across the sample window: newest sample vs the oldest still
+    // inside it. Windowing (vs single-frame) survives hitches and mouse warps; the dead
+    // zone keeps deliberate slow placement identical to a plain zero-velocity drop.
+    private Vector3 ComputeFlingVelocity(float itemMass) {
+        if (sampleCount < 2) return Vector3.zero;
+
+        int newestIdx = (sampleHead - 1 + SampleCapacity) % SampleCapacity;
+        HandSample newest = handSamples[newestIdx];
+        HandSample oldest = newest;
+        for (int i = 1; i < sampleCount; i++) {
+            HandSample s = handSamples[(newestIdx - i + SampleCapacity) % SampleCapacity];
+            if (newest.time - s.time > flingSampleWindow) break;
+            oldest = s;
+        }
+
+        float dt = newest.time - oldest.time;
+        if (dt <= 0.0001f) return Vector3.zero;
+
+        Vector3 v = (newest.pos - oldest.pos) / dt;
+        if (v.magnitude < minFlingSpeed) return Vector3.zero; // gentle place
+
+        // momentum-style falloff anchored to the mass scale: an item at maxCarryMass keeps
+        // exactly flingKeepAtMaxMass of the flick; lighter items curve smoothly toward 1
+        float keep = Mathf.Clamp(flingKeepAtMaxMass, 0.01f, 0.99f);
+        float armStrength = keep * Mathf.Max(1f, maxCarryMass) / (1f - keep);
+        v *= flingPowerScale * (armStrength / (armStrength + Mathf.Max(0.01f, itemMass)));
+        return Vector3.ClampMagnitude(v, maxFlingSpeed);
+    }
+
+    // End-over-end topspin around the axis perpendicular to the flight direction.
+    private Vector3 ComputeTumble(Vector3 flingVelocity) {
+        float speed = flingVelocity.magnitude;
+        if (speed < 0.01f || flingTumbleFactor <= 0f) return Vector3.zero;
+        Vector3 axis = Vector3.Cross(Vector3.up, flingVelocity / speed);
+        if (axis.sqrMagnitude < 1e-4f) axis = holdSlot != null ? holdSlot.right : Vector3.right; // straight-up fling
+        return axis.normalized * (speed * flingTumbleFactor);
+    }
+
+    // 0 = unencumbered, 1 = fully encumbered (at/above encumberHeavyMass).
+    private float ComputeEncumbrance(float itemMass) {
+        if (!enableEncumbrance) return 0f;
+        return Mathf.InverseLerp(encumberLightMass, maxCarryMass, itemMass);
+    }
+
+    // Single write path for both mobility hooks so no exit path can leave them stuck.
+    // t: 0 = unencumbered (both multipliers 1), 1 = heaviest (each channel at its own floor).
+    private void SetEncumbrance(float t) {
+        if (player != null) player.CarrySpeedMultiplier = Mathf.Lerp(1f, minCarryMoveMobility, t);
+        if (arm != null) arm.ArmSpeedMultiplier = Mathf.Lerp(1f, minCarryArmMobility, t);
+    }
+
     private void LateUpdate() {
         if (state == State.None) return;
 
@@ -166,6 +271,7 @@ public class HeldItemController : MonoBehaviour {
             heldLayers = null;
             heldTransforms = null;
             hitForwarder = null;
+            SetEncumbrance(0f);
             return;
         }
 
@@ -187,6 +293,10 @@ public class HeldItemController : MonoBehaviour {
             heldRb.transform.rotation = targetRot;
         }
 
+        // record hand motion for fling-on-release; Held only, so the transit tween
+        // and pause frames (dt == 0) never contaminate the release velocity
+        if (state == State.Held && Time.deltaTime > 0f) AddSample(heldRb.transform.position);
+
         // feed the hit forwarder the item's real world velocity for impulse calculation
         if (hitForwarder != null && Time.deltaTime > 0f) {
             hitForwarder.velocity = (heldRb.transform.position - prevItemPos) / Time.deltaTime;
@@ -205,6 +315,15 @@ public class HeldItemController : MonoBehaviour {
             else b.Encapsulate(col.bounds);
         }
         return has ? b.size.y : 0.2f;
+    }
+
+    // Index of the lowest layer ticked in the mask (the inspector field should have
+    // exactly one selected); -1 if the mask is empty.
+    private static int LayerFromMask(LayerMask mask) {
+        for (int i = 0; i < 32; i++) {
+            if ((mask.value & (1 << i)) != 0) return i;
+        }
+        return -1;
     }
 
     private IEnumerator RestorePlayerIgnores(Collider[] itemCols) {

@@ -20,13 +20,14 @@ Flow: `CursorController` raycasts the mouse → if it hits an `Interactive`-tagg
 range, mouse-down calls `IsometricRaycaster.BeginHold`, which finds the `IInteractable` and routes
 the hold based on `Type` (`Operate` → arm locks to it and forwards drag; `Pickup` → grab).
 
-### PickupInteractable.cs (`Type = Pickup`) — 🐞 buggy, needs work
-On `OnHoldStart`: opens the mouth (`ToggleMouth`), zeroes velocity, makes the rigidbody kinematic,
-**reparents the object to `isometricRaycaster.playerHoldSlot`** at local origin, and releases it
-from a conveyor if it was on one. On `OnHoldEnd`: closes mouth, re-enables gravity/physics,
-unparents. `Update` watches for the held object dropping below `y < 0.875` to re-activate a
-conveyor mover (`ReactivateFromWorldDrop`). **This pickup/drop + conveyor hand-off is the known
-buggy area** — treat it as in-progress.
+### PickupInteractable.cs (`Type = Pickup`)
+A **thin adapter** — the actual carry/fling lives in `HeldItemController` (see
+[player.md](player.md), 2026-07 overhaul). `OnHoldStart`: `HeldItemController.GetOrAdd(arm).Grab(this)`
++ fires `ItemEvents.PickedUp`. `OnHoldEnd`: `holder.Release()` (which **flings** the item if the arm
+was moving) + `ItemEvents.Dropped`. Per-item tuning: `gripSize` (mouth gape; 0 = auto from collider
+bounds) and `gripOffset` (carry offset in bill space). `pickupActive` is the "currently held" bridge
+flag the conveyor mover checks to fully yield control during a carry. `Body` exposes the item's
+`Rigidbody` — its `mass` is the input for fling falloff and encumbrance.
 
 ### LeverInteractable.cs (`Type = Operate`) — 🚧 rotates only, not wired
 `OnHoldStart` records the pivot rotation; `OnHoldDrag` accumulates mouse-Y into an angle
@@ -36,6 +37,8 @@ it should eventually drive things like resetting `GlobalAlarm`, via the general 
 system. Model: `Models/alarm_handle.fbx`.
 
 ## Items (`Assets/Scripts/Items/`)
+- `ItemEvents.cs` — static event hub for item lifecycle: `PickedUp`, `Dropped`, `ItemImpact`,
+  `BeltCaptured`, `BeltLeft(item, path, reason)` with `BeltLeaveReason { PickedUp, KnockedOff, Flung }`.
 - `CubeSpawner.cs` — debug: press **P** to instantiate `instance` at the spawner with a random color.
 - `CubePropManager.cs` — on a prop cube; **destroys itself** when it collides with a `Worker`-layer
   object. *(Placeholder for "object destroys/knocks out worker"; real sabotage destruction is planned.)*
@@ -56,26 +59,39 @@ A data-driven belt system that carries item objects along a path and flings them
   an **arc** approximated by `cornerSubdiv` straight segments (polar math around a computed center).
   Provides samplers: `SampleByDistance(s)`, `SampleByDistanceSmoothed(s, halfWindow)` (tangent via
   finite difference), `PositionAtDistance(s)`, and `TotalLength`. Rebuilds on node move/validate
-  in-editor; draws path/corner gizmos.
-- **`ConveyorObjectMover.cs`** — put on an item. Advances a distance `s` along the path at `speed`,
-  sampling position + tangent (with `maxTurnRateDegPerSec` smoothing) each frame. `loop` repeats;
-  non-loop **releases the item with force** (`ReleaseFromConveyorWithForce`, applies `exitForce`
-  along the tangent and disables itself). Integrates with pickup: when an item is picked up it
-  detaches; on drop near the belt (`snapDistance`) it re-snaps via `ReactivateFromWorldDrop`,
-  otherwise stays a free rigidbody. Toggles between an interaction `BoxCollider` (on belt) and a
-  `MeshCollider` (free). Item model: `conveyor_item.fbx`; belts: `conveyor_belt.fbx`, `corner_belt.fbx`.
+  in-editor; draws path/corner gizmos. Also owns the **Belt Settings** (`speed`, `loop`,
+  `exitForce`, `beltWidth` — wide belts allow capture/riding anywhere across the width — and
+  `maxItemMass`, 0 = unlimited) plus a static runtime registry `ConveyorPath.All` (populated in
+  `OnEnable`, which also rebuilds at runtime so standalone builds work).
+- **`ConveyorObjectMover.cs`** — put on an item. Explicit `OnBelt`/`Free` states. On-belt items
+  ride as **dynamic bodies** (gravity off), driven in `FixedUpdate` by a soft velocity servo
+  (belt-speed feedforward + proportional pull toward a lead point on the path); track position is a
+  **monotone progress cursor** advanced by measured motion along the tangent (no closest-point
+  re-sync — that's ambiguous at straight/corner transitions). Rotation + lateral/height offset are
+  captured as a **ride pose** on every capture, so items ride however they were placed. Shoved past
+  `snapDistance` (+0.25) off the lane → released as `KnockedOff`; non-loop path ends **fling**
+  (`ReleaseFromConveyorWithForce`, belt `exitForce` along the tangent). `Free` items re-snap to
+  **any** belt (`ConveyorPath.All` — no pre-wiring) after a 0.5 s cooldown, **sustained** near-rest
+  (0.25 s, linear + angular), within `snapDistance` of a lane and `snapHeightTolerance` vertically;
+  belts refuse items above their `maxItemMass`. `DetachForPickup()` hands off to the held-item
+  system without touching the rigidbody; `KnockOff(impulse, point)` is the directed shove release.
+  Per-item fields are tolerances only — `speed`/`loop`/`exitForce` live on the **path**.
+  Item model: `conveyor_item.fbx`; belts: `conveyor_belt.fbx`, `corner_belt.fbx`.
 - **`ConveyorManager.cs`** — scrolls the belt **material UV offset** (`_BaseMap_ST`) on the belt /
   corner `MeshRenderer`s to fake motion; separate tiling/offset for straight vs. corner belts.
 
 ### Spawners / triggers for items
-- `Debug/UnitSpawner.cs` — press **Tab** to spawn a random `units[]` prefab and assign it the
-  conveyor `cPath`.
+- `Debug/UnitSpawner.cs` — press **Tab** to spawn a random `units[]` prefab (spawned with the
+  prefab's own rotation; no path wiring needed — any belt captures items placed on it).
 - `Debug/ObjectAbsorber.cs` — a bin/collector: parents colliding objects (after a delay, with an
-  emission fade), and unparents them when they leave its bounds or it tilts past 135°. Model: `bin1.fbx`.
+  emission fade), and unparents them when they leave its bounds or it tilts past 135°. Skips
+  currently-held items (`pickupActive` guard). Model: `bin1.fbx`.
 
 ## Gotchas
-- Pickup ↔ conveyor hand-off is **buggy** (see roadmap). The re-snap logic depends on `snapDistance`,
-  rigidbody kinematic toggling, and collider swapping being in sync.
+- Belt re-snap needs **sustained** near-rest (0.25 s) + a 0.5 s cooldown + lane/height proximity —
+  a flung or shoved item never recaptures mid-flight; a gentle release (slow hand → zero-velocity
+  place) settles and captures. While an item is held (`pickupActive`), the mover fully yields —
+  never drive the rigidbody from belt code during a carry.
 - Corner generation in `ConveyorPath` assumes roughly equal leg lengths (`isProper` check) — odd
   node placement produces straight fallbacks.
 - Conveyor belt **visual** scroll (`ConveyorManager`) and item **movement** (`ConveyorObjectMover`)

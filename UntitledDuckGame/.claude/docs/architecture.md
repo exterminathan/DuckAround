@@ -47,7 +47,9 @@ detail, see the system docs ([player](player.md), [worker-ai](worker-ai.md), [al
   mouse-down, calls `IsometricRaycaster.BeginHold(hit, player)`. `IsometricRaycaster.Update`
   either drives the **arm** (rotation + vertical/horizontal IK, with collision sweeps) **or**, while
   holding an `Operate` interactable, forwards drag to the interactable. `PlayerDuckController.Update`
-  reads WASD and moves the `CharacterController` in isometric space.
+  reads WASD and moves the `CharacterController` in isometric space. `HeldItemController.LateUpdate`
+  (same GameObject as the raycaster) poses any carried item at the bill slot **post-IK** and samples
+  its world velocity — the source of the fling applied on release.
 - **Worker:** `WorkerAIController.Update` calls `_tree.Root.Execute(_blackboard)`. The tree is a
   `Selector` of: **collision/ragdoll → recovery → detection/chase → waypoint patrol** (first
   succeeding branch wins). All mutable state (waypoints, flags, timers, animator refs) lives in the
@@ -57,12 +59,12 @@ detail, see the system docs ([player](player.md), [worker-ai](worker-ai.md), [al
 
 | From → To | Mechanism | Notes |
 | --- | --- | --- |
-| Player body/arm → Worker | `OnControllerColliderHit` / `ArmHitForwarder.OnCollisionEnter` call `worker.SetStateAtValue("IsCollided", true)` | Triggers the worker's collision→ragdoll BT branch. |
+| Player body/arm/held item → Worker | `OnControllerColliderHit` / `ArmHitForwarder` / `HeldItemHitForwarder` call `worker.SetStateAtValue("IsCollided", true)` | Triggers the worker's collision→ragdoll BT branch. |
 | Worker detection → Alarm | `DetectionActions.BeginChase` calls `GlobalAlarm.RequestIncrease(1f)` | Alarm rises on each (cooldown-gated) new acquisition. |
 | Alarm → Worker behaviour & visuals | `GlobalAlarm.GetCurrentLevelData()` read in `DetectionChecks`/`DetectionActions` and `WorkerVisualController` | Detection angle/distance, chase timer, chase speed all scale with level. |
 | Player/Worker → Audio | `AudioAgent.Play("ragdoll" / "playerHitWorker")` → `AudioManager.Get(key)` → matching `StudioEventEmitter` | Keys are mapped in `AudioManager.Awake`. |
 | Interactable ↔ Player | `IInteractable` (`Pickup` / `Operate`) brokered by `IsometricRaycaster` hold state | `CursorController` initiates; raycaster routes drag/hold lifecycle. |
-| Conveyor ↔ Pickup | `PickupInteractable` toggles rigidbody + reparents to `playerHoldSlot`; `ConveyorObjectMover` releases/re-snaps the item | This hand-off is the **buggy** area; see roadmap. |
+| Conveyor ↔ Pickup | `PickupInteractable.pickupActive` gates the mover (belt fully yields while held); `DetachForPickup()` on grab; free items re-snap to any belt after settling | Carry is owned by `HeldItemController` (post-IK follow at `playerHoldSlot`, **no reparenting**); release flings with the sampled arm velocity. |
 
 ## Key design choices to respect
 

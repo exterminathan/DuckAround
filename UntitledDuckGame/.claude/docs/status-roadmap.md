@@ -1,6 +1,6 @@
 # Status & Roadmap — what works vs. what's planned
 
-Snapshot of mechanic status on the **demo branch** (as of 2026-05). Confirmed with the developer.
+Snapshot of mechanic status on the **demo branch** (as of 2026-07-24). Confirmed with the developer.
 Check here before building on a mechanic — several described features are **not wired up yet**.
 
 ## ✅ Working / functional
@@ -13,15 +13,31 @@ Check here before building on a mechanic — several described features are **no
 - **Ragdoll-on-hit** — shoving/hitting a worker ragdolls it; auto-recovers after ~3s. *(Intended to stay.)*
 - **Global alarm escalation** — rises on detection (cooldown-gated); scales detection range/angle,
   chase timer, chase speed; HUD readout + detection-circle visuals.
-- **Conveyors** — path building (straight + corner), item movement, end-of-belt fling, belt UV scroll.
+- **Conveyors** — path building (straight + corner), **physical belt riding** (on-belt items are
+  dynamic bodies driven by a FixedUpdate velocity servo), ride-pose capture, any-belt re-snap
+  (runtime registry, no pre-wiring), belt-owned settings (`speed`/`loop`/`exitForce`/`beltWidth`/
+  `maxItemMass`), end-of-belt fling, belt UV scroll. *(Reworked 2026-07.)*
+- **Held-item carry** — `HeldItemController`: grab → transit tween → post-IK hard-follow at the
+  bill slot (**no reparenting**); carried items keep live colliders (they shove props / ragdoll
+  workers via `HeldItemHitForwarder`); clean belt hand-off both ways. *(Overhauled 2026-07-22/23.)*
+- **Fling / throw on release** — flick the arm and let go: windowed hand-velocity launch with a
+  mass falloff anchored to `maxCarryMass`, gentle-place dead zone, speed cap, tumble. *(2026-07-24;
+  see [player.md](player.md).)*
+- **Carry encumbrance** — heavier held items scale down duck move speed and arm ease rates
+  (per-channel floors, master `enableEncumbrance` toggle). *(2026-07-24.)*
 
 ## 🐞 Buggy / needs work
-- **Object pickup & drop** (`PickupInteractable` + `ConveyorObjectMover` hand-off). The grab,
-  reparent-to-mouth, drop, and conveyor re-snap interactions are unreliable. **Known priority fix.**
+- **Item grab loc/rot not fully working** — a grabbed item's position/orientation in the bill isn't
+  always right (per-item `gripOffset` / hold-slot rotation needs work; items ride exactly at
+  `holdSlot` pose + offset today).
+- **Demo.unity scene drums** — the two belt drums ("drum (5)", "drum (14)") are hand-built from the
+  raw FBX rather than `drum.prefab` (dead concave MeshCollider, stray tiny BoxCollider, wrong
+  layer/mass); being repaired in-editor. `drum.prefab` itself is correct.
+- **Feel-tuning pass pending** — the fling + encumbrance knobs on `HeldItemController` (Mass Scale /
+  Fling / Encumbrance inspector headers) and the belt snap tolerances are fresh defaults, not
+  final tuning.
 
 ## 🚧 Planned / not yet wired
-- **Throwing objects with force.** Items can be picked up and dropped, but there is no throw
-  impulse on release yet.
 - **Lever → alarm reset.** `LeverInteractable` rotates but connects to nothing. It should lower/
   reset `GlobalAlarm` (which also has **no auto-decay** yet) and route through the general
   `IInteractable` system the developer is building out.

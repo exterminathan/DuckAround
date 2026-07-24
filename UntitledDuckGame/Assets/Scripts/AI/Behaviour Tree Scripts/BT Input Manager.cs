@@ -21,4 +21,13 @@ public class BTInputManager : MonoBehaviour {
             worker.SetNewDestination(waypoints[destination]);
         }
     }
+
+    public void Update() 
+    {
+        // Example update logic, can be customized as needed
+        if (Input.GetKeyDown(KeyCode.RightBracket)) 
+        {
+            SetNewDestinations();
+        }
+    }
 }
