@@ -11,14 +11,13 @@ public class ConveyorObjectMover : MonoBehaviour
     public enum MoverState { OnBelt, Free }
 
     [Header("Object Mover Settings")]
-    [Tooltip("The belt currently being ridden. Auto-assigned when a belt captures this item — no pre-wiring needed.")]
+    [Tooltip("The belt currently being ridden. Auto-assigned when a belt captures this item — no pre-wiring needed. Speed/loop/exit force live on the ConveyorPath.")]
     public ConveyorPath path;
-    public float speed = 1f;
-    public bool loop = true;
 
+    [Tooltip("Smoothing window for path tangents (corner rounding).")]
     public float tangentHalfWindow = 0.25f;
+    [Tooltip("How fast the item reorients to the belt direction (deg/sec).")]
     public float maxTurnRateDegPerSec = 720f;
-    public float exitForce = 3f;
 
     [Header("Re-Snap Settings")]
     [SerializeField] private float snapDistance = 0.1f;
@@ -32,6 +31,12 @@ public class ConveyorObjectMover : MonoBehaviour
     [Tooltip("Item must also be tumbling at/below this angular speed (rad/s) to be captured.")]
     [SerializeField] private float restAngularSpeed = 1f;
 
+    [Header("Ride Settle")]
+    [Tooltip("How fast a tilted item flattens onto its nearest face while riding (deg/sec). High = near-instant.")]
+    [SerializeField] private float tiltSettleDegPerSec = 240f;
+    [Tooltip("How fast the drop height eases onto the belt surface (units/sec).")]
+    [SerializeField] private float rideHeightSettleSpeed = 4f;
+
     // Placement tolerance for the initial on-belt check at Start: hand-placed scene
     // items rarely sit exactly on the spine, so this is laxer than snapDistance.
     private const float placementCaptureDistance = 0.5f;
@@ -40,6 +45,12 @@ public class ConveyorObjectMover : MonoBehaviour
     private const float maxCorrectionSpeed = 2f;
     // shoved further than this off the ride line (horizontally) -> knocked off
     private const float releaseDeviationPad = 0.25f;
+    // free items whose pivot is within this margin beyond the belt edge still capture
+    private const float captureEdgeMargin = 0.15f;
+    // cursor stall control: full speed until the item lags its lane point by more
+    // than the slack, tapering to a stop across the span (blocked items press gently)
+    private const float lagSlack = 0.05f;
+    private const float lagSpan = 0.3f;
     // soft-servo gains (per second): proportional pull toward the target pose —
     // gentle on purpose, so persistent contacts damp instead of stick-slipping
     private const float posCorrectionGain = 6f;
@@ -48,7 +59,6 @@ public class ConveyorObjectMover : MonoBehaviour
     private const float rideHoverClearance = 0.02f;
 
     private float s;
-    private Vector3 prevPos;
 
     // Captured ride pose relative to the belt tangent frame, taken at every capture
     // (scene start or resnap): an item rides in whatever orientation and lateral
@@ -59,8 +69,9 @@ public class ConveyorObjectMover : MonoBehaviour
     private Vector3 rideOffset;
     private float rideRestHeight;
 
-    private const float rideHeightSettleSpeed = 1.5f;
-    private const float rideCenterSpeed = 0.15f;
+    // how fast the lane follows sustained lateral displacement (wide-belt behavior:
+    // shoves shift the item to a new lane instead of springing back to the old one)
+    private const float laneAdoptSpeed = 1f;
     // rest must be SUSTAINED this long before capture — a bounce apex or a tumble has
     // near-zero velocity for a frame, and capturing there froze items at weird angles
     private const float settleDuration = 0.25f;
@@ -81,8 +92,8 @@ public class ConveyorObjectMover : MonoBehaviour
     public Rigidbody Body => rb;
 
     // World-space velocity the belt drives this item at; zero when free.
-    public Vector3 BeltVelocity => (state == MoverState.OnBelt && posTan.tan.sqrMagnitude > 1e-6f)
-        ? posTan.tan.normalized * speed
+    public Vector3 BeltVelocity => (state == MoverState.OnBelt && path != null && posTan.tan.sqrMagnitude > 1e-6f)
+        ? posTan.tan.normalized * path.Speed
         : Vector3.zero;
 
     #region Unity Functions
@@ -140,29 +151,21 @@ public class ConveyorObjectMover : MonoBehaviour
 
         float dt = Time.fixedDeltaTime;
         float L = path.TotalLength;
+        float beltSpeed = path.Speed;
+        bool beltLoop = path.Loop;
 
         var (basePos, baseTan) = path.SampleByDistanceSmoothed(s, tangentHalfWindow);
         posTan = (basePos, baseTan);
         Vector3 tanN = (baseTan.sqrMagnitude > 1e-6f) ? baseTan.normalized : transform.forward;
 
-        // The track cursor follows the item's MEASURED progress along the belt
-        // direction — monotone and continuous, and it stalls when the item is
-        // physically blocked. (A closest-point re-sync is ambiguous at straight/
-        // corner transitions — the inside of a corner is nearly equidistant to both
-        // legs — which made the cursor flip-flop and items jitter/stick there.)
-        float dsAchieved = Vector3.Dot(rb.position - prevPos, tanN);
-        prevPos = rb.position;
-        float maxStep = Mathf.Abs(speed) * dt + 0.05f;
-        s += Mathf.Clamp(dsAchieved, -maxStep, maxStep);
-        s = loop ? Mathf.Repeat(s, L) : Mathf.Clamp(s, 0f, L);
-
-        // shoved off the ride line (arm hit, pile-up pressure, body bump) -> release
+        // wide-belt riding: anywhere across the belt's width is a valid lane; only
+        // past the physical edge (or off in height) does the item fall off
+        float halfWidth = Mathf.Max(path.BeltWidth * 0.5f, snapDistance);
         Quaternion baseFrame = Quaternion.LookRotation(tanN, Vector3.up);
-        Vector3 deviation = rb.position - (basePos + baseFrame * rideOffset);
-        float devY = Mathf.Abs(deviation.y);
-        deviation.y = 0f;
-        float releaseDeviation = snapDistance + releaseDeviationPad;
-        if (deviation.sqrMagnitude > releaseDeviation * releaseDeviation || devY > snapHeightTolerance)
+        Vector3 baseLocal = Quaternion.Inverse(baseFrame) * (rb.position - basePos);
+
+        if (Mathf.Abs(baseLocal.x) > halfWidth + releaseDeviationPad
+            || Mathf.Abs(baseLocal.y - rideOffset.y) > snapHeightTolerance)
         {
             ReleaseFromConveyor();
             resnapBlockedUntil = Time.time + resnapCooldown;
@@ -170,8 +173,18 @@ public class ConveyorObjectMover : MonoBehaviour
             return;
         }
 
+        // The cursor advances at belt speed but stalls as the item falls behind its
+        // LANE point (blocked, or physically unable to keep up). Lag is measured
+        // against the lane — not the spine — so corner geometry works for edge lanes
+        // too (an inner lane covers less world distance per unit of track; a
+        // spine-based measure deadlocked edge riders at corners).
+        float lag = Vector3.Dot((basePos + baseFrame * rideOffset) - rb.position, tanN);
+        float advance = beltSpeed * dt * Mathf.Clamp01(1f - (lag - lagSlack) / lagSpan);
+        s += advance;
+        s = beltLoop ? Mathf.Repeat(s, L) : Mathf.Clamp(s, 0f, L);
+
         // end of a non-loop path -> fling off
-        if (!loop && s >= L - 1e-4f)
+        if (!beltLoop && s >= L - 1e-4f)
         {
             var (posEnd, tanEnd) = path.SampleByDistanceSmoothed(L, tangentHalfWindow);
             posTan = (posEnd, tanEnd);
@@ -179,13 +192,43 @@ public class ConveyorObjectMover : MonoBehaviour
             return;
         }
 
-        // ease the ride pose: drop height settles onto the line, edge-riders recenter
+        // gravity-like settling: ease the ride pose so the item's nearest local axis
+        // points straight up — a drum released at an angle flattens out while it
+        // travels instead of gliding frozen on a corner. Heading (yaw) is preserved.
+        Quaternion worldRide = baseFrame * rideRotation;
+        Vector3 axUp = worldRide * Vector3.up;
+        Vector3 axRight = worldRide * Vector3.right;
+        Vector3 axFwd = worldRide * Vector3.forward;
+        Vector3 bestAxis = axUp;
+        float bestDot = axUp.y;
+        if (-axUp.y > bestDot) { bestDot = -axUp.y; bestAxis = -axUp; }
+        if (axRight.y > bestDot) { bestDot = axRight.y; bestAxis = axRight; }
+        if (-axRight.y > bestDot) { bestDot = -axRight.y; bestAxis = -axRight; }
+        if (axFwd.y > bestDot) { bestDot = axFwd.y; bestAxis = axFwd; }
+        if (-axFwd.y > bestDot) { bestDot = -axFwd.y; bestAxis = -axFwd; }
+        Quaternion settled = Quaternion.Inverse(baseFrame) * (Quaternion.FromToRotation(bestAxis, Vector3.up) * worldRide);
+        rideRotation = Quaternion.RotateTowards(rideRotation, settled, tiltSettleDegPerSec * dt);
+
+        // keep the rest height synced to the CURRENT orientation — as a tilted item
+        // flattens, its pivot-to-underside shrinks (a stale height left it floating)
+        bool hasBounds = false;
+        Bounds itemBounds = default;
+        foreach (var c in allColliders)
+        {
+            if (c == null || !c.enabled) continue;
+            if (!hasBounds) { itemBounds = c.bounds; hasBounds = true; }
+            else itemBounds.Encapsulate(c.bounds);
+        }
+        if (hasBounds) rideRestHeight = (rb.position.y - itemBounds.min.y) + rideHoverClearance;
+
+        // ease the ride pose: drop height settles onto the surface; the lane follows
+        // the item's actual lateral position (kept, never recentered)
         rideOffset.y = Mathf.MoveTowards(rideOffset.y, rideRestHeight, rideHeightSettleSpeed * dt);
-        rideOffset.x = Mathf.MoveTowards(rideOffset.x, 0f, rideCenterSpeed * dt);
+        rideOffset.x = Mathf.MoveTowards(rideOffset.x, Mathf.Clamp(baseLocal.x, -halfWidth, halfWidth), laneAdoptSpeed * dt);
 
         // the target leads the cursor slightly so the feedforward always pulls ahead
-        float lead = Mathf.Max(Mathf.Abs(speed) * dt * 2f, 0.02f);
-        float sLead = loop ? Mathf.Repeat(s + lead, L) : Mathf.Min(s + lead, L);
+        float lead = Mathf.Max(Mathf.Abs(beltSpeed) * dt * 2f, 0.02f);
+        float sLead = beltLoop ? Mathf.Repeat(s + lead, L) : Mathf.Min(s + lead, L);
         var (pos, tan) = path.SampleByDistanceSmoothed(sLead, tangentHalfWindow);
         if (tan.sqrMagnitude <= 1e-6f) tan = tanN;
         tan.Normalize();
@@ -197,8 +240,14 @@ public class ConveyorObjectMover : MonoBehaviour
         // toward the target. A one-step full correction is infinitely stiff and
         // stick-slips against any persistent contact (floor, neighbors, the arm) —
         // physics still resolves contacts, so blocked items press, not phase
-        Vector3 vel = tan * speed + (targetPos - rb.position) * posCorrectionGain;
-        float maxVel = Mathf.Abs(speed) + maxCorrectionSpeed;
+        Vector3 vel = tan * beltSpeed + (targetPos - rb.position) * posCorrectionGain;
+
+        // belts move at ONE speed: cap the along-belt component so a freed item
+        // resumes at pace instead of sprinting to catch up to its stalled target
+        float along = Vector3.Dot(vel, tan);
+        if (along > beltSpeed) vel -= tan * (along - beltSpeed);
+
+        float maxVel = Mathf.Abs(beltSpeed) + maxCorrectionSpeed;
         if (vel.sqrMagnitude > maxVel * maxVel) vel = vel.normalized * maxVel;
         rb.linearVelocity = vel;
 
@@ -264,14 +313,17 @@ public class ConveyorObjectMover : MonoBehaviour
             float sC = FindClosestSAlongPath(p, transform.position);
 
             // a non-loop capture at the very end would re-fling instantly, forever
-            if (!loop && sC >= p.TotalLength - 0.05f) continue;
+            if (!p.Loop && sC >= p.TotalLength - 0.05f) continue;
 
             Vector3 toItem = transform.position - p.PositionAtDistance(sC);
             if (Mathf.Abs(toItem.y) > snapHeightTolerance) continue;
             toItem.y = 0f;
 
+            // a wide belt accepts items anywhere across its width, plus a margin so
+            // an item resting right ON the edge line (pivot just past it) still rides
+            float accept = Mathf.Max(radius, p.BeltWidth * 0.5f + captureEdgeMargin);
             float d2 = toItem.sqrMagnitude;
-            if (d2 <= radius * radius && d2 < bestD2)
+            if (d2 <= accept * accept && d2 < bestD2)
             {
                 bestD2 = d2;
                 bestPath = p;
@@ -332,13 +384,13 @@ public class ConveyorObjectMover : MonoBehaviour
 
             Vector3 local = Quaternion.Inverse(frame) * (transform.position - capturePos);
             local.z = 0f;
-            local.x = Mathf.Clamp(local.x, -maxLateralOffset, maxLateralOffset);
+            float halfW = Mathf.Max(path.BeltWidth * 0.5f, maxLateralOffset);
+            local.x = Mathf.Clamp(local.x, -halfW, halfW);
             local.y = Mathf.Clamp(local.y, -snapHeightTolerance, snapHeightTolerance);
             rideOffset = local;
         }
 
-        s = loop ? Mathf.Repeat(sClosest, path.TotalLength) : Mathf.Clamp(sClosest, 0f, path.TotalLength);
-        prevPos = transform.position;
+        s = path.Loop ? Mathf.Repeat(sClosest, path.TotalLength) : Mathf.Clamp(sClosest, 0f, path.TotalLength);
         state = MoverState.OnBelt;
 
         ItemEvents.ReportBeltCaptured(this, path);
@@ -360,7 +412,7 @@ public class ConveyorObjectMover : MonoBehaviour
             tan = (fallbackTan.sqrMagnitude > 1e-6f) ? fallbackTan : transform.forward;
         }
 
-        rb.AddForce(tan.normalized * exitForce, ForceMode.VelocityChange);
+        rb.AddForce(tan.normalized * (path != null ? path.ExitForce : 3f), ForceMode.VelocityChange);
 
         resnapBlockedUntil = Time.time + resnapCooldown;
         state = MoverState.Free;

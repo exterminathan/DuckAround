@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.51
+      value: 10.786629
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.031000331
+      value: 0.8592086
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -4.28
+      value: 8.735612
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalRotation.w
@@ -74,6 +74,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7659129842639108622}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5483417705042895145}
   m_SourcePrefab: {fileID: 100100000, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
 --- !u!1 &3314285351181495172 stripped
 GameObject:
@@ -142,3 +145,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
+  minImpactSpeed: 0.5
+  minImpactInterval: 0.1
+--- !u!114 &5483417705042895145
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3314285351181495172}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5127fa89c802a5f428c17316ab4b3fa8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  path: {fileID: 0}
+  speed: 1
+  loop: 1
+  tangentHalfWindow: 0.25
+  maxTurnRateDegPerSec: 720
+  exitForce: 3
+  snapDistance: 0.1
+  restSpeed: 0.35
+  resnapCooldown: 0.5
+  resnapCheckInterval: 0.2
+  snapHeightTolerance: 0.5
+  restAngularSpeed: 1
+  rb: {fileID: 3472595596387170793}

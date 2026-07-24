@@ -73,10 +73,14 @@ public class CursorController : MonoBehaviour {
             inRange = false;
         }
 
+        // only show the hover affordance when the target is also within pickup range,
+        // so the ring grow + color match what a click can actually grab
+        bool canEngage = isHovering && inRange;
+
         //scale outer cursor based on hover state
-        Vector3 targetScale = isHovering ? hoverScale : defaultScale;
+        Vector3 targetScale = canEngage ? hoverScale : defaultScale;
         outerCursor.localScale = Vector3.SmoothDamp(outerCursor.localScale, targetScale, ref outerScaleVelocity, scaleSmoothTime);
-        SetCursorColor(isHovering ? hoverColor : idleColor, 2);
+        SetCursorColor(canEngage ? hoverColor : idleColor, 2);
 
 
         if (isometricRaycaster != null) {

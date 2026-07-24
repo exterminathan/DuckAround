@@ -29,8 +29,18 @@ public class ConveyorPath : MonoBehaviour {
     [SerializeField] private List<ConveyorNode> nodes = new();
     [SerializeField] private int lineSubdiv = 8;
     [SerializeField] private int cornerSubdiv = 8;
+
+    [Header("Belt Settings")]
+    [Tooltip("Belt speed (units/sec) — carried items ride at this rate.")]
+    [SerializeField] private float speed = 1f;
+    [Tooltip("Closed loop: items circulate forever. Off: items fling off the end.")]
+    [SerializeField] private bool loop = true;
+    [Tooltip("Launch speed (velocity change) when a non-loop belt flings an item off its end.")]
+    [SerializeField] private float exitForce = 3f;
     [Tooltip("Items with rigidbody mass above this can't ride this belt. 0 = no limit.")]
     [SerializeField] private float maxItemMass = 0f;
+    [Tooltip("Physical width of the belt surface: items are captured and ride ANYWHERE across it, keeping their lane. 0 = line-only (per-item snapDistance).")]
+    [SerializeField] private float beltWidth = 1f;
 
     // runtime registry of enabled belts, so free items can detect ANY belt they land
     // on (ConveyorObjectMover.FindCapturePath) without a pre-wired path reference
@@ -47,6 +57,10 @@ public class ConveyorPath : MonoBehaviour {
     #region Public Properties
     public float TotalLength => totalLength;
     public float MaxItemMass => maxItemMass;
+    public float BeltWidth => beltWidth;
+    public float Speed => speed;
+    public bool Loop => loop;
+    public float ExitForce => exitForce;
     #endregion
 
     #region Path Builder Functions
@@ -254,6 +268,31 @@ public class ConveyorPath : MonoBehaviour {
                 Vector3 p = seg.GetPoint(t);
                 Gizmos.DrawLine(prev, p);
                 prev = p;
+            }
+        }
+
+        // belt width visualization: cyan edge lines at ±width/2 along the whole path,
+        // showing the actual riding surface (capture zone + lanes), not just the spine
+        if (beltWidth > 0f && totalLength > 1e-4f) {
+            Gizmos.color = Color.cyan;
+            float half = beltWidth * 0.5f;
+            int steps = Mathf.Max(8, Mathf.CeilToInt(totalLength * 4f));
+            Vector3 prevL = Vector3.zero, prevR = Vector3.zero;
+            bool hasPrev = false;
+            for (int i = 0; i <= steps; i++) {
+                float dist = totalLength * i / steps;
+                var (p, tan) = SampleByDistanceSmoothed(dist, 0.25f);
+                if (tan.sqrMagnitude < 1e-8f) continue;
+                Vector3 right = Vector3.Cross(Vector3.up, tan).normalized;
+                Vector3 l = p - right * half;
+                Vector3 r = p + right * half;
+                if (hasPrev) {
+                    Gizmos.DrawLine(prevL, l);
+                    Gizmos.DrawLine(prevR, r);
+                }
+                prevL = l;
+                prevR = r;
+                hasPrev = true;
             }
         }
 
