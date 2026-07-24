@@ -1,6 +1,11 @@
 using System;
 using UnityEngine;
 
+// Belt riding is PHYSICAL: on-belt items stay dynamic (gravity off) and a velocity
+// servo steers them along the path each physics step. Collisions are real — items
+// shove each other, press against blockers, and get pushed around by the arm/player.
+// The track position re-syncs to wherever physics actually let the item go; if it's
+// forced too far off the line it releases back to a free prop.
 public class ConveyorObjectMover : MonoBehaviour
 {
     public enum MoverState { OnBelt, Free }
@@ -24,33 +29,48 @@ public class ConveyorObjectMover : MonoBehaviour
     [SerializeField] private float resnapCheckInterval = 0.2f;
     [Tooltip("Max height above/below the path spine at which an item can still be captured.")]
     [SerializeField] private float snapHeightTolerance = 0.5f;
+    [Tooltip("Item must also be tumbling at/below this angular speed (rad/s) to be captured.")]
+    [SerializeField] private float restAngularSpeed = 1f;
 
     // Placement tolerance for the initial on-belt check at Start: hand-placed scene
     // items rarely sit exactly on the spine, so this is laxer than snapDistance.
     private const float placementCaptureDistance = 0.5f;
 
+    // how much faster than belt speed the servo may move to recover toward the track
+    private const float maxCorrectionSpeed = 2f;
+    // shoved further than this off the ride line (horizontally) -> knocked off
+    private const float releaseDeviationPad = 0.25f;
+    // soft-servo gains (per second): proportional pull toward the target pose —
+    // gentle on purpose, so persistent contacts damp instead of stick-slipping
+    private const float posCorrectionGain = 6f;
+    private const float angCorrectionGain = 6f;
+    // ride slightly above the contact plane so riders aren't permanently touching it
+    private const float rideHoverClearance = 0.02f;
+
     private float s;
-    private float nonLoopDistance;
-    private bool wasLooping;
+    private Vector3 prevPos;
 
     // Captured ride pose relative to the belt tangent frame, taken at every capture
     // (scene start or resnap): an item rides in whatever orientation and lateral
     // offset it was placed/dropped with. Height eases toward rideRestHeight — the
     // pivot-to-collider-bottom distance — so the item's underside rests ON the belt
-    // line instead of its pivot sinking to it.
+    // line; lateral offset drifts gently back to center.
     private Quaternion rideRotation = Quaternion.identity;
     private Vector3 rideOffset;
     private float rideRestHeight;
 
-    // captured drop height eases back onto the spine at this rate (units/sec)
     private const float rideHeightSettleSpeed = 1.5f;
+    private const float rideCenterSpeed = 0.15f;
+    // rest must be SUSTAINED this long before capture — a bounce apex or a tumble has
+    // near-zero velocity for a frame, and capturing there froze items at weird angles
+    private const float settleDuration = 0.25f;
+    private float settledUntil;
 
     [SerializeField] private Rigidbody rb;
 
     private (Vector3 pos, Vector3 tan) posTan;
     private PickupInteractable pickupInteractable;
-    private Collider interactionCollider;
-    private Collider collCollider;
+    private Collider[] allColliders;
 
     private MoverState state = MoverState.OnBelt;
     private float resnapBlockedUntil;
@@ -60,9 +80,7 @@ public class ConveyorObjectMover : MonoBehaviour
     public bool IsOnBelt => state == MoverState.OnBelt && enabled;
     public Rigidbody Body => rb;
 
-    // World-space velocity the belt imparts while riding; zero when free. The hit
-    // forwarders use it for RELATIVE contact speed, so a stationary arm blocking
-    // the path still registers the item running into it.
+    // World-space velocity the belt drives this item at; zero when free.
     public Vector3 BeltVelocity => (state == MoverState.OnBelt && posTan.tan.sqrMagnitude > 1e-6f)
         ? posTan.tan.normalized * speed
         : Vector3.zero;
@@ -74,28 +92,12 @@ public class ConveyorObjectMover : MonoBehaviour
 
         pickupInteractable = GetComponentInChildren<PickupInteractable>();
 
-        // the box/mesh swap is only valid for items that have BOTH (box = on-belt
-        // interaction proxy, mesh = free physics). Single-collider items (e.g. drum:
-        // mesh only) must keep their collider live in every state — disabling their
-        // only collider makes them unhoverable and lets the arm phase through.
-        interactionCollider = GetComponentInChildren<BoxCollider>();
-        collCollider = GetComponentInChildren<MeshCollider>();
-
-        // a degenerate proxy box (e.g. an accidental 0.0001-size collider) would leave
-        // the item effectively colliderless on the belt — treat it as absent instead
-        if (interactionCollider is BoxCollider proxyBox)
+        // physical riding wants the item's REAL collision shape live in every state —
+        // enable everything (box proxy + mesh become a compound; no more swapping)
+        allColliders = GetComponentsInChildren<Collider>(true);
+        foreach (var c in allColliders)
         {
-            Vector3 worldSize = Vector3.Scale(proxyBox.size, proxyBox.transform.lossyScale);
-            if (Mathf.Abs(worldSize.x) < 0.02f || Mathf.Abs(worldSize.y) < 0.02f || Mathf.Abs(worldSize.z) < 0.02f)
-            {
-                interactionCollider = null;
-            }
-        }
-
-        if (interactionCollider == null || collCollider == null)
-        {
-            interactionCollider = null;
-            collCollider = null;
+            if (c != null) c.enabled = true;
         }
 
         // Placement decides the starting state: an item sitting on any belt is captured
@@ -118,101 +120,106 @@ public class ConveyorObjectMover : MonoBehaviour
         // while held, the hold owns the item entirely — never move or recapture it
         if (pickupInteractable != null && pickupInteractable.pickupActive) return;
 
-        // free items need no path — TryResnap scans every registered belt
-        if (state == MoverState.Free)
+        if (state != MoverState.Free) return;
+
+        // per-frame rest tracking: any burst of motion pushes the settle window out —
+        // bounce apexes and tumbles have near-zero velocity for single frames
+        bool settled = rb != null && !rb.isKinematic
+            && rb.linearVelocity.sqrMagnitude <= restSpeed * restSpeed
+            && rb.angularVelocity.sqrMagnitude <= restAngularSpeed * restAngularSpeed;
+        if (!settled) settledUntil = Time.time + settleDuration;
+
+        TryResnap();
+    }
+
+    private void FixedUpdate()
+    {
+        if (state != MoverState.OnBelt) return;
+        if (pickupInteractable != null && pickupInteractable.pickupActive) return;
+        if (path == null || path.TotalLength <= 1e-4f || rb == null) return;
+
+        float dt = Time.fixedDeltaTime;
+        float L = path.TotalLength;
+
+        var (basePos, baseTan) = path.SampleByDistanceSmoothed(s, tangentHalfWindow);
+        posTan = (basePos, baseTan);
+        Vector3 tanN = (baseTan.sqrMagnitude > 1e-6f) ? baseTan.normalized : transform.forward;
+
+        // The track cursor follows the item's MEASURED progress along the belt
+        // direction — monotone and continuous, and it stalls when the item is
+        // physically blocked. (A closest-point re-sync is ambiguous at straight/
+        // corner transitions — the inside of a corner is nearly equidistant to both
+        // legs — which made the cursor flip-flop and items jitter/stick there.)
+        float dsAchieved = Vector3.Dot(rb.position - prevPos, tanN);
+        prevPos = rb.position;
+        float maxStep = Mathf.Abs(speed) * dt + 0.05f;
+        s += Mathf.Clamp(dsAchieved, -maxStep, maxStep);
+        s = loop ? Mathf.Repeat(s, L) : Mathf.Clamp(s, 0f, L);
+
+        // shoved off the ride line (arm hit, pile-up pressure, body bump) -> release
+        Quaternion baseFrame = Quaternion.LookRotation(tanN, Vector3.up);
+        Vector3 deviation = rb.position - (basePos + baseFrame * rideOffset);
+        float devY = Mathf.Abs(deviation.y);
+        deviation.y = 0f;
+        float releaseDeviation = snapDistance + releaseDeviationPad;
+        if (deviation.sqrMagnitude > releaseDeviation * releaseDeviation || devY > snapHeightTolerance)
         {
-            TryResnap();
+            ReleaseFromConveyor();
+            resnapBlockedUntil = Time.time + resnapCooldown;
+            ItemEvents.ReportBeltLeft(this, ItemEvents.BeltLeaveReason.KnockedOff);
             return;
         }
 
-        if (path == null || path.TotalLength <= 1e-4f) return;
-
-        float L = path.TotalLength;
-        float delta = speed * Time.deltaTime;
-
-        if (loop)
+        // end of a non-loop path -> fling off
+        if (!loop && s >= L - 1e-4f)
         {
-            s += delta;
-            s = Mathf.Repeat(s, L);
-            nonLoopDistance = s;
+            var (posEnd, tanEnd) = path.SampleByDistanceSmoothed(L, tangentHalfWindow);
+            posTan = (posEnd, tanEnd);
+            ReleaseFromConveyorWithForce();
+            return;
+        }
 
-            SampleAt(s, delta);
-            wasLooping = true;
+        // ease the ride pose: drop height settles onto the line, edge-riders recenter
+        rideOffset.y = Mathf.MoveTowards(rideOffset.y, rideRestHeight, rideHeightSettleSpeed * dt);
+        rideOffset.x = Mathf.MoveTowards(rideOffset.x, 0f, rideCenterSpeed * dt);
+
+        // the target leads the cursor slightly so the feedforward always pulls ahead
+        float lead = Mathf.Max(Mathf.Abs(speed) * dt * 2f, 0.02f);
+        float sLead = loop ? Mathf.Repeat(s + lead, L) : Mathf.Min(s + lead, L);
+        var (pos, tan) = path.SampleByDistanceSmoothed(sLead, tangentHalfWindow);
+        if (tan.sqrMagnitude <= 1e-6f) tan = tanN;
+        tan.Normalize();
+        Quaternion frame = Quaternion.LookRotation(tan, Vector3.up);
+        Vector3 targetPos = pos + frame * rideOffset;
+        Quaternion targetRot = frame * rideRotation;
+
+        // SOFT velocity servo: belt-speed feedforward + gentle proportional pull
+        // toward the target. A one-step full correction is infinitely stiff and
+        // stick-slips against any persistent contact (floor, neighbors, the arm) —
+        // physics still resolves contacts, so blocked items press, not phase
+        Vector3 vel = tan * speed + (targetPos - rb.position) * posCorrectionGain;
+        float maxVel = Mathf.Abs(speed) + maxCorrectionSpeed;
+        if (vel.sqrMagnitude > maxVel * maxVel) vel = vel.normalized * maxVel;
+        rb.linearVelocity = vel;
+
+        Quaternion dq = targetRot * Quaternion.Inverse(rb.rotation);
+        dq.ToAngleAxis(out float angle, out Vector3 axis);
+        if (angle > 180f) angle -= 360f;
+        if (!float.IsNaN(axis.x) && !float.IsInfinity(axis.x) && Mathf.Abs(angle) > 1e-3f)
+        {
+            float maxAng = maxTurnRateDegPerSec * Mathf.Deg2Rad;
+            Vector3 angVel = axis.normalized * (angle * Mathf.Deg2Rad * angCorrectionGain);
+            if (angVel.sqrMagnitude > maxAng * maxAng) angVel = angVel.normalized * maxAng;
+            rb.angularVelocity = angVel;
         }
         else
         {
-            if (wasLooping)
-            {
-                nonLoopDistance = s;
-                wasLooping = false;
-            }
-            else
-            {
-                nonLoopDistance += delta;
-            }
-
-            if (nonLoopDistance >= L - 1e-4f)
-            {
-                float atEnd = L;
-                var (posEnd, tanEnd) = path.SampleByDistanceSmoothed(atEnd, tangentHalfWindow);
-                posTan = (posEnd, tanEnd);
-
-                if (tanEnd.sqrMagnitude > 1e-6f)
-                {
-                    Quaternion frame = Quaternion.LookRotation(tanEnd, Vector3.up);
-                    transform.position = posEnd + frame * rideOffset;
-                    transform.rotation = frame * rideRotation;
-                }
-                else
-                {
-                    transform.position = posEnd + rideOffset;
-                }
-
-                ReleaseFromConveyorWithForce();
-                return;
-            }
-
-            float clamped = Mathf.Clamp(nonLoopDistance, 0f, L);
-            SampleAt(clamped, delta);
+            rb.angularVelocity = Vector3.zero;
         }
     }
     #endregion
 
     #region Helpers
-    private void SampleAt(float distanceAlongPath, float deltaTime)
-    {
-        var (pos, tan) = path.SampleByDistanceSmoothed(distanceAlongPath, tangentHalfWindow);
-        posTan = (pos, tan);
-
-        // ease the captured drop height toward resting the underside on the belt line
-        rideOffset.y = Mathf.MoveTowards(rideOffset.y, rideRestHeight, rideHeightSettleSpeed * deltaTime);
-
-        if (tan.sqrMagnitude > 1e-6f)
-        {
-            Quaternion frame = Quaternion.LookRotation(tan, Vector3.up);
-            transform.position = pos + frame * rideOffset;
-
-            Quaternion target = frame * rideRotation;
-
-            if (maxTurnRateDegPerSec > 0f)
-            {
-                transform.rotation = Quaternion.RotateTowards(
-                    transform.rotation,
-                    target,
-                    maxTurnRateDegPerSec * deltaTime
-                );
-            }
-            else
-            {
-                transform.rotation = target;
-            }
-        }
-        else
-        {
-            transform.position = pos + rideOffset;
-        }
-    }
-
     private float FindClosestSAlongPath(ConveyorPath p, Vector3 worldPos)
     {
         float L = p.TotalLength;
@@ -259,8 +266,6 @@ public class ConveyorObjectMover : MonoBehaviour
             // a non-loop capture at the very end would re-fling instantly, forever
             if (!loop && sC >= p.TotalLength - 0.05f) continue;
 
-            // horizontal ring around the spine + a separate height tolerance, so an
-            // item resting ON the belt surface (pivot above the spine) still captures
             Vector3 toItem = transform.position - p.PositionAtDistance(sC);
             if (Mathf.Abs(toItem.y) > snapHeightTolerance) continue;
             toItem.y = 0f;
@@ -276,15 +281,16 @@ public class ConveyorObjectMover : MonoBehaviour
         return bestPath != null;
     }
 
-    // Free-state recapture: only when the item is settled (near-rest) on/next to a
-    // belt and outside the post-fling cooldown, so knocked-off items stay knocked off.
+    // Free-state recapture: only when the item has been settled (near-rest, not
+    // tumbling) for a sustained window and is on/next to a belt, outside the
+    // post-fling cooldown — so knocked-off items stay knocked off.
     private void TryResnap()
     {
         if (Time.time < resnapBlockedUntil || Time.time < nextResnapCheck) return;
         nextResnapCheck = Time.time + resnapCheckInterval;
 
         if (rb == null || rb.isKinematic) return;
-        if (rb.linearVelocity.sqrMagnitude > restSpeed * restSpeed) return;
+        if (Time.time < settledUntil) return;
 
         if (FindCapturePath(snapDistance, out ConveyorPath bestPath, out float bestS))
         {
@@ -297,28 +303,28 @@ public class ConveyorObjectMover : MonoBehaviour
     {
         if (rb != null)
         {
-            rb.isKinematic = true;
+            rb.isKinematic = false;
             rb.useGravity = false;
         }
 
-        // measure pivot-to-underside from the colliders live at capture time (free
-        // config), BEFORE the swap below — a disabled collider has no valid bounds
+        // measure pivot-to-underside from the live colliders so the item rides with
+        // its underside on the belt line instead of its pivot buried at line height
         bool hasBounds = false;
         Bounds itemBounds = default;
-        foreach (var c in GetComponentsInChildren<Collider>())
+        foreach (var c in allColliders)
         {
             if (c == null || !c.enabled) continue;
             if (!hasBounds) { itemBounds = c.bounds; hasBounds = true; }
             else itemBounds.Encapsulate(c.bounds);
         }
-        rideRestHeight = hasBounds ? transform.position.y - itemBounds.min.y : 0f;
-
-        if (interactionCollider != null) interactionCollider.enabled = true;
-        if (collCollider != null) collCollider.enabled = false;
+        rideRestHeight = hasBounds
+            ? (transform.position.y - itemBounds.min.y) + rideHoverClearance
+            : 0f;
 
         // capture the current pose relative to the belt frame: the item keeps the
-        // orientation and lateral/height offset it landed with (height eases out)
+        // orientation and lateral/height offset it landed with (offsets ease out)
         var (capturePos, captureTan) = path.SampleByDistanceSmoothed(sClosest, tangentHalfWindow);
+        posTan = (capturePos, captureTan);
         if (captureTan.sqrMagnitude > 1e-6f)
         {
             Quaternion frame = Quaternion.LookRotation(captureTan, Vector3.up);
@@ -331,13 +337,8 @@ public class ConveyorObjectMover : MonoBehaviour
             rideOffset = local;
         }
 
-        float L = path.TotalLength;
-        s = loop ? Mathf.Repeat(sClosest, L) : Mathf.Clamp(sClosest, 0f, L);
-        nonLoopDistance = s;
-        // deltaTime = 0f keeps current rotation this frame
-        SampleAt(nonLoopDistance, 0f);
-
-        wasLooping = loop;
+        s = loop ? Mathf.Repeat(sClosest, path.TotalLength) : Mathf.Clamp(sClosest, 0f, path.TotalLength);
+        prevPos = transform.position;
         state = MoverState.OnBelt;
 
         ItemEvents.ReportBeltCaptured(this, path);
@@ -350,14 +351,11 @@ public class ConveyorObjectMover : MonoBehaviour
         rb.isKinematic = false;
         rb.useGravity = true;
 
-        if (interactionCollider != null) interactionCollider.enabled = false;
-        if (collCollider != null) collCollider.enabled = true;
-
         var (pos, tan) = posTan;
 
         if (tan.sqrMagnitude <= 1e-6f)
         {
-            float back = Mathf.Max(0f, nonLoopDistance - 0.05f);
+            float back = Mathf.Max(0f, s - 0.05f);
             var (_, fallbackTan) = path.SampleByDistanceSmoothed(back, tangentHalfWindow);
             tan = (fallbackTan.sqrMagnitude > 1e-6f) ? fallbackTan : transform.forward;
         }
@@ -377,28 +375,22 @@ public class ConveyorObjectMover : MonoBehaviour
         rb.isKinematic = false;
         rb.useGravity = true;
 
-        if (interactionCollider != null) interactionCollider.enabled = false;
-        if (collCollider != null) collCollider.enabled = true;
-
         state = MoverState.Free;
     }
 
-    // Pickup hand-off: swap to the free collider config and stop belt movement, but do
-    // NOT touch the rigidbody — the hold owns rigidbody state for the whole carry.
+    // Pickup hand-off: stop belt movement but do NOT touch the rigidbody — the hold
+    // owns rigidbody state for the whole carry.
     public void DetachForPickup()
     {
         bool wasOnBelt = state == MoverState.OnBelt;
-
-        if (interactionCollider != null) interactionCollider.enabled = false;
-        if (collCollider != null) collCollider.enabled = true;
 
         state = MoverState.Free;
 
         if (wasOnBelt) ItemEvents.ReportBeltLeft(this, ItemEvents.BeltLeaveReason.PickedUp);
     }
 
-    // An arm/body hit dislodges an on-belt item: release with physics and apply the
-    // hit impulse. The cooldown stops the belt from instantly recapturing it.
+    // An explicit hit dislodges an on-belt item: release with physics and apply the
+    // impulse. The cooldown stops the belt from instantly recapturing it.
     public void KnockOff(Vector3 impulse, Vector3 point)
     {
         if (state != MoverState.OnBelt) return;

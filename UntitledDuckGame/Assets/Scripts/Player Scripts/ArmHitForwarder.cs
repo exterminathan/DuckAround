@@ -5,70 +5,22 @@ public class ArmHitForwarder : MonoBehaviour {
     public Vector3 velocity;
 
     private Rigidbody Mrb;
-    private BoxCollider box;
-    // generous size: the everything-mask overlap near a belt also catches floor, belt
-    // geometry, and the arm's own colliders — a small buffer can truncate the item out
-    private readonly Collider[] beltOverlapHits = new Collider[32];
 
-	void Awake() {
+    void Awake() {
         Mrb = GetComponent<Rigidbody>();
         if (Mrb == null) {
             Mrb = GetComponentInParent<Rigidbody>();
         }
-        box = GetComponent<BoxCollider>();
-        // the arm's sweep boxes live on child collider objects, not on the bone this
-        // forwarder sits on — without this fallback, box stays null and the belt
-        // knock-off overlap silently never runs
-        if (box == null) box = GetComponentInChildren<BoxCollider>();
-        if (box == null) Debug.LogWarning($"[AHF] {name}: no BoxCollider found — belt knock-off disabled");
     }
 
-	void Start() {
+    void Start() {
         lastPos = transform.position;
     }
 
-    // On-belt conveyor items are kinematic, and the arm rigidbodies are kinematic too —
-    // kinematic-kinematic pairs never produce OnCollisionEnter, so belt knock-off is
-    // detected with an explicit overlap query instead of collision callbacks.
-    void Update() {
-        CheckBeltKnockOff();
-    }
-
-    private void CheckBeltKnockOff() {
-        if (box == null || player == null) return;
-
-        // all box math in the BOX's transform space — it may live on a child of the
-        // bone this forwarder (and its velocity tracking) sits on
-        Vector3 center = box.transform.TransformPoint(box.center);
-        Vector3 scale = box.transform.lossyScale;
-        Vector3 halfExtents = new Vector3(
-            Mathf.Abs(box.size.x * scale.x),
-            Mathf.Abs(box.size.y * scale.y),
-            Mathf.Abs(box.size.z * scale.z)) * 0.5f;
-
-        int n = Physics.OverlapBoxNonAlloc(center, halfExtents, beltOverlapHits, box.transform.rotation, ~0, QueryTriggerInteraction.Ignore);
-        for (int i = 0; i < n; i++) {
-            var mover = beltOverlapHits[i].GetComponentInParent<ConveyorObjectMover>();
-            if (mover == null || !mover.IsOnBelt) continue;
-
-            Rigidbody itemRb = mover.Body;
-            if (itemRb == null) continue;
-
-            // RELATIVE contact speed: the item carries the belt's velocity, so a
-            // stationary arm parked across the path still counts as a hit
-            Vector3 relVel = velocity - mover.BeltVelocity;
-            float relSpeed = relVel.magnitude;
-            if (relSpeed < player.pushThreshold) continue;
-
-            // reduced mass: μ = m1*m2/(m1+m2)
-            float μ = player.robotMass * itemRb.mass / (player.robotMass + itemRb.mass);
-            Vector3 impulse = relVel.normalized * relSpeed * μ * player.armImpulseDampFactor;
-
-            Debug.Log($"[AHF] {name} knocked {mover.name} off the belt (impulse {impulse.magnitude:F3}, relSpeed={relSpeed:F2})");
-            mover.KnockOff(impulse, beltOverlapHits[i].ClosestPoint(center));
-        }
-    }
-
+    // On-belt items ride as DYNAMIC bodies (velocity servo in ConveyorObjectMover),
+    // so ordinary collision callbacks cover them too: a swing shoves them off the
+    // line, a parked arm is a physical blocker that jams the belt. The old overlap
+    // queries for kinematic riders are gone.
     void OnCollisionEnter(Collision other) {
         // audio/ vfx for hit
         // change to be based on what is being hit

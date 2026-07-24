@@ -51,13 +51,19 @@ MonoBehaviour:
   path: {fileID: 0}
   speed: 1
   loop: 0
-  initRotation: {x: -0.70710677, y: 0, z: 0, w: 0.70710677}
-  startOffset: 0
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
   exitForce: 5
+  snapDistance: 0.3
+  restSpeed: 0.35
+  resnapCooldown: 0.5
+  resnapCheckInterval: 0.2
+  snapHeightTolerance: 0.5
+  jamClearance: 0.005
+  jamBlockingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
   rb: {fileID: 2560228193846316941}
-  snapDistance: 0.1
 --- !u!54 &2560228193846316941
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -98,6 +104,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupActive: 0
+  gripSize: 0
+  gripOffset: {x: 0, y: 0, z: 0}
+  minImpactSpeed: 0.5
+  minImpactInterval: 0.1
 --- !u!65 &6130465966813341507
 BoxCollider:
   m_ObjectHideFlags: 0
