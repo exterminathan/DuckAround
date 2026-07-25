@@ -60,8 +60,10 @@ public class ConveyorSegmentVisual : MonoBehaviour {
         if (path == null) return; // path destroyed mid-play
 
         // offset adds post-tiling in the shader, so its period is exactly 1
-        // regardless of tiling — Repeat keeps scrollV drift-free forever
-        scrollV = Mathf.Repeat(scrollV + sign * path.Speed * uvPerMeter * Time.deltaTime, 1f);
+        // regardless of tiling — Repeat keeps scrollV drift-free forever.
+        // Subtract: a growing V offset moves the texture visually in -V, so the
+        // applied scroll is negated to make sign=+1 mean "with the travel direction".
+        scrollV = Mathf.Repeat(scrollV - sign * path.Speed * uvPerMeter * Time.deltaTime, 1f);
         beltMaterial.SetVector(BaseMapStId, new Vector4(baseST.x, baseST.y, baseST.z, baseST.w + scrollV));
     }
 
