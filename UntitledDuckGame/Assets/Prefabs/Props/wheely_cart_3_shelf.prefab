@@ -222,7 +222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_Name
-      value: wheely_cart
+      value: wheely_cart_3_shelf
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -314,7 +314,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupActive: 0
   gripSize: 0
-  gripOffset: {x: 0, y: 0, z: 0}
+  gripPoint: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!114 &1823938925883224

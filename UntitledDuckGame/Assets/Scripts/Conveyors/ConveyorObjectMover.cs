@@ -269,31 +269,6 @@ public class ConveyorObjectMover : MonoBehaviour
     #endregion
 
     #region Helpers
-    private float FindClosestSAlongPath(ConveyorPath p, Vector3 worldPos)
-    {
-        float L = p.TotalLength;
-        int N = Mathf.Max(64, Mathf.CeilToInt(L * 8f));
-        float bestS = 0f;
-        float bestD2 = float.PositiveInfinity;
-        for (int i = 0; i <= N; i++)
-        {
-            float si = (L * i) / N;
-            Vector3 pi = p.PositionAtDistance(si);
-            float d2 = (pi - worldPos).sqrMagnitude;
-            if (d2 < bestD2) { bestD2 = d2; bestS = si; }
-        }
-        float window = Mathf.Max(0.25f, L / N * 4f);
-        int R = 24;
-        for (int i = 0; i <= R; i++)
-        {
-            float si = Mathf.Clamp(bestS - window * 0.5f + window * (i / (float)R), 0f, L);
-            Vector3 pi = p.PositionAtDistance(si);
-            float d2 = (pi - worldPos).sqrMagnitude;
-            if (d2 < bestD2) { bestD2 = d2; bestS = si; }
-        }
-        return bestS;
-    }
-
     // Scans every enabled belt (ConveyorPath.All) for one this item could ride at its
     // current position: within the given horizontal radius of the spine, within height
     // tolerance, under the belt's mass limit, and not at a non-loop end. Nearest wins.
@@ -310,7 +285,7 @@ public class ConveyorObjectMover : MonoBehaviour
             if (p == null || p.TotalLength <= 1e-4f) continue;
             if (rb != null && p.MaxItemMass > 0f && rb.mass > p.MaxItemMass) continue;
 
-            float sC = FindClosestSAlongPath(p, transform.position);
+            float sC = p.FindClosestS(transform.position);
 
             // a non-loop capture at the very end would re-fling instantly, forever
             if (!p.Loop && sC >= p.TotalLength - 0.05f) continue;

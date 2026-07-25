@@ -212,7 +212,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupActive: 0
   gripSize: 0
-  gripOffset: {x: 0, y: 0, z: 0}
+  gripPoint: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!114 &5068718024798114754

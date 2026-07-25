@@ -26,6 +26,9 @@ public class ConveyorPath : MonoBehaviour {
     #endregion
 
     [Header("Conveyor Path Settings")]
+    [Tooltip("Auto-build the node list from ConveyorNodes found in children (hierarchy order). Drop segment prefabs under this object in travel order — straights carry 1 node, corners 2 — and the path assembles itself. Loop paths close back to the first node automatically. Off: the hand-wired list below is used as-is.")]
+    [SerializeField] private bool autoCollectNodes = false;
+    [Tooltip("Ignored when Auto Collect Nodes is on (the list is overwritten from children).")]
     [SerializeField] private List<ConveyorNode> nodes = new();
     [SerializeField] private int lineSubdiv = 8;
     [SerializeField] private int cornerSubdiv = 8;
@@ -70,6 +73,15 @@ public class ConveyorPath : MonoBehaviour {
         cornerCenters.Clear();
         segments.Clear();
         totalLength = 0f;
+
+        if (autoCollectNodes) {
+            // hierarchy (depth-first) order = travel order: segments are ordered as
+            // siblings, and each segment prefab keeps its own nodes in entry->exit order
+            GetComponentsInChildren(nodes);
+            // same closure convention as hand-wired loops: first node repeated at the
+            // end, so the last->first pair becomes an ordinary segment
+            if (loop && nodes.Count >= 2) nodes.Add(nodes[0]);
+        }
 
         if (nodes == null || nodes.Count < 2)
             return;
@@ -222,6 +234,32 @@ public class ConveyorPath : MonoBehaviour {
         var last = segments[^1];
         return last.GetPoint(1f);
     }
+
+    // Closest track distance s to a world position: coarse scan (>=64 samples, ~8/meter)
+    // then a refined pass over a window around the best coarse hit. Used by movers for
+    // capture and by segment visuals to derive scroll direction.
+    public float FindClosestS(Vector3 worldPos) {
+        if (totalLength <= 1e-4f || segments.Count == 0) return 0f;
+        float L = totalLength;
+        int N = Mathf.Max(64, Mathf.CeilToInt(L * 8f));
+        float bestS = 0f;
+        float bestD2 = float.PositiveInfinity;
+        for (int i = 0; i <= N; i++) {
+            float si = (L * i) / N;
+            Vector3 pi = PositionAtDistance(si);
+            float d2 = (pi - worldPos).sqrMagnitude;
+            if (d2 < bestD2) { bestD2 = d2; bestS = si; }
+        }
+        float window = Mathf.Max(0.25f, L / N * 4f);
+        int R = 24;
+        for (int i = 0; i <= R; i++) {
+            float si = Mathf.Clamp(bestS - window * 0.5f + window * (i / (float)R), 0f, L);
+            Vector3 pi = PositionAtDistance(si);
+            float d2 = (pi - worldPos).sqrMagnitude;
+            if (d2 < bestD2) { bestD2 = d2; bestS = si; }
+        }
+        return bestS;
+    }
     #endregion
 
     // Registry + rebuild run at runtime too (a build never fires the editor-only
@@ -249,7 +287,10 @@ public class ConveyorPath : MonoBehaviour {
 #if UNITY_EDITOR
 
     private void HandleNodeMovedOrChanged(ConveyorNode n) {
-        if (nodes != null && nodes.Contains(n)) {
+        // auto-collect: a just-added child node isn't in the list yet — IsChildOf
+        // catches it so newly dropped segment prefabs rebuild the path immediately
+        if ((nodes != null && nodes.Contains(n))
+            || (autoCollectNodes && n != null && n.transform.IsChildOf(transform))) {
             Rebuild();
         }
     }

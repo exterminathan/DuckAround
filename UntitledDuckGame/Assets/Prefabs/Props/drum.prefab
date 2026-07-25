@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10.786629
+      value: 21.022247
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.8592086
+      value: 0.015000105
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.735612
+      value: -14.173885
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 98dd5b0b7d6e7914f978f065aaddc2ec, type: 3}
       propertyPath: m_LocalRotation.w
@@ -146,7 +146,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupActive: 0
   gripSize: 0
-  gripOffset: {x: 0, y: 0, z: 0}
+  gripPoint: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!114 &5483417705042895145
@@ -162,15 +163,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 0}
-  speed: 1
-  loop: 1
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
-  exitForce: 3
   snapDistance: 0.1
   restSpeed: 0.35
   resnapCooldown: 0.5
   resnapCheckInterval: 0.2
   snapHeightTolerance: 0.5
   restAngularSpeed: 1
+  tiltSettleDegPerSec: 240
+  rideHeightSettleSpeed: 4
   rb: {fileID: 3472595596387170793}

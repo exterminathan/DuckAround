@@ -182,15 +182,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.8629999
+      value: 21.966194
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.035999987
+      value: 0.015000105
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -6.321
+      value: -13.941809
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_LocalRotation.w
@@ -222,7 +222,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_Name
-      value: wheely_cart 1
+      value: wheely_cart_2_shelf
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 6002233af89948f4c8b2197dbefcb9f9, type: 3}
       propertyPath: m_Layer
@@ -323,7 +323,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickupActive: 0
   gripSize: 0
-  gripOffset: {x: 0, y: 0, z: 0}
+  gripPoint: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!114 &1498984646408205423
@@ -339,17 +340,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   path: {fileID: 0}
-  speed: 1
-  loop: 1
   tangentHalfWindow: 0.25
   maxTurnRateDegPerSec: 720
-  exitForce: 3
   snapDistance: 0.1
   restSpeed: 0.35
   resnapCooldown: 0.5
   resnapCheckInterval: 0.2
   snapHeightTolerance: 0.5
   restAngularSpeed: 1
+  tiltSettleDegPerSec: 240
+  rideHeightSettleSpeed: 4
   rb: {fileID: 8254435182231246966}
 --- !u!4 &3322728237205180536 stripped
 Transform:
