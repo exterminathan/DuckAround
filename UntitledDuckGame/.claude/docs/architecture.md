@@ -65,6 +65,7 @@ detail, see the system docs ([player](player.md), [worker-ai](worker-ai.md), [al
 | Player/Worker → Audio | `AudioAgent.Play("ragdoll" / "playerHitWorker")` → `AudioManager.Get(key)` → matching `StudioEventEmitter` | Keys are mapped in `AudioManager.Awake`. |
 | Interactable ↔ Player | `IInteractable` (`Pickup` / `Operate`) brokered by `IsometricRaycaster` hold state | `CursorController` initiates; raycaster routes drag/hold lifecycle. |
 | Conveyor ↔ Pickup | `PickupInteractable.pickupActive` gates the mover (belt fully yields while held); `DetachForPickup()` on grab; free items re-snap to any belt after settling | Carry is owned by `HeldItemController` (post-IK follow at `playerHoldSlot`, **no reparenting**); release flings with the sampled arm velocity. |
+| Player carry → Worker | `WorkerPickupInteractable` (runtime-added to the pelvis) writes `"IsHeld"` / `"CollisionStartTime"` via `SetStateAtValue`; `RagdollChecks` gate the BT recovery branch | A downed worker rides `HeldItemController`'s **dangling** joint-carry path (`DanglingCarry` on the `PickupInteractable` base); `OnFlung` launches the other bones and restarts the recovery timer. |
 
 ## Key design choices to respect
 

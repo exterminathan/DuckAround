@@ -1,0 +1,512 @@
+/* TuningHubWindow.uss — Tuning Hub styling.
+   Structural colors come from Unity's built-in theme variables so light/dark skins
+   resolve automatically; custom accents are gated behind .dark / .light classes
+   stamped on the root. UI Toolkit has no box-shadow — depth comes from 1px borders
+   plus a lighter header fill. */
+
+.th-root {
+	flex-grow: 1;
+}
+
+.th-shell {
+	flex-direction: row;
+	flex-grow: 1;
+}
+
+/* ------------------------------------------------------------------ sidebar */
+
+.th-sidebar {
+	width: 188px;
+	flex-shrink: 0;
+	border-right-width: 1px;
+	border-right-color: var(--unity-colors-default-border);
+	background-color: var(--unity-colors-toolbar-background);
+}
+
+.th-sidebar-title {
+	font-size: 10px;
+	letter-spacing: 2px;
+	-unity-font-style: bold;
+	opacity: 0.55;
+	margin: 10px 10px 6px 10px;
+}
+
+.th-mode-switch {
+	flex-direction: row;
+	margin: 2px 8px 8px 8px;
+}
+
+.th-mode-btn {
+	flex-grow: 1;
+	margin: 0;
+	padding: 3px 0;
+	font-size: 10px;
+	border-radius: 0;
+	background-color: transparent;
+	border-color: var(--unity-colors-default-border);
+}
+
+.th-mode-btn.is-selected {
+	background-color: var(--unity-colors-highlight-background);
+	color: var(--unity-colors-highlight-text-inactive);
+	-unity-font-style: bold;
+}
+
+.dark .th-mode-btn.is-selected { color: #ffffff; }
+.light .th-mode-btn.is-selected { color: #ffffff; }
+
+.th-nav {
+	flex-grow: 1;
+}
+
+.th-nav-item {
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	margin: 0;
+	padding: 5px 10px 5px 8px;
+	border-radius: 0;
+	border-width: 0;
+	border-left-width: 2px;
+	border-left-color: rgba(0, 0, 0, 0);
+	background-color: transparent;
+	transition-property: background-color;
+	transition-duration: 0.08s;
+}
+
+.th-nav-item:hover {
+	background-color: rgba(128, 128, 128, 0.12);
+}
+
+.th-nav-item.is-selected {
+	border-left-color: var(--unity-colors-highlight-background);
+	background-color: rgba(128, 128, 128, 0.14);
+}
+
+.th-nav-label {
+	font-size: 12px;
+}
+
+.th-nav-item.is-selected .th-nav-label {
+	-unity-font-style: bold;
+}
+
+.th-nav-count {
+	font-size: 10px;
+	opacity: 0.45;
+}
+
+.th-sidebar-footer {
+	border-top-width: 1px;
+	border-top-color: var(--unity-colors-default-border);
+	padding: 8px 10px;
+}
+
+.th-legend-row {
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 2px;
+}
+
+.th-legend-label {
+	font-size: 9px;
+	opacity: 0.6;
+}
+
+.th-snapshot-pill {
+	margin: 6px 0 0 0;
+	padding: 2px 6px;
+	font-size: 9px;
+	border-radius: 8px;
+	background-color: transparent;
+	border-color: var(--unity-colors-default-border);
+	opacity: 0.7;
+}
+
+.th-snapshot-pill.is-active {
+	opacity: 1;
+	-unity-font-style: bold;
+}
+
+.dark .th-snapshot-pill.is-active { color: #6bc46d; border-color: #6bc46d; }
+.light .th-snapshot-pill.is-active { color: #2e7d32; border-color: #2e7d32; }
+
+/* --------------------------------------------------------------------- main */
+
+.th-main {
+	flex-grow: 1;
+}
+
+.th-toolbar {
+	flex-shrink: 0;
+}
+
+.th-search {
+	flex-grow: 1;
+	max-width: 320px;
+	margin: 1px 4px;
+}
+
+.th-banner {
+	padding: 4px 10px;
+	font-size: 11px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--unity-colors-default-border);
+}
+
+.dark .th-banner { background-color: rgba(227, 179, 65, 0.12); color: #e3b341; }
+.light .th-banner { background-color: rgba(156, 111, 0, 0.10); color: #9c6f00; }
+
+.th-context {
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
+	padding: 5px 10px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--unity-colors-default-border);
+}
+
+.th-context-name {
+	-unity-font-style: bold;
+	font-size: 12px;
+	margin-right: 6px;
+}
+
+.th-context-chip {
+	font-size: 9px;
+	padding: 1px 6px;
+	margin: 1px 2px;
+	border-radius: 8px;
+	border-width: 1px;
+	border-color: var(--unity-colors-default-border);
+	opacity: 0.75;
+}
+
+.th-content {
+	flex-grow: 1;
+	padding: 8px;
+}
+
+/* -------------------------------------------------------------------- cards */
+
+.th-card {
+	border-radius: 6px;
+	border-width: 1px;
+	border-color: var(--unity-colors-default-border);
+	background-color: var(--unity-colors-window-background);
+	margin-bottom: 8px;
+	overflow: hidden;
+}
+
+.th-card-header {
+	flex-direction: row;
+	align-items: center;
+	padding: 5px 10px;
+	border-bottom-width: 1px;
+	border-bottom-color: var(--unity-colors-default-border);
+	background-color: rgba(128, 128, 128, 0.07);
+}
+
+.th-card-header:hover {
+	background-color: rgba(128, 128, 128, 0.12);
+}
+
+.th-card-arrow {
+	width: 0;
+	height: 0;
+	border-left-width: 4px;
+	border-right-width: 4px;
+	border-top-width: 5px;
+	border-left-color: rgba(0, 0, 0, 0);
+	border-right-color: rgba(0, 0, 0, 0);
+	border-top-color: var(--unity-colors-label-text);
+	margin-right: 7px;
+	opacity: 0.6;
+}
+
+.th-card-arrow.is-collapsed {
+	rotate: -90deg;
+}
+
+.th-card-title {
+	-unity-font-style: bold;
+	font-size: 12px;
+}
+
+.th-card-pill {
+	margin-left: 8px;
+	font-size: 9px;
+	opacity: 0.55;
+}
+
+.th-card-warn {
+	margin-left: auto;
+	font-size: 9px;
+	color: var(--unity-colors-warning-text);
+}
+
+.th-card-body {
+	padding: 3px 0;
+}
+
+/* --------------------------------------------------------------------- rows */
+
+.th-row {
+	flex-direction: row;
+	align-items: center;
+	min-height: 22px;
+	padding: 1px 10px 1px 6px;
+	transition-property: background-color;
+	transition-duration: 0.08s;
+}
+
+.th-row:hover {
+	background-color: rgba(128, 128, 128, 0.10);
+}
+
+.th-row--alt {
+	background-color: rgba(128, 128, 128, 0.045);
+}
+
+.th-row--dead {
+	opacity: 0.45;
+}
+
+.th-dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 4px;
+	margin-right: 6px;
+	flex-shrink: 0;
+	background-color: rgba(0, 0, 0, 0);
+}
+
+.dark .th-dot.is-snapshot { background-color: #6bc46d; }
+.dark .th-dot.is-session { background-color: #e3b341; }
+.dark .th-dot.is-override { background-color: #7cacf8; }
+.light .th-dot.is-snapshot { background-color: #2e7d32; }
+.light .th-dot.is-session { background-color: #9c6f00; }
+.light .th-dot.is-override { background-color: #1a73e8; }
+
+.th-label {
+	flex-basis: 36%;
+	flex-shrink: 0;
+	overflow: hidden;
+	font-size: 11px;
+	-unity-text-align: middle-left;
+}
+
+.th-control {
+	flex-grow: 1;
+	margin: 0;
+}
+
+.th-control .unity-base-field {
+	margin: 0;
+}
+
+.th-control .unity-base-field__label {
+	min-width: 0;
+}
+
+.th-control .unity-base-slider__text-field {
+	min-width: 48px;
+	max-width: 60px;
+}
+
+.th-unit {
+	margin-left: 5px;
+	font-size: 9px;
+	opacity: 0.5;
+	flex-shrink: 0;
+	min-width: 22px;
+}
+
+.th-badge {
+	margin-left: 6px;
+	padding: 0 6px;
+	border-radius: 7px;
+	font-size: 8px;
+	flex-shrink: 0;
+	border-width: 1px;
+}
+
+.dark .th-badge.is-auto { color: #6bc46d; border-color: rgba(107, 196, 109, 0.5); }
+.dark .th-badge.is-warn { color: #e3b341; border-color: rgba(227, 179, 65, 0.5); }
+.dark .th-badge.is-hard { color: #f28b82; border-color: rgba(242, 139, 130, 0.5); }
+.dark .th-badge.is-edit { color: #9aa0a6; border-color: rgba(154, 160, 166, 0.5); }
+.light .th-badge.is-auto { color: #2e7d32; border-color: rgba(46, 125, 50, 0.5); }
+.light .th-badge.is-warn { color: #9c6f00; border-color: rgba(156, 111, 0, 0.5); }
+.light .th-badge.is-hard { color: #c5221f; border-color: rgba(197, 34, 31, 0.5); }
+.light .th-badge.is-edit { color: #5f6368; border-color: rgba(95, 99, 104, 0.5); }
+
+.th-scope {
+	margin-left: 6px;
+	padding: 1px 7px;
+	font-size: 8px;
+	border-radius: 8px;
+	flex-shrink: 0;
+	background-color: transparent;
+	border-width: 1px;
+	border-color: var(--unity-colors-default-border);
+	opacity: 0.7;
+}
+
+.th-scope:hover {
+	opacity: 1;
+}
+
+.th-scope.is-scoped {
+	opacity: 1;
+	-unity-font-style: bold;
+}
+
+.dark .th-scope.is-scoped { color: #7cacf8; border-color: #7cacf8; }
+.light .th-scope.is-scoped { color: #1a73e8; border-color: #1a73e8; }
+
+.th-note {
+	font-size: 10px;
+	opacity: 0.6;
+	padding: 3px 10px;
+	white-space: normal;
+}
+
+.th-missing {
+	font-size: 10px;
+	color: var(--unity-colors-warning-text);
+	padding: 2px 10px;
+}
+
+.th-subheader {
+	-unity-font-style: bold;
+	font-size: 10px;
+	opacity: 0.7;
+	padding: 6px 10px 1px 10px;
+}
+
+.th-empty {
+	padding: 28px 16px;
+	opacity: 0.55;
+	-unity-text-align: middle-center;
+	white-space: normal;
+}
+
+/* ------------------------------------------------------------ review window */
+
+.th-review-summary {
+	padding: 8px 10px;
+	font-size: 11px;
+	opacity: 0.8;
+	white-space: normal;
+}
+
+.th-review-row {
+	flex-direction: row;
+	align-items: center;
+	padding: 0 8px;
+}
+
+.th-review-target {
+	flex-basis: 32%;
+	flex-shrink: 0;
+	overflow: hidden;
+	font-size: 11px;
+}
+
+.th-review-field {
+	flex-basis: 26%;
+	flex-shrink: 0;
+	overflow: hidden;
+	font-size: 10px;
+	opacity: 0.7;
+}
+
+.th-review-change {
+	flex-grow: 1;
+	font-size: 11px;
+}
+
+.th-review-status {
+	font-size: 9px;
+	opacity: 0.7;
+	flex-shrink: 0;
+}
+
+.th-review-buttons {
+	flex-direction: row;
+	justify-content: flex-end;
+	padding: 8px;
+	border-top-width: 1px;
+	border-top-color: var(--unity-colors-default-border);
+}
+
+.th-review-buttons > .unity-button {
+	margin-left: 6px;
+	padding: 3px 12px;
+}
+
+/* ------------------------------------------------------------- UI scale tiers
+   Options ▸ UI Scale. Compact = the base sizes above; Medium (default) and Large
+   bump every font size plus the dimensions that must grow with them (row heights,
+   dots, badges, control text). UI Toolkit has no em/rem units, so scaling is
+   explicit per-class overrides. */
+
+.th-scale-md .th-sidebar { width: 205px; }
+.th-scale-md .th-sidebar-title { font-size: 11px; }
+.th-scale-md .th-mode-btn { font-size: 11px; }
+.th-scale-md .th-nav-label { font-size: 13px; }
+.th-scale-md .th-nav-count { font-size: 11px; }
+.th-scale-md .th-legend-label { font-size: 10px; }
+.th-scale-md .th-snapshot-pill { font-size: 10px; }
+.th-scale-md .th-banner { font-size: 12px; }
+.th-scale-md .th-context-name { font-size: 13px; }
+.th-scale-md .th-context-chip { font-size: 10px; }
+.th-scale-md .th-card-title { font-size: 13px; }
+.th-scale-md .th-card-pill { font-size: 10px; }
+.th-scale-md .th-card-warn { font-size: 10px; }
+.th-scale-md .th-row { min-height: 25px; }
+.th-scale-md .th-dot { width: 8px; height: 8px; }
+.th-scale-md .th-label { font-size: 12px; }
+.th-scale-md .th-unit { font-size: 10px; min-width: 26px; }
+.th-scale-md .th-badge { font-size: 9px; }
+.th-scale-md .th-scope { font-size: 9px; }
+.th-scale-md .th-note { font-size: 11px; }
+.th-scale-md .th-missing { font-size: 11px; }
+.th-scale-md .th-subheader { font-size: 11px; }
+.th-scale-md .th-control .unity-base-field { font-size: 12px; }
+.th-scale-md .th-control .unity-base-slider__text-field { min-width: 52px; max-width: 66px; }
+.th-scale-md .th-review-summary { font-size: 12px; }
+.th-scale-md .th-review-target { font-size: 12px; }
+.th-scale-md .th-review-field { font-size: 11px; }
+.th-scale-md .th-review-change { font-size: 12px; }
+.th-scale-md .th-review-status { font-size: 10px; }
+
+.th-scale-lg .th-sidebar { width: 225px; }
+.th-scale-lg .th-sidebar-title { font-size: 12px; }
+.th-scale-lg .th-mode-btn { font-size: 12px; }
+.th-scale-lg .th-nav-label { font-size: 14px; }
+.th-scale-lg .th-nav-count { font-size: 12px; }
+.th-scale-lg .th-legend-label { font-size: 11px; }
+.th-scale-lg .th-snapshot-pill { font-size: 11px; }
+.th-scale-lg .th-banner { font-size: 13px; }
+.th-scale-lg .th-context-name { font-size: 14px; }
+.th-scale-lg .th-context-chip { font-size: 11px; }
+.th-scale-lg .th-card-title { font-size: 14px; }
+.th-scale-lg .th-card-pill { font-size: 11px; }
+.th-scale-lg .th-card-warn { font-size: 11px; }
+.th-scale-lg .th-row { min-height: 28px; }
+.th-scale-lg .th-dot { width: 9px; height: 9px; }
+.th-scale-lg .th-label { font-size: 13px; flex-basis: 34%; }
+.th-scale-lg .th-unit { font-size: 11px; min-width: 30px; }
+.th-scale-lg .th-badge { font-size: 10px; }
+.th-scale-lg .th-scope { font-size: 10px; }
+.th-scale-lg .th-note { font-size: 12px; }
+.th-scale-lg .th-missing { font-size: 12px; }
+.th-scale-lg .th-subheader { font-size: 12px; }
+.th-scale-lg .th-control .unity-base-field { font-size: 13px; }
+.th-scale-lg .th-control .unity-base-slider__text-field { min-width: 58px; max-width: 74px; }
+.th-scale-lg .th-review-summary { font-size: 13px; }
+.th-scale-lg .th-review-target { font-size: 13px; }
+.th-scale-lg .th-review-field { font-size: 12px; }
+.th-scale-lg .th-review-change { font-size: 13px; }
+.th-scale-lg .th-review-status { font-size: 11px; }

@@ -1,8 +1,8 @@
 # Player — QuackBot, the arm/IK, and interaction
 
 Scripts: `Assets/Scripts/Player Scripts/` (+ `Assets/Scripts/UI/CursorController.cs`).
-Prefabs: `quackbot_dev.prefab`, `quackbot_three.prefab` (model: `Models/quackbot.fbx`,
-`Models/cratebot.fbx`).
+Prefabs: `Prefabs/Player/quackbot_dev.prefab`, `Prefabs/Player/quackbot_three.prefab`
+(model: `Models/quackbot.fbx`, `Models/cratebot.fbx`).
 
 > **Current tuning values** (from the Demo-scene player prefab) are captured in
 > [player-inspector-values.md](player-inspector-values.md).
@@ -104,11 +104,32 @@ debug lines/spheres. The live IK is still applied by Unity's `TwoBoneIKConstrain
 
 **Interaction lifecycle:**
 - `BeginHold(hit, player)` — looks up `IInteractable` on the hit collider. `Operate` → `HoldMode.Interact`
-  (sets `isInteracting`, rotates arm toward target, snaps IK to hit point, calls `OnHoldStart`).
-  `Pickup` → `HoldMode.Pickup` (calls `OnHoldStart`). Fallback by `Interactive` tag if no component.
+  (sets `isInteracting`, calls `OnHoldStart`). `Pickup` → `HoldMode.Pickup` (calls `OnHoldStart`).
+  Fallback by `Interactive` tag if no component.
 - `HandleHoldInteraction()` (while `Interact`) — re-raycasts the held collider and forwards
   `OnHoldDrag(hit, mouseDelta)`.
 - `EndHold(player)` — calls `OnHoldEnd`, restores pre-hold rotation/IK for `Interact`, clears state.
+
+**Operate arm-aim API** *(2026-07-25 rework — built for the lever, usable by any `Operate`
+interactable)*. Core rule: **during an Operate hold the body yaw is never turned by default** —
+the Main Camera is a *child* of the duck body, so a body turn swings the whole isometric view.
+Instead the **arm pivot** does the aiming:
+- `SolvePivotYaw(worldAimDir)` *(private)* — finds the local pivot yaw that points the arm along a
+  world direction. The pivot-yaw→world-yaw gain is **probed live** from the hierarchy (nudge the
+  pivot 10°, measure via `MeasureArmReachDirection()`, restore) rather than assumed 1:1.
+- `CanArmAim(worldAimDir)` — true if the aim fits inside the pivot clamps (`min/maxPivotAngle`);
+  lets an interactable pick which side of a target to approach from.
+- `SetInteractArmAim(worldAimDir)` / `IsInteractArmAimSettled` — aim the arm for the rest of the
+  hold; eased each frame (`UpdateInteractArmAim`, same exponential ease as `HandleRotation`, scaled
+  by `ArmSpeedMultiplier`), so no snap.
+- `ComputeArmAlignedStand(target, approach, distance, out standPos)` — where the **body** must
+  stand so the arm (offset to the pivot, not the body origin) lines up with a target from
+  `distance` away along `approach`.
+- `SetArmTargetWorld(pos)` / `ArmTargetWorld` — drive/read the IK target in world space (the lever
+  hand-ride uses this every drag frame).
+- `SetInteractFacingYaw(yaw)` / `IsBodyFacingSettled` — opt-in escape hatch for an interactable
+  that genuinely wants a body turn; locks `UpdateBodyFacing`'s per-frame re-aim (which otherwise
+  made the body spin when standing right next to a target).
 
 Key refs: `mainCamera`, `playerDuckController`, `ik_target`, `bone_point`, `rotate_pivot`,
 `tbikc` (TwoBoneIKConstraint), `armObjects[]`, `playerHoldSlot` (the bill-tip anchor a held item
@@ -125,10 +146,22 @@ player's arm/body only (item colliders stay **live** — a carried item is a wea
 layers to `heldItemLayer` (a `LayerMask` — tick exactly one; default **Interactable**, must stay
 out of the arm sweep masks), makes the rigidbody kinematic (gravity + interpolation off), tweens it
 into the bill over `transitDuration` (0.15 s), then **hard-follows `playerHoldSlot` every
-`LateUpdate`, post-IK**. The item is never reparented. Mouth gape scales with item size via
-`OpenMouthTo`. `HeldItemHitForwarder` (added at grab, destroyed at release) mirrors
-`ArmHitForwarder` for the carried item: ragdolls workers, shoves props with the item's tracked
-velocity (same reduced-mass μ).
+`LateUpdate`, post-IK** (slot rotation × the item's `gripRotation`, position offset by
+`gripOffset`). The item is never reparented. Mouth gape scales with item size via `OpenMouthTo`.
+`HeldItemHitForwarder` (added at grab, destroyed at release) mirrors `ArmHitForwarder` for the
+carried item: ragdolls workers, shoves props with the item's tracked velocity (same reduced-mass μ).
+
+**Dangling carry** *(2026-07-25 — the ragdolled-worker path; any item whose `DanglingCarry` is
+true)* — the grabbed rigidbody stays **dynamic** and hangs from a reusable kinematic proxy
+(`CarryAnchor`) via a joint, so the rest of its joint chain keeps simulating (limbs flail).
+Driving the pelvis transform directly would rigidly drag the whole bone hierarchy and freeze the
+dangle. `DanglingRotationSpring <= 0` → `FixedJoint` (rigid bite); `> 0` → `ConfigurableJoint`
+with position locked and slerp-driven rotation (spring/damper from the item), so the body sags and
+swings before being pulled back to the grip pose (`gripRotation` is baked into the joint's
+creation-time offset — the anchor itself just tracks the slot). Transit + `LateUpdate` follow
+drive the **anchor**, not the body. Encumbrance and fling falloff use `item.CarryMass` (whole-body
+mass for a ragdoll), and every release path calls `item.OnFlung(flingVelocity)` right after the
+fling velocity hits the main body — multi-body items launch their other rigidbodies there.
 
 **Fling on release** — while `Held`, the item's world position is ring-buffered per frame (it rides
 the bill, so the buffer naturally combines arm height + body yaw + WASD motion). `Release()` (the
@@ -142,7 +175,7 @@ single exit for mouse-up, sticky-click and quack) averages the hand velocity ove
 - clamped to `maxFlingSpeed` (15), plus end-over-end tumble (`flingTumbleFactor`, rad/s per m/s).
 A 0.3 s `armIgnoreSeconds` grace stops the arm punching the item on the way out.
 
-**Encumbrance** — at grab, item mass maps to t ∈ [`encumberLightMass` (1) → `maxCarryMass`]; two
+**Encumbrance** — at grab, item mass (`CarryMass`) maps to t ∈ [`encumberLightMass` (1) → `maxCarryMass`]; two
 **runtime** (non-serialized) multipliers ease toward per-channel floors:
 `PlayerDuckController.CarrySpeedMultiplier` (WASD; floor `minCarryMoveMobility` 0.8) and
 `IsometricRaycaster.ArmSpeedMultiplier` (yaw + vertical ease; floor `minCarryArmMobility` 0.8).

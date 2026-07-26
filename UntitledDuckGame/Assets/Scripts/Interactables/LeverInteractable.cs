@@ -13,11 +13,11 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
     [Header("Drag Mapping")]
     [Tooltip("Push the cursor UP to drive the lever instead of down.")]
     [SerializeField] private bool invertDrag = false;
-    [Tooltip("Full stroke = dragging from wherever the cursor was when you grabbed, out to the edge " +
-             "of the screen. Off = the fixed pixel travel below.")]
-    [SerializeField] private bool useScreenEdgeTravel = true;
-    [Tooltip("Pixels of cursor travel for a full stroke when 'useScreenEdgeTravel' is off.")]
-    [SerializeField] private float customRangePixels = 400f;
+    [Tooltip("Cursor travel for a full stroke, as a fraction of screen height, measured down from " +
+             "wherever the cursor was when you grabbed. 0.4 = drag down through 40% of the screen " +
+             "to throw the lever end to end. Resolution-independent.")]
+    [Range(0.05f, 1f)]
+    [SerializeField] private float travelScreenFraction = 0.4f;
 
     [Header("Player Snap")]
     [Tooltip("World units between the duck's arm pivot and the lever pivot once snapped in. " +
@@ -92,8 +92,7 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
         minAngle = -45f;
         maxAngle = 45f;
         invertDrag = false;
-        useScreenEdgeTravel = true;
-        customRangePixels = 400f;
+        travelScreenFraction = 0.4f;
         distanceFromLever = 1f;
         rollSpeed = 9f;
         maxRollDuration = 0.5f;
@@ -306,26 +305,20 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
     // toward whichever end you're heading for. That's what stops it snapping to an absolute
     // screen position the instant it latches on.
     private float MapCursorToAngle() {
-        float screenH = Mathf.Max(1f, Screen.height);
-
         // Positive = dragged in the "pull" direction (down by default).
         float pull = invertDrag
             ? (Input.mousePosition.y - anchorMouseY)
             : (anchorMouseY - Input.mousePosition.y);
 
-        // Travel available either side of the anchor. The 100px floor keeps the lever usable when
-        // you grab it with the cursor already jammed against a screen edge.
-        float toPullEdge = invertDrag ? (screenH - anchorMouseY) : anchorMouseY;
-        float toPushEdge = invertDrag ? anchorMouseY : (screenH - anchorMouseY);
+        // A full stroke is always this many pixels of travel from the anchor, whichever way you
+        // drag - it no longer depends on where on the screen you happened to grab.
+        float span = Mathf.Max(1f, Screen.height * travelScreenFraction);
 
-        float pullSpan = useScreenEdgeTravel ? Mathf.Max(100f, toPullEdge) : Mathf.Max(1f, customRangePixels);
-        float pushSpan = useScreenEdgeTravel ? Mathf.Max(100f, toPushEdge) : Mathf.Max(1f, customRangePixels);
-
-        // Each side is scaled by the stroke actually left in that direction, so the far end lands
-        // exactly at the screen edge (or exactly customRangePixels out) no matter where you grabbed.
+        // Scaled by the stroke actually left in that direction, so a lever grabbed part-way
+        // through still takes the full span to reach its end stop.
         float t = (pull >= 0f)
-            ? anchorProgress + (1f - anchorProgress) * Mathf.Clamp01(pull / pullSpan)
-            : anchorProgress - anchorProgress * Mathf.Clamp01(-pull / pushSpan);
+            ? anchorProgress + (1f - anchorProgress) * Mathf.Clamp01(pull / span)
+            : anchorProgress - anchorProgress * Mathf.Clamp01(-pull / span);
 
         return Mathf.Lerp(minAngle, maxAngle, Mathf.Clamp01(t));
     }

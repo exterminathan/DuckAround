@@ -1,6 +1,6 @@
 # Status & Roadmap — what works vs. what's planned
 
-Snapshot of mechanic status on the **demo branch** (as of 2026-07-24). Confirmed with the developer.
+Snapshot of mechanic status on the **demo branch** (as of 2026-07-25). Confirmed with the developer.
 Check here before building on a mechanic — several described features are **not wired up yet**.
 
 ## ✅ Working / functional
@@ -16,7 +16,12 @@ Check here before building on a mechanic — several described features are **no
 - **Conveyors** — path building (straight + corner), **physical belt riding** (on-belt items are
   dynamic bodies driven by a FixedUpdate velocity servo), ride-pose capture, any-belt re-snap
   (runtime registry, no pre-wiring), belt-owned settings (`speed`/`loop`/`exitForce`/`beltWidth`/
-  `maxItemMass`), end-of-belt fling, belt UV scroll. *(Reworked 2026-07.)*
+  `maxItemMass`), end-of-belt fling. *(Reworked 2026-07.)*
+- **Conveyor auto-assemble + tooling** *(2026-07-25)* — `autoCollectNodes`: drop segment prefabs
+  (`Prefabs/Map Features/conveyor_straight|corner|end`) under a `ConveyorPath` in hierarchy order
+  and the path builds itself; per-segment UV scroll via `ConveyorSegmentVisual` (auto-signed from
+  the path tangent; supersedes `ConveyorManager`); one-click **Reverse Path Direction** inspector
+  button.
 - **Held-item carry** — `HeldItemController`: grab → transit tween → post-IK hard-follow at the
   bill slot (**no reparenting**); carried items keep live colliders (they shove props / ragdoll
   workers via `HeldItemHitForwarder`); clean belt hand-off both ways. *(Overhauled 2026-07-22/23.)*
@@ -25,6 +30,14 @@ Check here before building on a mechanic — several described features are **no
   see [player.md](player.md).)*
 - **Carry encumbrance** — heavier held items scale down duck move speed and arm ease rates
   (per-channel floors, master `enableEncumbrance` toggle). *(2026-07-24.)*
+- **Worker carry** *(2026-07-25)* — a ragdolled worker can be grabbed by the pelvis and carried
+  **dangling** from the bill (limbs keep flailing; spring-tunable bite), then flung like any item
+  (whole-body mass drives encumbrance/fling). BT guards keep it down while held, while the player
+  lingers close, or while still in flight. See [worker-ai.md](worker-ai.md) + [player.md](player.md).
+- **Lever grab/drag feel** *(2026-07-25)* — full interaction: duck rolls to an arm-aligned stand
+  spot, the arm (not the body/camera) squares up, anchor-relative cursor drag with
+  tightness/curve resistance, spring-back to rest on release. **The lever's value still drives
+  nothing** (see Planned). Being feel-tuned — the drag-mapping code is under active iteration.
 
 ## 🐞 Buggy / needs work
 - **Item grab loc/rot not fully working** — a grabbed item's position/orientation in the bill isn't
@@ -38,9 +51,10 @@ Check here before building on a mechanic — several described features are **no
   final tuning.
 
 ## 🚧 Planned / not yet wired
-- **Lever → alarm reset.** `LeverInteractable` rotates but connects to nothing. It should lower/
-  reset `GlobalAlarm` (which also has **no auto-decay** yet) and route through the general
-  `IInteractable` system the developer is building out.
+- **Lever → alarm reset.** `LeverInteractable` now has its full grab/drag interaction (see above)
+  but `GetNormalizedValue()` still connects to nothing. It should lower/reset `GlobalAlarm`
+  (which also has **no auto-decay** yet) and route through the general `IInteractable` system
+  the developer is building out.
 - **Object-based worker destruction.** Real "throw a prop to destroy/knock out a worker" is planned.
   The current `CubePropManager` (cube self-destructs when it touches a worker) is a **placeholder**.
 - **General interactable system** consolidation — levers and future operables should all go through
@@ -68,6 +82,7 @@ Check here before building on a mechanic — several described features are **no
 - `AudioAgent.PlayEvent` — no dynamic emitter fallback (TODO comment).
 - Verbose `Debug.Log` instrumentation throughout AI/physics — expected on the demo branch.
 - `WaypointAgent.cs` — **deprecated**; use `WorkerAIController` + BT instead.
+- `ConveyorManager.cs` — **superseded** by `ConveyorSegmentVisual` (2026-07-25); unreferenced.
 
 ## Working notes
 - Active branch is a **demo branch**; recent commits are demo tooling/checkpoints.

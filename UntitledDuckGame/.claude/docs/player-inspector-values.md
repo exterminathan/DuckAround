@@ -2,7 +2,7 @@
 
 Current serialized values for the player scripts, captured **2026-05-28**.
 
-**Source of truth:** In `Demo.unity` the player is an instance of **`Assets/Prefabs/quackbot_three.prefab`**
+**Source of truth:** In `Demo.unity` the player is an instance of **`Assets/Prefabs/Player/quackbot_three.prefab`**
 (prefab guid `461fa2cfff867d54d99d77cab50afda3`, PrefabInstance fileID `1513513973`). The scene has
 **no field overrides** on the player scripts, so the prefab values below are exactly what runs in Demo.
 If you change these in the prefab, every scene using it updates; to change just Demo, override on the

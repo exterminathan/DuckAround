@@ -39,16 +39,19 @@ keys off them directly (see `ArmHitForwarder`, `PlayerDuckController`, masks on 
 | `WorkerAlarmDemo.unity` | Testbed for alarm + detection tuning. |
 | `WorkerBTDemo.unity` | Testbed for behaviour-tree iteration. |
 
-## Prefabs (`Assets/Prefabs/`)
-- **Player:** `quackbot_dev.prefab`, `quackbot_three.prefab`
-- **Workers:** `WorkerBase_PREFAB.prefab`, `WorkerHelmet_PREFAB.prefab`, `lowpoly_ragdoll.prefab`
-- **Navigation:** `Waypoint.prefab`
-- **Conveyor:** `ConveyorNode.prefab`, `1unit.prefab`
-- **Props / world:** `drum.prefab`, `fan.prefab`, `floor.prefab`, `radio.prefab`, `radio_item.prefab`,
-  `strut_base.prefab`, `wheely_cart.prefab`, `wheely_cart 1.prefab`, `wooden_pallet.prefab`,
-  `Drop Cube.prefab`
-- **UI:** `UI/Player UI Canvas.prefab`, `UI/UI Manager.prefab`, `UI/WorkerStatPanel.prefab`
-- **VFX:** `VFX/MetalMetal Sparks Particles.prefab`
+## Prefabs (`Assets/Prefabs/`, re-organized into subfolders 2026-07-25)
+- **`Player/`:** `quackbot_dev.prefab`, `quackbot_three.prefab`
+- **`AI/`:** `WorkerBase_PREFAB.prefab`, `WorkerHelmet_PREFAB.prefab`, `lowpoly_ragdoll.prefab`,
+  `Waypoint.prefab`
+- **`Map Features/`:** `ConveyorNode.prefab` + the auto-assemble belt segments
+  `conveyor_straight.prefab`, `conveyor_corner.prefab`, `conveyor_end.prefab` (drop under a
+  `ConveyorPath` in travel order — see
+  [interactables-items-conveyors.md](interactables-items-conveyors.md))
+- **`Props/`:** `1unit.prefab`, `drum.prefab`, `fan.prefab`, `floor.prefab`, `radio.prefab`,
+  `radio_item.prefab`, `strut_base.prefab`, `wheely_cart_2_shelf.prefab`,
+  `wheely_cart_3_shelf.prefab`, `wooden_pallet.prefab`, `Drop Cube.prefab`
+- **`UI/`:** `Player UI Canvas.prefab`, `UI Manager.prefab`, `WorkerStatPanel.prefab`
+- **`VFX/`:** `MetalMetal Sparks Particles.prefab`
 
 ## Models (`Assets/Models/`, FBX)
 `quackbot.fbx`, `cratebot.fbx`, `lowpoly_withrig.fbx` (worker, rigged), `helmet.fbx`,
@@ -74,6 +77,7 @@ Player arm uses **Animation Rigging** (`TwoBoneIKConstraint`), not these clips.
 | `FindMissingScripts.cs` | Tools ▸ Find Missing Scripts in Assets | Find prefabs with missing script components. |
 | `HierarchyPrint.cs` | Tools ▸ Hierarchy Inspector | Dump a GameObject hierarchy + fields to `Assets/HierarchyDump.txt`. |
 | `ChildAlphabeticalSorter.cs` | Tools ▸ Child Alphabetical Sorter | Sort a transform's children alphabetically (numeric-suffix aware). |
+| `ConveyorPathEditor.cs` | *(inspector button on `ConveyorPath`)* | "Reverse Path Direction" — flip a belt's travel direction in place (undo-aware, multi-select). |
 
 ## Packages / tech (from `Packages/manifest.json`)
 - **Unity 6000.0.71f1** (Unity 6).

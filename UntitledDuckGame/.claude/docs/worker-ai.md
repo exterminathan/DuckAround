@@ -1,8 +1,9 @@
 # Worker AI — behaviour tree, patrol, detection, ragdoll
 
 Scripts: `Assets/Scripts/AI/`. Workers are the patrolling enemy robots.
-Prefabs: `WorkerBase_PREFAB.prefab`, `WorkerHelmet_PREFAB.prefab`, `lowpoly_ragdoll.prefab`
-(models: `lowpoly_withrig.fbx`, `helmet.fbx`). Animations: `Assets/Animations/Worker/`.
+Prefabs (in `Assets/Prefabs/AI/`): `WorkerBase_PREFAB.prefab`, `WorkerHelmet_PREFAB.prefab`,
+`lowpoly_ragdoll.prefab` (models: `lowpoly_withrig.fbx`, `helmet.fbx`).
+Animations: `Assets/Animations/Worker/`.
 
 ## Behaviour tree framework (`Behaviour Tree Scripts/`)
 
@@ -24,9 +25,10 @@ A small hand-rolled BT. **No external BT package.**
 ```
 WorkerBehaviour (Selector)
 ├─ CollisionHandler (Sequence)      ← CollisionBTBuilder.BuildCollisionSequence()
-│    HasCollision? → SetIdle → HandleCollision → ResetPlayerUponRagdoll → EnterRagdoll
+│    HasCollision? → NOT IsHeld? → SetIdle → HandleCollision → ResetPlayerUponRagdoll → EnterRagdoll
 ├─ RecoverHandler (Sequence)        ← CollisionBTBuilder.BuildRecoverySequence()
-│    HasStopTimeElapsed? → IsRagdollActive? → ExitRagdoll → ResetWorkerPosition
+│    HasStopTimeElapsed? → IsRagdollActive? → NOT IsHeld? → NOT PlayerInSuppressRange?
+│    → IsRagdollSettled? → ExitRagdoll → ResetWorkerPosition
 │    → RecoverFromCollision → (if HasTargetWaypoint → SetWalking)
 ├─ Detection (Selector)             ← DetectionBTBuilder.BuildDetectionBranch()
 │    ├─ ChaseBranch: IsChasing? → (LostPlayer? → EndChase) | (ChasePlayerTick → ensure Walking)
@@ -34,6 +36,11 @@ WorkerBehaviour (Selector)
 └─ WaypointTraversal (Sequence)     ← WaypointBTBuilder.BuildWaypointTraversal()
      IsAllowedToMove? → (IdleAtTarget | DoTravel[EnsurePath → SetWalking → PathTraversal])
 ```
+
+The three carry guards *(2026-07-25)*: the collision branch never re-enters ragdoll while carried
+(would un-kinematic the pelvis mid-carry), and recovery is blocked while carried, while the player
+lingers within `RecoverySuppressRange`, or while the flung body is still moving faster than
+`RecoverySettleSpeed` — so a worker never stands up in the bill, mid-air, or in the duck's face.
 
 The order encodes priority: **ragdoll/recovery preempts everything**, then **chasing the
 player**, then **patrol**.
@@ -48,6 +55,7 @@ player**, then **patrol**.
 | `PlayerDetection/DetectionChecks.cs` | `DetectPlayer` (OverlapSphere + cone angle), `IsChasing`, `LostPlayer` (chase timer) |
 | `PlayerDetection/DetectionActions.cs` | `BeginChase` (raises alarm, alert anim, chase visuals), `ChasePlayerTick`, `EndChase`, `ResetPlayerUponRagdoll` |
 | `Ragdoll/RagdollActions.cs` | `EnterRagdoll`/`ExitRagdoll` (toggle `ApplyRagdoll`), `ResetWorkerPositionAfterRagdoll` (recenters root to ragdoll collider average) |
+| `Ragdoll/RagdollChecks.cs` | carry guards *(2026-07-25)*: `IsHeldByPlayer` (blackboard `IsHeld`), `IsPlayerInSuppressRange` (OverlapSphere around the **pelvis** — the root transform stays at the knockout spot when the body is carried off), `IsRagdollSettled` (pelvis speed ≤ `RecoverySettleSpeed`) |
 | `Transforms/RotationActions.cs` | `RotateToNextWaypointAction` (face next waypoint) |
 | `Waypoints/WaypointChecks.cs` | `HasPathCheck`, `IsAllowedToMoveCheck`, `IsAtTargetWaypoint`, `HasTargetWaypoint` |
 | `Waypoints/WaypointActions.cs` | `FindPathAction` (BFS), `PathTraversalAction` (move along path) |
@@ -64,8 +72,21 @@ The per-worker MonoBehaviour (requires `BehaviourTree`). On `Awake` it:
 
 **`ApplyRagdoll(bool on)`** — the ragdoll switch: disables the `Animator` when on, toggles each
 child rigidbody `isKinematic`/`useGravity`, enables/disables ragdoll colliders, toggles the
-primary collider, plays `"ragdoll"` audio, and on **off** resets the FBX local position and sets
-the patrol visual color.
+primary collider, plays `"ragdoll"` audio, toggles the pickup adapter's `PickupAllowed` (grabbable
+**only while down** — guards the click-on-recovery-frame race), and on **off** resets the FBX
+local position and sets the patrol visual color.
+
+**Carry / pickup** *(2026-07-25 — a downed worker can be carried and flung)* — on `Awake` the
+controller finds the **pelvis** (the one bone rigidbody with no `CharacterJoint` — the ragdoll
+root) and adds a `WorkerPickupInteractable` to it at runtime (see
+[interactables-items-conveyors.md](interactables-items-conveyors.md)); the bone colliders are
+already tagged `Interactive` in the prefab and only exist while ragdolled. The carry rides
+`HeldItemController`'s **dangling** path (pelvis hangs off a joint, limbs keep flailing — see
+[player.md](player.md)). Tuning lives on the controller's *Carry / Pickup* inspector header:
+`RecoverySuppressRange`, `RecoverySettleSpeed` (the BT recovery guards), `CarryGripSize` /
+`CarryGripOffset` / `CarryGripRotation` (default Z=90 — the worker rides sideways in the bill),
+and `CarryRotationSpring` / `CarryRotationDamper` (bite stiffness: 0 = rigid, ~200 floppy →
+~2000 firm; re-read on every grab, so play-mode tweaks apply to the next pickup).
 
 **Collisions** — `OnCollisionEnter` logs contact info, plays `"ragdoll"`, and if the other layer
 is in `workerCollisionLayerMask` sets `"IsCollided"=true` (→ ragdoll branch). External code
@@ -79,7 +100,8 @@ Helpers: `SetStateAtValue(key, val)`, `SetAlertAnimationActive(bool)` (alert ani
 `SelfTransform`, `WorkerAIController`, `WorkerAnimator`, `AlertAnimator`, `StartWaypoint`,
 `TargetWaypoint`, `FullPath`, `PathIndex`, `Speed`, `ArriveThreshold`, `IsAllowedToMove`,
 `IsCollided`, `IsRagdollActive`, `CollisionStartTime`, `IsChasing`, `LastDetectionTime`,
-`PlayerTransform`. **Keys are string literals — typos fail silently.**
+`PlayerTransform`, `IsHeld` (written by `WorkerPickupInteractable` via `SetStateAtValue`),
+`PelvisRigidbody`. **Keys are string literals — typos fail silently.**
 
 ## Waypoint navigation (`Waypoint Scripts/`)
 - `Waypoint.cs` — node with a `List<Waypoint> neighbors`; draws gizmo lines (blue = bidirectional,

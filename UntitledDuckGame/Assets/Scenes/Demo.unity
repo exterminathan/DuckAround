@@ -458,6 +458,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &85649159 stripped
@@ -1379,6 +1380,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &235636910 stripped
@@ -1838,6 +1840,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4.5474687e-15
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.010000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0084999995
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.00000074505795
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.00000068545336
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
     - target: {fileID: 2127619349341739775, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
       propertyPath: m_Name
       value: conveyor_straight (1)
@@ -3301,6 +3331,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &632701036 stripped
@@ -3614,6 +3645,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &646790466 stripped
@@ -3634,6 +3666,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 251303753035811827, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: turnDirection
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 777411424872880342, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_LocalScale.y
       value: 100.00004
@@ -3685,6 +3721,62 @@ PrefabInstance:
     - target: {fileID: 3717317224765623159, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_Name
       value: conveyor_corner (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.6571918e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500003
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.000000041445215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000041445215
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0050000013
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -5.960462e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.49999943
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.49999943
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.50000054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.50000054
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3832,6 +3924,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &726759586 stripped
@@ -4236,6 +4329,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 251303753035811827, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: turnDirection
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 777411424872880342, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2
@@ -4279,6 +4376,54 @@ PrefabInstance:
     - target: {fileID: 3717317224765623159, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_Name
       value: conveyor_corner (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0049999985
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.000000059604645
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000059604645
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.49999946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.49999946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.50000054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.50000054
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4578,6 +4723,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &844967232 stripped
@@ -4585,62 +4731,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3322728237205180536, guid: 88b8898eea3e4304d9df233b848dde92, type: 3}
   m_PrefabInstance: {fileID: 844967223}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &846381435
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 846381437}
-  - component: {fileID: 846381436}
-  m_Layer: 0
-  m_Name: ConveyorManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &846381436
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 846381435}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57bef2b46bd39ec4eb16e58e94e0f791, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  conveyorBeltRenderers:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  cornerBeltRenderers:
-  - {fileID: 0}
-  scrollSpeed: 0.25
-  regInitTiling: {x: 0.5, y: 1}
-  regInitOffset: {x: -0.053, y: 0}
-  crnInitTiling: {x: 1, y: 1}
-  crnInitOffset: {x: -0.006, y: -0.43}
---- !u!4 &846381437
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 846381435}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!134 &849056655
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -4870,6 +4960,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &908947552 stripped
@@ -5006,6 +5097,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.009999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0085
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.000000716362
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0000006269551
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
     - target: {fileID: 2127619349341739775, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
       propertyPath: m_Name
       value: conveyor_straight
@@ -5294,6 +5409,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &983499440 stripped
@@ -5447,6 +5563,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1076296828 stripped
@@ -6333,6 +6450,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0000000026280504
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.009999997
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.0000007163619
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.000000626955
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.7071068
+      objectReference: {fileID: 0}
     - target: {fileID: 2127619349341739775, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
       propertyPath: m_Name
       value: conveyor_straight (2)
@@ -6483,6 +6624,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 251303753035811827, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: turnDirection
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 777411424872880342, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_LocalScale.y
       value: 100.00004
@@ -6534,6 +6679,62 @@ PrefabInstance:
     - target: {fileID: 3717317224765623159, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_Name
       value: conveyor_corner
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.000000041445336
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000041445336
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.005
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.0000000011920924
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.49999946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.49999946
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.50000054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.50000054
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6701,6 +6902,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1213789135 stripped
@@ -6851,6 +7053,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 251303753035811827, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: turnDirection
+      value: -1
+      objectReference: {fileID: 0}
     - target: {fileID: 777411424872880342, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_LocalScale.y
       value: 100.00004
@@ -6902,6 +7108,62 @@ PrefabInstance:
     - target: {fileID: 3717317224765623159, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
       propertyPath: m_Name
       value: conveyor_corner (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0000000047683737
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.005000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500002
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.000000059604638
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.000000059604638
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4507976480469175168, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.0050000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -5.960462e-10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.008500001
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.4999995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.4999995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.50000054
+      objectReference: {fileID: 0}
+    - target: {fileID: 4728824453354590365, guid: a2aeb0d543a7d1d429727d4d0fd2d00e, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.50000054
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7646,6 +7908,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1400499972 stripped
@@ -8029,6 +8292,34 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1976939917}
     m_Modifications:
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0000000047683577
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.010000002
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.0084999995
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.0000007450579
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0.0000006258486
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.70710677
+      objectReference: {fileID: 0}
+    - target: {fileID: 1832657620370233169, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.70710677
+      objectReference: {fileID: 0}
     - target: {fileID: 2127619349341739775, guid: 8c90e2c00ce32c24b8e40458e7d6c6f1, type: 3}
       propertyPath: m_Name
       value: conveyor_straight (3)
@@ -8309,6 +8600,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1498653390 stripped
@@ -8341,6 +8633,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1510283155 stripped
@@ -8984,6 +9277,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1691508099 stripped
@@ -9148,6 +9442,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1695878595 stripped
@@ -9272,6 +9567,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1696617751 stripped
@@ -9686,6 +9982,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1753473467 stripped
@@ -10890,6 +11187,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &1960043738 stripped
@@ -10946,19 +11244,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoCollectNodes: 1
   nodes:
-  - {fileID: 925136711}
-  - {fileID: 1245661437}
-  - {fileID: 1245661435}
-  - {fileID: 318109441}
-  - {fileID: 705497057}
-  - {fileID: 705497055}
-  - {fileID: 1160190012}
-  - {fileID: 799991710}
-  - {fileID: 799991708}
-  - {fileID: 1466824123}
   - {fileID: 1167415814}
   - {fileID: 1167415812}
+  - {fileID: 1466824123}
+  - {fileID: 799991710}
+  - {fileID: 799991708}
+  - {fileID: 1160190012}
+  - {fileID: 705497057}
+  - {fileID: 705497055}
+  - {fileID: 318109441}
+  - {fileID: 1245661437}
+  - {fileID: 1245661435}
   - {fileID: 925136711}
+  - {fileID: 1167415814}
   lineSubdiv: 8
   cornerSubdiv: 8
   speed: 1
@@ -10979,14 +11277,14 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 925136712}
-  - {fileID: 1245661436}
-  - {fileID: 318109442}
-  - {fileID: 705497056}
-  - {fileID: 1160190013}
-  - {fileID: 799991709}
-  - {fileID: 1466824124}
   - {fileID: 1167415813}
+  - {fileID: 1466824124}
+  - {fileID: 799991709}
+  - {fileID: 1160190013}
+  - {fileID: 705497056}
+  - {fileID: 318109442}
+  - {fileID: 1245661436}
+  - {fileID: 925136712}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1991618363 stripped
@@ -11280,6 +11578,7 @@ MonoBehaviour:
   pickupActive: 0
   gripSize: 0
   gripOffset: {x: 0, y: 0, z: 0}
+  gripRotation: {x: 0, y: 0, z: 0}
   minImpactSpeed: 0.5
   minImpactInterval: 0.1
 --- !u!4 &2103418494 stripped
@@ -12030,7 +12329,6 @@ SceneRoots:
   - {fileID: 1533262200}
   - {fileID: 996417737}
   - {fileID: 7601138190848438306}
-  - {fileID: 846381437}
   - {fileID: 1100347753}
   - {fileID: 240298189}
   - {fileID: 1174616868}
