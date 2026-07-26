@@ -49,6 +49,25 @@ public class WorkerAIController : MonoBehaviour {
     [Header("Self")]
     [SerializeField] private Collider workerPrimaryCollider;
 
+    [Header("Carry / Pickup")]
+    [Tooltip("Player within this distance keeps a downed worker down, even after the recovery timer elapses.")]
+    public float RecoverySuppressRange = 4f;
+    [Tooltip("Pelvis speed (m/s) below which the ragdoll counts as settled enough to recover.")]
+    public float RecoverySettleSpeed = 0.5f;
+    [Tooltip("Midriff thickness fed to the mouth gape (0 would measure the whole body bounds).")]
+    public float CarryGripSize = 0.4f;
+    [Tooltip("Pelvis pivot offset from the bill anchor while carried, in hold-slot local space.")]
+    public Vector3 CarryGripOffset = Vector3.zero;
+    [Tooltip("Extra rotation (euler) on top of the bill rotation — tuned so the worker rides sideways.")]
+    public Vector3 CarryGripRotation = new Vector3(0f, 0f, 90f);
+    [Tooltip("Bite stiffness while carried: 0 = rigid grip; > 0 = spring-driven rotation, lower = the body sags/swings more in the mouth. Try 200 (floppy) to 2000 (firm).")]
+    public float CarryRotationSpring = 800f;
+    [Tooltip("Damping for the bite spring — higher kills swing/wobble faster.")]
+    public float CarryRotationDamper = 40f;
+
+    private Rigidbody pelvisRb;
+    private WorkerPickupInteractable pickupAdapter;
+
     // --- Added: cache last collision point for gizmo drawing ---
     private Vector3 _lastCollisionPoint;
     private bool _hasCollisionPoint;
@@ -75,6 +94,23 @@ public class WorkerAIController : MonoBehaviour {
         //lowpoly_withrig fbx reference to reset position after ragdoll reset
         originalFBX = gameObject.transform.GetChild(0).gameObject;
 
+        //carry/pickup: the pelvis is the one bone RB with no CharacterJoint — the ragdoll
+        //root the player grabs; the adapter makes it a Pickup IInteractable (bone colliders
+        //are already tagged Interactive in the prefab and only exist while ragdolled)
+        pelvisRb = rigidbodies.FirstOrDefault(rb => rb.GetComponent<CharacterJoint>() == null);
+        if (pelvisRb != null) {
+            pickupAdapter = pelvisRb.gameObject.AddComponent<WorkerPickupInteractable>();
+            pickupAdapter.Controller = this;
+            pickupAdapter.BoneRigidbodies = rigidbodies;
+            pickupAdapter.gripSize = CarryGripSize;
+            pickupAdapter.gripOffset = CarryGripOffset;
+            pickupAdapter.gripRotation = CarryGripRotation;
+            pickupAdapter.PickupAllowed = false;
+        }
+        else {
+            Debug.LogWarning($"[{name}] no joint-less bone rigidbody found — worker cannot be picked up");
+        }
+
 
         //Tree stuff
         _tree = GetComponent<BehaviourTree>();
@@ -98,6 +134,9 @@ public class WorkerAIController : MonoBehaviour {
             ["IsChasing"] = false,
             ["LastDetectionTime"] = 0f,
             ["PlayerTransform"] = null,
+            //carry/pickup (seeded so SetStateAtValue accepts external writes)
+            ["IsHeld"] = false,
+            ["PelvisRigidbody"] = pelvisRb,
 
         };
 
@@ -145,6 +184,9 @@ public class WorkerAIController : MonoBehaviour {
 
         // play ragdoll audio
         if (on) { audioAgent.Play("ragdoll"); }
+
+        // grabbable only while down (guards the click-on-recovery-frame race)
+        if (pickupAdapter != null) pickupAdapter.PickupAllowed = on;
 
         if (workerPrimaryCollider != null) {
             workerPrimaryCollider.enabled = !on;

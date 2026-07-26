@@ -4,56 +4,87 @@ using UnityEngine;
 public class LeverInteractable : MonoBehaviour, IInteractable {
     [Header("Lever Setup")]
     [SerializeField] private Transform leverPivot;
+    [Tooltip("Hinge axis in the PIVOT'S LOCAL space. The duck squares up in the plane perpendicular " +
+             "to this, which is what makes the snap work for a lever mounted at any angle.")]
     [SerializeField] private Vector3 localAxis = Vector3.right;
     [SerializeField] private float minAngle = -45f;
     [SerializeField] private float maxAngle = 45f;
 
-    [Header("Input Tuning")]
+    [Header("Drag Mapping")]
+    [Tooltip("Push the cursor UP to drive the lever instead of down.")]
     [SerializeField] private bool invertDrag = false;
-
-    [Header("Screen-Space Drag")]
-    [Tooltip("Primary mapping: map mouse Y between the lever tip's on-screen positions at min/max angle " +
-             "(1:1 with the lever's real on-screen sweep). Turn off to use the fixed pixel band below.")]
-    [SerializeField] private bool useTrueLeverExtent = true;
-    [Tooltip("Fallback band height in pixels (used when 'useTrueLeverExtent' is off), centered on the " +
-             "midpoint between the lever's min/max on-screen positions captured at grab time.")]
-    [SerializeField] private float customRangePixels = 200f;
+    [Tooltip("Full stroke = dragging from wherever the cursor was when you grabbed, out to the edge " +
+             "of the screen. Off = the fixed pixel travel below.")]
+    [SerializeField] private bool useScreenEdgeTravel = true;
+    [Tooltip("Pixels of cursor travel for a full stroke when 'useScreenEdgeTravel' is off.")]
+    [SerializeField] private float customRangePixels = 400f;
 
     [Header("Player Snap")]
-    [Tooltip("World-units the duck is placed from the lever, along the swing-plane out-direction. " +
-             "Independent of the cursor's engage range — the duck rolls here before the lever engages.")]
+    [Tooltip("World units between the duck's arm pivot and the lever pivot once snapped in. " +
+             "Independent of the cursor's engage range.")]
     [SerializeField] private float distanceFromLever = 1f;
-    [Tooltip("Seconds for the duck to roll from where it grabbed to the aligned snap position.")]
-    [SerializeField] private float rollDuration = 0.35f;
+    [Tooltip("How fast the duck rolls into position, in world units/second.")]
+    [SerializeField] private float rollSpeed = 9f;
+    [Tooltip("Hard cap on the roll in seconds, so a long approach can't stall the interaction.")]
+    [SerializeField] private float maxRollDuration = 0.5f;
+    [Tooltip("If the duck is already this close to the stand spot, skip the roll entirely and " +
+             "attach on the spot.")]
+    [SerializeField] private float snapTolerance = 0.2f;
+    [Tooltip("Seconds to ease the hand from wherever it was onto the grabbed point, so the arm " +
+             "reaches out instead of popping.")]
+    [SerializeField] private float handReachTime = 0.15f;
 
-    [Header("Resistance")]
-    [Tooltip("Base lever speed in degrees/second (at resistanceFactor = 1 and curve = 1).")]
+    [Header("Tightness")]
+    [Tooltip("Top follow speed in degrees/second, before tightness and the curve scale it down.")]
     [SerializeField] private float maxLeverSpeed = 120f;
-    [Tooltip("Higher = stiffer/slower lever (you must push longer). Scales follow speed by 1 / resistanceFactor.")]
-    [SerializeField] private float resistanceFactor = 2f;
-    [Tooltip("Follow-speed multiplier across the stroke. X = progress from minAngle (0) to maxAngle (1); " +
-             "Y = speed multiplier (lower = stiffer at that point). Default is flat 1.")]
-    [SerializeField] private AnimationCurve resistanceCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+    [Tooltip("How tightly the lever tracks the cursor. 1 = keeps up at full speed; low = heavy and " +
+             "slow, so you have to keep pushing instead of flicking it.")]
+    [Range(0.02f, 1f)]
+    [SerializeField] private float tightness = 0.5f;
+    [Tooltip("Tightness across the stroke. X = where the lever currently sits, 0 at minAngle to 1 " +
+             "at maxAngle. Y = multiplier on the follow speed at that point: 1 = full speed, " +
+             "0 = seized solid. Use it for an easy start, a stiff spot mid-throw, or a hard grind " +
+             "near the end.")]
+    [SerializeField] private AnimationCurve tightnessCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+
+    [Header("Release")]
+    [Tooltip("Spring the lever back to its authored rest pose when let go.")]
+    [SerializeField] private bool returnToRestOnRelease = true;
+    [Tooltip("Spring-back speed in degrees/second. 0 snaps instantly.")]
+    [SerializeField] private float returnSpeed = 240f;
 
     public InteractionType Type => InteractionType.Operate;
 
-    private Quaternion startLocalRot;
+    // Authored rest pose, captured ONCE. Capturing it per-grab let an interrupted spring-back
+    // rebake the current (already rotated) pose as the new rest, so the lever crept every grab.
+    private Quaternion restLocalRot;
+    private bool restCaptured;
+
     private float currentAngle;
     private bool isHeld;
-    private bool isEngaged; // true once the duck has rolled in and the lever accepts drag
+    private bool isEngaged; // true once the duck is in position and the lever accepts drag
+    private bool springingBack;
 
-    // Per-grab cached state for tip-follow + screen-space mapping.
+    // Per-grab cached state.
     private IsometricRaycaster arm;
-    private Camera cam;
     private Vector3 localGrabPoint;
-    private float screenYAtMin;
-    private float screenYAtMax;
-    private float anchorCenterY;
+    private Vector3 standPos;
+    private Vector3 approachDir;
+    private Vector3 handStartPos;
+    private float handBlend;
+
+    // Drag anchor, captured the moment the lever engages: the cursor position and the lever
+    // progress it corresponds to. Everything is measured RELATIVE to this, so engaging never
+    // jerks the lever to wherever the cursor happened to be sitting.
+    private float anchorMouseY;
+    private float anchorProgress;
 
     // Player refs (found lazily, like PickupInteractable).
     private PlayerDuckController playerDuckController;
     private CharacterController playerController;
     private Coroutine engageRoutine;
+
+    private float RestAngle => Mathf.Clamp(0f, Mathf.Min(minAngle, maxAngle), Mathf.Max(minAngle, maxAngle));
 
     private void Reset() {
         leverPivot = transform;
@@ -61,67 +92,122 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
         minAngle = -45f;
         maxAngle = 45f;
         invertDrag = false;
-        useTrueLeverExtent = true;
-        customRangePixels = 200f;
+        useScreenEdgeTravel = true;
+        customRangePixels = 400f;
         distanceFromLever = 1f;
-        rollDuration = 0.35f;
+        rollSpeed = 9f;
+        maxRollDuration = 0.5f;
+        snapTolerance = 0.2f;
+        handReachTime = 0.15f;
         maxLeverSpeed = 120f;
-        resistanceFactor = 2f;
-        resistanceCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+        tightness = 0.5f;
+        tightnessCurve = AnimationCurve.Linear(0f, 1f, 1f, 1f);
+        returnToRestOnRelease = true;
+        returnSpeed = 240f;
+    }
+
+    private void Awake() {
+        CaptureRest();
+    }
+
+    private void CaptureRest() {
+        if (restCaptured) return;
+        if (leverPivot == null) leverPivot = transform;
+        restLocalRot = leverPivot.localRotation;
+        currentAngle = RestAngle;
+        restCaptured = true;
+    }
+
+    private void Update() {
+        if (isHeld || !springingBack) return;
+
+        float step = (returnSpeed <= 0f) ? Mathf.Infinity : returnSpeed * Time.deltaTime;
+        currentAngle = Mathf.MoveTowards(currentAngle, RestAngle, step);
+        ApplyAngle();
+        if (Mathf.Abs(currentAngle - RestAngle) < 0.01f) {
+            currentAngle = RestAngle;
+            ApplyAngle();
+            springingBack = false;
+        }
     }
 
     public void OnHoldStart(RaycastHit hit, IsometricRaycaster arm) {
-        if (leverPivot == null) leverPivot = transform;
+        CaptureRest();
         this.arm = arm;
-        cam = Camera.main;
 
         if (playerDuckController == null) playerDuckController = FindFirstObjectByType<PlayerDuckController>();
         if (playerDuckController != null && playerController == null)
             playerController = playerDuckController.GetComponent<CharacterController>();
 
-        startLocalRot = leverPivot.localRotation;
-        currentAngle = 0f;
         isHeld = true;
         isEngaged = false;
+        springingBack = false;
 
-        // Capture the grabbed point in the pivot's local space so it tracks the rotation.
+        // Grabbed point in the pivot's local space, so it tracks the lever as it swings.
         localGrabPoint = leverPivot.InverseTransformPoint(hit.point);
-
-        // Precompute the tip's on-screen Y at both angle extremes for the screen-space mapping.
-        if (cam != null) {
-            screenYAtMin = cam.WorldToScreenPoint(GrabPointAtAngle(minAngle)).y;
-            screenYAtMax = cam.WorldToScreenPoint(GrabPointAtAngle(maxAngle)).y;
-            anchorCenterY = (screenYAtMin + screenYAtMax) * 0.5f;
-        }
-
-        ApplyAngle();
 
         // Open the bill a little so it reads as gripping the lever (closed again in OnHoldEnd).
         if (playerDuckController != null)
             playerDuckController.ToggleMouth(true, 0.2f);
 
-        // Roll the duck into the lever's swing plane, then enable dragging.
+        // Where the duck has to stand for the ARM to line up with the lever. Derived from the
+        // hinge axis, so it holds for a lever mounted at any angle. The body yaw is never touched
+        // - the camera is parented to the body, so turning it would swing the whole view.
+        float rollDist = 0f;
+        if (playerDuckController != null && arm != null) {
+            Transform body = playerDuckController.transform;
+            Vector3 outDir = ComputeSwingOutDir(body.position - leverPivot.position);
+
+            // Prefer the side the duck is already on, but if the arm can't swing that far round
+            // (pivot clamp), take the other side of the swing plane instead.
+            if (!arm.CanArmAim(-outDir) && arm.CanArmAim(outDir)) outDir = -outDir;
+
+            approachDir = -outDir;
+            if (!arm.ComputeArmAlignedStand(leverPivot.position, approachDir, distanceFromLever,
+                                            out standPos)) {
+                standPos = body.position;
+            }
+
+            Vector3 flatDelta = standPos - body.position;
+            flatDelta.y = 0f;
+            rollDist = flatDelta.magnitude;
+        }
+
         if (engageRoutine != null) StopCoroutine(engageRoutine);
-        engageRoutine = StartCoroutine(EngageRoutine());
+
+        // Already parked in front of the lever: attach on the spot, no roll, no wait.
+        if (rollDist <= snapTolerance) {
+            Engage();
+        }
+        else {
+            engageRoutine = StartCoroutine(RollThenEngage(rollDist));
+        }
     }
 
     public void OnHoldDrag(RaycastHit hit, Vector2 mouseDelta) {
         if (!isHeld || !isEngaged) return;
 
-        float targetAngle = MapMouseToAngle();
+        float targetAngle = MapCursorToAngle();
 
-        // Rate-limited follow: the lever eases toward the mouse-implied angle but never snaps,
-        // so quick flicks don't move it — you have to push deliberately. resistanceFactor sets
-        // the overall stiffness; resistanceCurve varies it across the stroke.
+        // Rate-limited follow: the lever eases toward the cursor-implied angle but never snaps,
+        // so quick flicks don't move it - you have to push deliberately. 'tightness' sets the
+        // overall stiffness; 'tightnessCurve' varies it across the stroke.
         float progress = Mathf.InverseLerp(minAngle, maxAngle, currentAngle);
-        float curveMul = resistanceCurve != null ? Mathf.Max(0f, resistanceCurve.Evaluate(progress)) : 1f;
-        float maxStep = (maxLeverSpeed / Mathf.Max(0.0001f, resistanceFactor)) * curveMul * Time.deltaTime;
+        float curveMul = (tightnessCurve != null) ? Mathf.Max(0f, tightnessCurve.Evaluate(progress)) : 1f;
+        float maxStep = maxLeverSpeed * Mathf.Max(0.001f, tightness) * curveMul * Time.deltaTime;
 
         currentAngle = Mathf.MoveTowards(currentAngle, targetAngle, maxStep);
         ApplyAngle();
 
-        // Tip rides the grabbed point: not parented, steered through the arm's API each frame.
-        if (arm != null) arm.SetArmTargetWorld(leverPivot.TransformPoint(localGrabPoint));
+        // Hand rides the grabbed point: not parented, steered through the arm's API each frame.
+        // Blended in over handReachTime so the arm reaches out rather than teleporting.
+        if (arm != null) {
+            Vector3 grabWorld = leverPivot.TransformPoint(localGrabPoint);
+            handBlend = (handReachTime <= 0f)
+                ? 1f
+                : Mathf.MoveTowards(handBlend, 1f, Time.deltaTime / handReachTime);
+            arm.SetArmTargetWorld(Vector3.Lerp(handStartPos, grabWorld, handBlend));
+        }
     }
 
     public void OnHoldEnd() {
@@ -137,97 +223,119 @@ public class LeverInteractable : MonoBehaviour, IInteractable {
         if (playerDuckController != null)
             playerDuckController.ToggleMouth(false, 0.2f);
 
-        // Spring the lever back to neutral. (Remove these two lines if you want it to hold its angle.)
-        currentAngle = 0f;
-        ApplyAngle();
+        if (returnToRestOnRelease) {
+            if (returnSpeed <= 0f) {
+                currentAngle = RestAngle;
+                ApplyAngle();
+            }
+            else {
+                springingBack = true; // Update() eases it home
+            }
+        }
     }
 
-    // Maps the current mouse Y to a target lever angle using the chosen screen-space scheme.
-    private float MapMouseToAngle() {
-        float mouseY = Input.mousePosition.y;
+    // Rolls the duck to the aligned stand spot, then attaches. Duration scales with the distance
+    // so a short shuffle doesn't cost the same as a long approach. The body yaw is untouched
+    // throughout, so the isometric camera (a child of the body) never moves.
+    private IEnumerator RollThenEngage(float rollDist) {
+        Transform body = (playerDuckController != null) ? playerDuckController.transform : null;
 
-        float t;
-        if (useTrueLeverExtent) {
-            // Primary: mouse Y maps directly between the tip's min/max on-screen positions.
-            t = Mathf.InverseLerp(screenYAtMin, screenYAtMax, mouseY);
-        }
-        else {
-            // Fallback: a fixed pixel band centered on the lever's on-screen midpoint at grab time.
-            float half = customRangePixels * 0.5f;
-            t = Mathf.InverseLerp(anchorCenterY - half, anchorCenterY + half, mouseY);
-        }
-
-        if (invertDrag) t = 1f - t;
-        return Mathf.Lerp(minAngle, maxAngle, Mathf.Clamp01(t));
-    }
-
-    // Smoothly rolls the duck to the aligned snap position in the lever's swing plane,
-    // then flips isEngaged so the lever starts accepting drag input.
-    private IEnumerator EngageRoutine() {
-        if (playerController != null) {
-            Vector3 target = ComputeSnapPosition();
-            Vector3 start = playerController.transform.position;
-            float dur = Mathf.Max(0.0001f, rollDuration);
+        if (playerController != null && body != null) {
+            float dur = Mathf.Min(rollDist / Mathf.Max(0.01f, rollSpeed), Mathf.Max(0.01f, maxRollDuration));
+            Vector3 start = body.position;
 
             for (float elapsed = 0f; elapsed < dur; elapsed += Time.deltaTime) {
                 float k = Mathf.Clamp01(elapsed / dur);
                 k = k * k * (3f - 2f * k); // smoothstep
-                Vector3 desired = Vector3.Lerp(start, target, k);
+                Vector3 desired = Vector3.Lerp(start, standPos, k);
                 // Move via the CharacterController so the roll respects collisions.
-                playerController.Move(desired - playerController.transform.position);
+                playerController.Move(desired - body.position);
                 yield return null;
             }
-            playerController.Move(target - playerController.transform.position);
+            playerController.Move(standPos - body.position);
         }
 
-        isEngaged = true;
+        Engage();
         engageRoutine = null;
     }
 
-    // Position directly out from the lever along its swing plane (horizontal direction perpendicular
-    // to the rotation axis), on whichever side the duck is currently on, at distanceFromLever.
-    // Keeps the duck's current Y — its resting ground height.
-    private Vector3 ComputeSnapPosition() {
-        Vector3 basePos = leverPivot.position;
-        Vector3 duckPos = playerController.transform.position;
+    // Latches on: aims the arm at the lever and opens the drag anchor. The arm swing and the hand
+    // reach both ease from here on, concurrently with dragging - nothing is gated behind them, so
+    // grabbing a lever you're already standing at is instant.
+    private void Engage() {
+        if (arm != null) {
+            arm.SetInteractArmAim(approachDir);
+            handStartPos = arm.ArmTargetWorld;
+        }
+        else {
+            handStartPos = leverPivot.TransformPoint(localGrabPoint);
+        }
 
-        Vector3 axisWorld = leverPivot.TransformDirection(
-            (localAxis.sqrMagnitude > 0f) ? localAxis.normalized : Vector3.right);
+        handBlend = 0f;
+        anchorMouseY = Input.mousePosition.y;
+        anchorProgress = Mathf.Clamp01(Mathf.InverseLerp(minAngle, maxAngle, currentAngle));
+        isEngaged = true;
+    }
 
-        // Horizontal direction lying in the swing plane (perpendicular to the rotation axis).
+    // Horizontal direction out of the lever, lying in its swing plane (perpendicular to the hinge),
+    // on whichever side the duck already stands. 'fromPivotToDuck' is the duck's offset from the pivot.
+    private Vector3 ComputeSwingOutDir(Vector3 fromPivotToDuck) {
+        Vector3 axisWorld = leverPivot.TransformDirection(SafeAxis());
+
         Vector3 outDir = Vector3.Cross(axisWorld, Vector3.up);
         outDir.y = 0f;
 
-        // Degenerate case (rotation axis is vertical): fall back to the duck->lever approach direction.
+        // Hinge is vertical (the lever sweeps horizontally): every horizontal direction lies in
+        // the swing plane, so just approach from where the duck already is.
         if (outDir.sqrMagnitude < 1e-6f) {
-            outDir = duckPos - basePos;
+            outDir = fromPivotToDuck;
             outDir.y = 0f;
+            if (outDir.sqrMagnitude < 1e-6f) outDir = Vector3.forward;
         }
         outDir.Normalize();
 
-        // Keep the duck on the side it is already on.
-        Vector3 toDuck = duckPos - basePos; toDuck.y = 0f;
+        Vector3 toDuck = fromPivotToDuck;
+        toDuck.y = 0f;
         if (Vector3.Dot(outDir, toDuck) < 0f) outDir = -outDir;
 
-        return new Vector3(basePos.x, duckPos.y, basePos.z) + outDir * distanceFromLever;
+        return outDir;
+    }
+
+    // Cursor -> target angle, measured RELATIVE to where the cursor sat when the lever engaged.
+    // At the anchor the lever holds its current angle; dragging away from the anchor walks it
+    // toward whichever end you're heading for. That's what stops it snapping to an absolute
+    // screen position the instant it latches on.
+    private float MapCursorToAngle() {
+        float screenH = Mathf.Max(1f, Screen.height);
+
+        // Positive = dragged in the "pull" direction (down by default).
+        float pull = invertDrag
+            ? (Input.mousePosition.y - anchorMouseY)
+            : (anchorMouseY - Input.mousePosition.y);
+
+        // Travel available either side of the anchor. The 100px floor keeps the lever usable when
+        // you grab it with the cursor already jammed against a screen edge.
+        float toPullEdge = invertDrag ? (screenH - anchorMouseY) : anchorMouseY;
+        float toPushEdge = invertDrag ? anchorMouseY : (screenH - anchorMouseY);
+
+        float pullSpan = useScreenEdgeTravel ? Mathf.Max(100f, toPullEdge) : Mathf.Max(1f, customRangePixels);
+        float pushSpan = useScreenEdgeTravel ? Mathf.Max(100f, toPushEdge) : Mathf.Max(1f, customRangePixels);
+
+        // Each side is scaled by the stroke actually left in that direction, so the far end lands
+        // exactly at the screen edge (or exactly customRangePixels out) no matter where you grabbed.
+        float t = (pull >= 0f)
+            ? anchorProgress + (1f - anchorProgress) * Mathf.Clamp01(pull / pullSpan)
+            : anchorProgress - anchorProgress * Mathf.Clamp01(-pull / pushSpan);
+
+        return Mathf.Lerp(minAngle, maxAngle, Mathf.Clamp01(t));
+    }
+
+    private Vector3 SafeAxis() {
+        return (localAxis.sqrMagnitude > 0f) ? localAxis.normalized : Vector3.right;
     }
 
     private void ApplyAngle() {
-        Vector3 axis = (localAxis.sqrMagnitude > 0f) ? localAxis.normalized : Vector3.right;
-        leverPivot.localRotation = startLocalRot * Quaternion.AngleAxis(currentAngle, axis);
-    }
-
-    // World position of the grabbed point if the lever were rotated to 'angle', computed via a
-    // local matrix so it does NOT disturb the live transform. Used at grab time to project the
-    // tip's on-screen extent at the two angle limits.
-    private Vector3 GrabPointAtAngle(float angle) {
-        Vector3 axis = (localAxis.sqrMagnitude > 0f) ? localAxis.normalized : Vector3.right;
-        Quaternion rot = startLocalRot * Quaternion.AngleAxis(angle, axis);
-        Matrix4x4 pivotLocal = Matrix4x4.TRS(leverPivot.localPosition, rot, leverPivot.localScale);
-        Matrix4x4 pivotWorld = (leverPivot.parent != null)
-            ? leverPivot.parent.localToWorldMatrix * pivotLocal
-            : pivotLocal;
-        return pivotWorld.MultiplyPoint3x4(localGrabPoint);
+        leverPivot.localRotation = restLocalRot * Quaternion.AngleAxis(currentAngle, SafeAxis());
     }
 
     // Optional helper if other systems want normalized lever value [0..1]

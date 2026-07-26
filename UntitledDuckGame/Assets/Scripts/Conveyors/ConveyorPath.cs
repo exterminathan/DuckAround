@@ -101,7 +101,7 @@ public class ConveyorPath : MonoBehaviour {
                 float direction = -Mathf.Sign(nA.turnDirection);
                 float radius = Mathf.Abs(pA.x - pB.x);
 
-                // forward vector of second node in corner 
+                // forward vector of second node in corner
                 Vector3 pBf = nB.Forward;
 
                 // * corner radius of first node
@@ -143,7 +143,7 @@ public class ConveyorPath : MonoBehaviour {
                     pW = new Vector3(nX, pA.y, nZ);
 
 
-                    //vector from center to next point 
+                    //vector from center to next point
                     Vector3 pN = new Vector3(nX, pA.y, nZ);
                     Debug.DrawLine(pCenter, pN, Color.red);
 
@@ -173,7 +173,7 @@ public class ConveyorPath : MonoBehaviour {
     #endregion
 
     #region Path Helper Functions
-    //path sampler 
+    //path sampler
     public (Vector3 pos, Vector3 tangent) SampleByDistance(float s) {
         s = Mathf.Clamp(s, 0, totalLength);
         float accum = 0f;
@@ -296,6 +296,85 @@ public class ConveyorPath : MonoBehaviour {
     }
     private void OnValidate() { Rebuild(); }
     private void Reset() { Rebuild(); }
+
+    // Reverses travel direction in place (inspector button — see ConveyorPathEditor).
+    // Child order flips (auto-collect) or the hand-wired list reverses, every node
+    // rotates 180° so forwards face the new travel direction (no flipped prefab
+    // variants exist), and each corner's turnDirection migrates to its new entry
+    // node with the sign mirrored (a left turn ridden backwards is a right turn).
+    public void ReversePathDirection() {
+        // flattened travel order as Rebuild sees it, minus the loop-closure duplicate
+        List<ConveyorNode> flat = new();
+        bool hadClosureDup = false;
+        if (autoCollectNodes) {
+            GetComponentsInChildren(flat);
+        }
+        else {
+            if (nodes != null) flat.AddRange(nodes);
+            if (loop && flat.Count >= 2 && flat[^1] == flat[0]) {
+                flat.RemoveAt(flat.Count - 1);
+                hadClosureDup = true;
+            }
+        }
+        flat.RemoveAll(nd => nd == null);
+        int n = flat.Count;
+        if (n < 2) return;
+
+        // desired data for each slot of the NEW (reversed) order
+        var newPos = new Vector3[n];
+        var newRot = new Quaternion[n];
+        var newTurn = new float[n];
+        for (int j = 0; j < n; j++) {
+            Transform src = flat[n - 1 - j].transform;
+            newPos[j] = src.position;
+            newRot[j] = src.rotation * Quaternion.AngleAxis(180f, Vector3.up);
+        }
+        // old corner pair (i, i+1) becomes (n-2-i, n-1-i): the old exit node is the
+        // new entry and carries the mirrored turn
+        for (int i = 0; i < n - 1; i++)
+            if (flat[i].turnDirection != 0f) newTurn[n - 2 - i] = -flat[i].turnDirection;
+        if (loop && flat[n - 1].turnDirection != 0f) newTurn[n - 1] = -flat[n - 1].turnDirection;
+
+        // make the hierarchy / list yield the reversed sequence
+        List<ConveyorNode> ordered;
+        if (autoCollectNodes) {
+            // reversing direct children reverses segment order; nodes INSIDE a
+            // multi-node segment can't be sibling-reordered (prefab instance
+            // restriction), so those pairs get their data swapped by the apply below
+            UnityEditor.Undo.RegisterChildrenOrderUndo(transform, "Reverse Conveyor Path");
+            for (int i = 0; i < transform.childCount; i++)
+                transform.GetChild(transform.childCount - 1).SetSiblingIndex(i);
+            ordered = new List<ConveyorNode>();
+            GetComponentsInChildren(ordered);
+            ordered.RemoveAll(nd => nd == null);
+        }
+        else {
+            UnityEditor.Undo.RecordObject(this, "Reverse Conveyor Path");
+            ordered = new List<ConveyorNode>(flat);
+            ordered.Reverse();
+            nodes.Clear();
+            nodes.AddRange(ordered);
+            if (hadClosureDup) nodes.Add(ordered[0]);
+        }
+
+        if (ordered.Count != n) {
+            Debug.LogWarning($"[{name}] ReversePathDirection: node count changed during reorder ({n} -> {ordered.Count}) — aborting node data apply.", this);
+            return;
+        }
+
+        // write the reversed data back in traversal order (positions only actually
+        // move for the swapped in-segment corner pairs)
+        for (int j = 0; j < n; j++) {
+            ConveyorNode node = ordered[j];
+            UnityEditor.Undo.RecordObject(node.transform, "Reverse Conveyor Path");
+            UnityEditor.Undo.RecordObject(node, "Reverse Conveyor Path");
+            node.transform.SetPositionAndRotation(newPos[j], newRot[j]);
+            node.turnDirection = newTurn[j];
+        }
+
+        Rebuild();
+        UnityEditor.SceneView.RepaintAll();
+    }
 
     private void OnDrawGizmos() {
         if (!Application.isPlaying) Rebuild();

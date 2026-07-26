@@ -73,6 +73,9 @@ public class HeldItemController : MonoBehaviour {
     private Transform[] heldTransforms;
     private HeldItemHitForwarder hitForwarder;
     private RigidbodyInterpolation cachedInterpolation;
+    private Rigidbody carryAnchor; // kinematic proxy a dangling carry hangs from (created once, reused)
+    private Joint carryJoint;      // FixedJoint (rigid bite) or ConfigurableJoint (springy bite)
+    private bool danglingCarry;
     private Coroutine restoreRoutine;
     private PickupInteractable lastReleasedItem;
 
@@ -138,22 +141,69 @@ public class HeldItemController : MonoBehaviour {
         hitForwarder = item.gameObject.AddComponent<HeldItemHitForwarder>();
         hitForwarder.Init(player, heldCols);
 
-        // interpolation stamps the stale physics pose over transform writes — off while held
         cachedInterpolation = heldRb.interpolation;
-        heldRb.interpolation = RigidbodyInterpolation.None;
-        heldRb.linearVelocity = Vector3.zero;
-        heldRb.angularVelocity = Vector3.zero;
-        heldRb.useGravity = false;
-        heldRb.isKinematic = true;
+        danglingCarry = item.DanglingCarry;
+        if (danglingCarry) {
+            // ragdoll carry: the pelvis stays DYNAMIC and hangs from a kinematic anchor via
+            // a FixedJoint so the joint chain keeps simulating and the limbs flail. Driving
+            // the pelvis transform directly would rigidly drag the whole bone hierarchy
+            // (the limbs are its transform children) and freeze the dangle.
+            if (carryAnchor == null) {
+                var anchorGO = new GameObject("CarryAnchor");
+                carryAnchor = anchorGO.AddComponent<Rigidbody>();
+                carryAnchor.isKinematic = true;
+            }
+            carryAnchor.gameObject.SetActive(true);
+            // anchor pose chosen so that once it reaches the hold slot the pelvis sits at
+            // slot.rotation * gripRotation (a FixedJoint preserves the creation-time offset)
+            carryAnchor.transform.SetPositionAndRotation(
+                heldRb.position,
+                heldRb.rotation * Quaternion.Inverse(Quaternion.Euler(item.gripRotation)));
+            float biteSpring = item.DanglingRotationSpring;
+            if (biteSpring > 0f) {
+                // springy bite: position locked to the bill, rotation spring-driven back to
+                // the grip pose — the body sags and swings, then gets pulled upright
+                var cj = heldRb.gameObject.AddComponent<ConfigurableJoint>();
+                cj.connectedBody = carryAnchor;
+                cj.xMotion = ConfigurableJointMotion.Locked;
+                cj.yMotion = ConfigurableJointMotion.Locked;
+                cj.zMotion = ConfigurableJointMotion.Locked;
+                cj.angularXMotion = ConfigurableJointMotion.Free;
+                cj.angularYMotion = ConfigurableJointMotion.Free;
+                cj.angularZMotion = ConfigurableJointMotion.Free;
+                cj.rotationDriveMode = RotationDriveMode.Slerp;
+                cj.slerpDrive = new JointDrive {
+                    positionSpring = biteSpring,
+                    positionDamper = item.DanglingRotationDamper,
+                    maximumForce = float.MaxValue
+                };
+                carryJoint = cj;
+            }
+            else {
+                // rigid bite: orientation fully slaved to the bill
+                var fj = heldRb.gameObject.AddComponent<FixedJoint>();
+                fj.connectedBody = carryAnchor;
+                carryJoint = fj;
+            }
+            heldRb.WakeUp();
+        }
+        else {
+            // interpolation stamps the stale physics pose over transform writes — off while held
+            heldRb.interpolation = RigidbodyInterpolation.None;
+            heldRb.linearVelocity = Vector3.zero;
+            heldRb.angularVelocity = Vector3.zero;
+            heldRb.useGravity = false;
+            heldRb.isKinematic = true;
+        }
 
-        transitStartPos = item.transform.position;
-        transitStartRot = item.transform.rotation;
+        transitStartPos = danglingCarry ? carryAnchor.transform.position : item.transform.position;
+        transitStartRot = danglingCarry ? carryAnchor.transform.rotation : item.transform.rotation;
         prevItemPos = transitStartPos;
         sampleHead = 0;
         sampleCount = 0;
         transitT = 0f;
         state = State.Transit;
-        SetEncumbrance(ComputeEncumbrance(heldRb.mass));
+        SetEncumbrance(ComputeEncumbrance(item.CarryMass));
 
         float gape = Mathf.Clamp(
             2f * Mathf.Atan2(gripSize * 0.5f, Mathf.Max(0.01f, billLength)) * Mathf.Rad2Deg,
@@ -176,13 +226,24 @@ public class HeldItemController : MonoBehaviour {
         }
 
         if (heldRb != null) {
-            heldRb.isKinematic = false;
-            heldRb.useGravity = true;
-            Vector3 fling = ComputeFlingVelocity(heldRb.mass);
+            if (danglingCarry) {
+                if (carryJoint != null) Destroy(carryJoint);
+            }
+            else {
+                heldRb.isKinematic = false;
+                heldRb.useGravity = true;
+                heldRb.interpolation = cachedInterpolation;
+            }
+            Vector3 fling = ComputeFlingVelocity(heldItem != null ? heldItem.CarryMass : heldRb.mass);
             heldRb.linearVelocity = fling;
             heldRb.angularVelocity = ComputeTumble(fling);
-            heldRb.interpolation = cachedInterpolation;
+            // every release path lands here — multi-body carriers fling their remaining
+            // rigidbodies and do their own bookkeeping (worker BT flags) in OnFlung
+            if (heldItem != null) heldItem.OnFlung(fling);
         }
+        if (carryAnchor != null) carryAnchor.gameObject.SetActive(false);
+        carryJoint = null;
+        danglingCarry = false;
 
         SetEncumbrance(0f);
 
@@ -265,6 +326,10 @@ public class HeldItemController : MonoBehaviour {
         // item destroyed or slot lost mid-hold: nothing left to restore, just reset
         if (heldRb == null || holdSlot == null) {
             state = State.None;
+            if (carryJoint != null) Destroy(carryJoint);
+            if (carryAnchor != null) carryAnchor.gameObject.SetActive(false);
+            carryJoint = null;
+            danglingCarry = false;
             heldItem = null;
             heldRb = null;
             heldCols = null;
@@ -276,21 +341,26 @@ public class HeldItemController : MonoBehaviour {
         }
 
         Vector3 gripOffset = heldItem != null ? heldItem.gripOffset : Vector3.zero;
+        Vector3 gripEuler = heldItem != null ? heldItem.gripRotation : Vector3.zero;
         Vector3 targetPos = holdSlot.TransformPoint(gripOffset);
-        Quaternion targetRot = holdSlot.rotation;
+        // dangling carry: gripRotation is baked into the joint's relative pose, so the
+        // anchor itself just tracks the slot
+        Quaternion targetRot = danglingCarry ? holdSlot.rotation : holdSlot.rotation * Quaternion.Euler(gripEuler);
+        // dangling carry drives the anchor and lets the joint pull the body after it
+        Transform driven = danglingCarry && carryAnchor != null ? carryAnchor.transform : heldRb.transform;
 
         if (state == State.Transit) {
             transitT += Time.deltaTime / Mathf.Max(0.0001f, transitDuration);
             float k = Mathf.Clamp01(transitT);
             k = k * k * (3f - 2f * k); // smoothstep
-            heldRb.transform.position = Vector3.Lerp(transitStartPos, targetPos, k);
-            heldRb.transform.rotation = Quaternion.Slerp(transitStartRot, targetRot, k);
+            driven.position = Vector3.Lerp(transitStartPos, targetPos, k);
+            driven.rotation = Quaternion.Slerp(transitStartRot, targetRot, k);
             if (transitT >= 1f) state = State.Held;
         }
         else {
             // hard lock, no smoothing — lag here reads as the item slipping out of the bill
-            heldRb.transform.position = targetPos;
-            heldRb.transform.rotation = targetRot;
+            driven.position = targetPos;
+            driven.rotation = targetRot;
         }
 
         // record hand motion for fling-on-release; Held only, so the transit tween

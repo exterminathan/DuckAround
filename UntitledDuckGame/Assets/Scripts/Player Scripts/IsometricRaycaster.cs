@@ -128,9 +128,18 @@ public class IsometricRaycaster : MonoBehaviour {
     [Header("Holding Settings")]
     private HoldMode _holdMode = HoldMode.None;
     private Vector3 preHoldRotation;
-    private float _neutralArmYaw;
     private float preHoldBodyYaw;
     private float bodyTargetYaw;
+
+    // Set when an interactable pins the body yaw itself. Suppresses the per-frame re-aim below:
+    // chasing the collider's origin while the duck stands right next to it made the body spin.
+    private bool facingYawLocked;
+
+    // Arm-pivot aim held for the duration of an Operate interaction. This is how the duck squares
+    // up to a lever: the arm turns, the body (and the camera bolted to it) stays put.
+    private bool interactAimActive;
+    private float interactAimYaw;
+
     private FaceState _faceState = FaceState.Idle;
     private Vector3 lastMousePos;
     private IInteractable activeInteractable;
@@ -148,8 +157,6 @@ public class IsometricRaycaster : MonoBehaviour {
 
         //assign default rotationAngleY
         rotationAngleY = rotate_pivot.transform.localEulerAngles.y;
-        // neutral arm-pivot yaw = arm pointing straight ahead relative to the body
-        _neutralArmYaw = rotate_pivot.transform.localEulerAngles.y;
 
         // seed the canonical local arm state from the authored rest pose
         ikParent = ik_target.parent;
@@ -273,26 +280,176 @@ public class IsometricRaycaster : MonoBehaviour {
         rotationAngleY = preHoldRotation.y;
     }
 
-    // Set up a body-facing turn for an Operate interaction: park the arm pivot straight ahead
-    // (so the arm stays in line with the body), remember the body's current facing for restore,
-    // and seed the target yaw toward the interactable. The actual turn is eased in UpdateBodyFacing.
-    private void BeginInteractFacing(RaycastHit hit) {
+    // Entering an Operate interaction. Deliberately does NOT turn the body and does NOT snap the
+    // arm pivot: the Main Camera is a CHILD of the duck body, so any body yaw swings the whole
+    // isometric view, and snapping the pivot to neutral reads as the arm being yanked around by
+    // the mouse. Aiming is done with the arm pivot instead - see SetInteractArmAim.
+    private void BeginInteractAim(RaycastHit hit) {
         if (playerDuckController == null) return;
 
-        SetPivotYaw(_neutralArmYaw);
+        facingYawLocked = false;
+        interactAimActive = false;
 
-        // Only capture the rest yaw when fully idle: re-grabbing mid-restore would
-        // otherwise capture a half-restored yaw and drift the body over repeated uses.
+        // Still recorded so SetInteractFacingYaw (available to any interactable that genuinely
+        // wants a body turn) has a rest yaw to restore to.
         if (_faceState == FaceState.Idle)
             preHoldBodyYaw = playerDuckController.transform.eulerAngles.y;
+    }
 
-        Vector3 dir = hit.transform.position - playerDuckController.transform.position;
-        dir.y = 0f;
-        bodyTargetYaw = (dir.sqrMagnitude > 1e-6f)
-            ? Quaternion.LookRotation(dir).eulerAngles.y
-            : preHoldBodyYaw;
+    private float YawOf(Vector3 dir) {
+        return Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+    }
 
+    // Local pivot yaw that points the arm along 'worldAimDir'. The mapping from the pivot's local
+    // Y euler to world yaw is not guaranteed 1:1 in sign (a flipped/rotated parent in the rig
+    // would invert it), so it's probed once from the live hierarchy rather than assumed.
+    private float SolvePivotYaw(Vector3 worldAimDir, out bool withinRange) {
+        withinRange = false;
+
+        Vector3 aim = worldAimDir;
+        aim.y = 0f;
+        if (rotate_pivot == null || aim.sqrMagnitude < 1e-8f) return rotationAngleY;
+
+        Vector3 startEuler = rotate_pivot.transform.localEulerAngles;
+        float startYaw = startEuler.y;
+        float baseWorldYaw = YawOf(MeasureArmReachDirection());
+
+        const float probe = 10f;
+        rotate_pivot.transform.localEulerAngles = new Vector3(startEuler.x, startYaw + probe, startEuler.z);
+        float probedWorldYaw = YawOf(MeasureArmReachDirection());
+        rotate_pivot.transform.localEulerAngles = startEuler;
+
+        float gain = Mathf.DeltaAngle(baseWorldYaw, probedWorldYaw) / probe;
+        if (Mathf.Abs(gain) < 0.1f) return rotationAngleY; // pivot doesn't steer the arm at all
+
+        float need = Mathf.DeltaAngle(baseWorldYaw, YawOf(aim.normalized)) / gain;
+
+        // localEulerAngles reads back in [0,360); normalize before clamping to the pivot limits.
+        float solved = Mathf.DeltaAngle(0f, startYaw + need);
+        float clamped = Mathf.Clamp(solved, Mathf.Min(minPivotAngle, maxPivotAngle),
+                                            Mathf.Max(minPivotAngle, maxPivotAngle));
+        withinRange = Mathf.Abs(Mathf.DeltaAngle(solved, clamped)) < 0.5f;
+        return clamped;
+    }
+
+    // True if the arm can square up along 'worldAimDir' without hitting its pivot limits.
+    // Lets an interactable choose which side of a target to approach from.
+    public bool CanArmAim(Vector3 worldAimDir) {
+        SolvePivotYaw(worldAimDir, out bool withinRange);
+        return withinRange;
+    }
+
+    // Points the arm along 'worldAimDir' for the rest of the hold. Eased in UpdateInteractArmAim
+    // from wherever the mouse left the pivot, so there is no snap, and the body (and therefore
+    // the camera) never moves.
+    public void SetInteractArmAim(Vector3 worldAimDir) {
+        interactAimYaw = SolvePivotYaw(worldAimDir, out _);
+        interactAimActive = true;
+    }
+
+    public bool IsInteractArmAimSettled {
+        get {
+            if (!interactAimActive) return true;
+            return Mathf.Abs(Mathf.DeltaAngle(rotationAngleY, interactAimYaw)) < 0.5f;
+        }
+    }
+
+    // Same frame-rate-independent ease HandleRotation uses, so holding a lever feels like normal
+    // arm movement rather than a separate animation.
+    private void UpdateInteractArmAim() {
+        if (!interactAimActive || rotate_pivot == null || playerDuckController == null) return;
+
+        float k = 1f - Mathf.Exp(-rotationSmoothSpeed * ArmSpeedMultiplier * Time.deltaTime);
+        float step = Mathf.DeltaAngle(rotationAngleY, interactAimYaw) * k;
+        SetPivotYaw(rotationAngleY + step);
+    }
+
+    private Transform PlayerBody() {
+        return (playerDuckController != null) ? playerDuckController.transform : transform;
+    }
+
+    // The arm's root bone is the true shoulder; rotate_pivot is the fallback when the rig
+    // reference isn't wired up.
+    private Transform ArmAnchor() {
+        if (tbikc != null && tbikc.data.root != null) return tbikc.data.root;
+        return (rotate_pivot != null) ? rotate_pivot.transform : null;
+    }
+
+    // Rebuilds the canonical local arm frame if Start hasn't run (domain reload / Hot Reload).
+    private void EnsureArmFrame() {
+        if (ikParent != null || ik_target == null) return;
+        ikParent = ik_target.parent;
+        Vector3 initLocal = ik_target.localPosition;
+        reachX = Mathf.Clamp(initLocal.x, minIKX, maxIKX);
+        defaultLocalZ = initLocal.z;
+    }
+
+    // Horizontal direction the arm extends, read off the rig rather than assumed. Sampling the
+    // two scroll-reach extremes isolates the reach axis independently of the current arm height
+    // (ikParent is rotated, so the height term also contributes to the world direction). The
+    // shoulder is only used to decide which way along that axis counts as "outward".
+    private Vector3 MeasureArmReachDirection() {
+        EnsureArmFrame();
+        if (ikParent == null || ik_target == null) return PlayerBody().forward;
+
+        float y = ik_target.localPosition.y;
+        Vector3 axis = ikParent.TransformPoint(new Vector3(minIKX, y, defaultLocalZ))
+                     - ikParent.TransformPoint(new Vector3(maxIKX, y, defaultLocalZ));
+        axis.y = 0f;
+
+        Transform anchor = ArmAnchor();
+        Vector3 outward = ik_target.position - ((anchor != null) ? anchor.position : PlayerBody().position);
+        outward.y = 0f;
+
+        if (axis.sqrMagnitude < 1e-8f) axis = outward;              // minIKX == maxIKX: no scroll range
+        else if (Vector3.Dot(axis, outward) < 0f) axis = -axis;     // point the axis away from the shoulder
+
+        return (axis.sqrMagnitude > 1e-8f) ? axis.normalized : PlayerBody().forward;
+    }
+
+    // Where the body must stand for the arm to reach straight down 'approach' into 'target' from
+    // 'distance' away. 'approach' is the world direction from the stand spot toward the target.
+    // The body yaw is NOT part of the answer - it never changes during an interaction, because the
+    // camera hangs off the body. The arm pivot covers the angle instead (SetInteractArmAim).
+    public bool ComputeArmAlignedStand(Vector3 target, Vector3 approach, float distance,
+                                       out Vector3 standPos) {
+        Transform body = PlayerBody();
+        standPos = body.position;
+
+        approach.y = 0f;
+        if (approach.sqrMagnitude < 1e-8f) return false;
+        approach.Normalize();
+
+        // The arm's yaw pivot sits off to one side of the body origin, so measuring the stand
+        // distance at the origin leaves the arm laterally offset from the target. Offset the
+        // stand spot so it's the PIVOT that lands on the approach line. rotate_pivot is used
+        // rather than the IK root bone because it's the yaw centre - it doesn't move when the
+        // arm aims, so the answer stays valid after SetInteractArmAim runs.
+        Vector3 pivotOffset = (rotate_pivot != null)
+            ? rotate_pivot.transform.position - body.position
+            : Vector3.zero;
+        pivotOffset.y = 0f;
+
+        Vector3 flatTarget = new Vector3(target.x, body.position.y, target.z);
+        standPos = flatTarget - approach * distance - pivotOffset;
+        return true;
+    }
+
+    // Lets an Operate interactable own the body yaw outright, and stops UpdateBodyFacing from
+    // re-deriving it every frame.
+    public void SetInteractFacingYaw(float yaw) {
+        bodyTargetYaw = yaw;
+        facingYawLocked = true;
         _faceState = FaceState.FacingTarget;
+    }
+
+    // True once the body has finished easing onto whichever facing goal is current.
+    public bool IsBodyFacingSettled {
+        get {
+            if (playerDuckController == null || _faceState == FaceState.Idle) return true;
+            float goal = (_faceState == FaceState.Restoring) ? preHoldBodyYaw : bodyTargetYaw;
+            return Mathf.Abs(Mathf.DeltaAngle(playerDuckController.transform.eulerAngles.y, goal)) < 0.25f;
+        }
     }
 
     // Eases the duck body to face the active Operate target, then back to its original facing on
@@ -304,7 +461,7 @@ public class IsometricRaycaster : MonoBehaviour {
 
         Transform body = playerDuckController.transform;
 
-        if (_faceState == FaceState.FacingTarget && holdCollider != null) {
+        if (_faceState == FaceState.FacingTarget && !facingYawLocked && holdCollider != null) {
             Vector3 dir = holdCollider.transform.position - body.position;
             dir.y = 0f;
             if (dir.sqrMagnitude > 1e-6f) bodyTargetYaw = Quaternion.LookRotation(dir).eulerAngles.y;
@@ -581,6 +738,10 @@ public class IsometricRaycaster : MonoBehaviour {
         ik_target.position = worldPos;
     }
 
+    // Current world position of the IK target, so an interactable can blend the hand out from
+    // wherever the arm actually is instead of popping it onto the grab point.
+    public Vector3 ArmTargetWorld => (ik_target != null) ? ik_target.position : transform.position;
+
     // Interface references bypass Unity's overloaded null check, so a destroyed
     // interactable would otherwise still receive calls. Clear it explicitly.
     private void ValidateActiveInteractable() {
@@ -589,6 +750,9 @@ public class IsometricRaycaster : MonoBehaviour {
 
     private void HandleHoldInteraction() {
         ValidateActiveInteractable();
+
+        // Arm keeps holding its interaction aim while HandleRotation is parked.
+        UpdateInteractArmAim();
 
         Vector2 mouseDelta = (Vector2)(Input.mousePosition - lastMousePos);
         lastMousePos = Input.mousePosition;
@@ -633,8 +797,10 @@ public class IsometricRaycaster : MonoBehaviour {
         holdCollider = hit.collider;
 
         if (_holdMode == HoldMode.Interact) {
-            BeginInteractFacing(hit);
-            ik_target.position = hit.point;
+            BeginInteractAim(hit);
+            // No snap of the IK target onto the hit point: it yanked the hand off-axis before the
+            // arm had squared up. The interactable drives the target itself once it is ready
+            // (LeverInteractable eases it out after the duck has rolled in and the arm has aimed).
             activeInteractable?.OnHoldStart(hit, this);
         }
         if (_holdMode == HoldMode.Pickup) {
@@ -649,11 +815,13 @@ public class IsometricRaycaster : MonoBehaviour {
 
         if (_holdMode == HoldMode.Interact) {
             activeInteractable?.OnHoldEnd();
-            ResetRotation();
-            // No snap-restore of the IK target: the per-frame local composition in
-            // HandleVerticalIK blends the arm back onto its axis over a few frames.
-            // Ease the body back to its pre-interaction facing (UpdateBodyFacing handles it).
-            _faceState = FaceState.Restoring;
+            // No snap-restore of the pivot yaw or the IK target: dropping the aim hands the pivot
+            // straight back to HandleRotation, which eases it to the mouse-implied angle from
+            // wherever it is, and HandleVerticalIK blends the target back onto its axis. Both
+            // pick up mid-motion because SetPivotYaw keeps rotationAngleY in lockstep.
+            interactAimActive = false;
+            facingYawLocked = false;
+            if (_faceState != FaceState.Idle) _faceState = FaceState.Restoring;
         }
         if (_holdMode == HoldMode.Pickup) {
             activeInteractable?.OnHoldEnd();
