@@ -126,4 +126,30 @@ feature testbeds (alarm tuning, behaviour-tree iteration).
   `IInteractable` component on the hit object decides pickup vs. operate.
 - Several scripts contain **`Debug.Log` spam and WIP/TODO regions** — that's expected on the
   demo branch; don't "clean them up" unprompted.
-```
+
+---
+
+## 5. Tuning Hub registration rule
+
+**Every new feature must register its main control variables in the Tuning Hub**
+(`Tools ▸ Tuning Hub`).
+
+When a new gameplay feature (or a meaningful new tunable on an existing system) is
+implemented, add its primary tuning fields to
+[Assets/Editor/TuningHub/TuningManifest.cs](Assets/Editor/TuningHub/TuningManifest.cs)
+in the same change:
+
+- Add `F(...)` entries in the matching category/group (or a new `G<T>(...)` group /
+  `Cat(...)` category if the feature is a new system), with a friendly label, slider
+  range, unit, and the correct apply-mode badge (`Live` / `Reapply` / `NextEvent` /
+  `RestartPlay` / `EditorOnly` — check whether gameplay reads the field per-frame,
+  caches it in Awake/Start, or reads it per-event).
+- "Main control variables" = the knobs a designer would tweak (speeds, forces, timings,
+  ranges, masses, toggles) — not object references, wiring, or runtime state flags
+  (mark those `H(...)` if they're serialized).
+- If a renamed/removed field breaks an existing entry, fix the manifest in the same
+  change (the hub shows "field not found — update TuningManifest" rows and
+  `Tools ▸ Tuning Hub ▸ Validate Manifest` lists all stale entries).
+- Editing `TuningManifest.cs` is a method-body change → `echo reload > Library/hotReloadRemoteRequest.txt`.
+- Never add an `.asmdef` to `Assets/Editor/TuningHub/` (breaks `typeof(...)` refs to
+  gameplay classes — see the note at the top of TuningManifest.cs).
